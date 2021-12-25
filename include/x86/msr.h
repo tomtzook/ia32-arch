@@ -9,17 +9,20 @@ namespace msr {
 
 using id_t = uint32_t;
 
+#pragma pack(push, 1)
+
+static constexpr size_t msr_def_size = sizeof(uintn_t);
+
 template<id_t _id>
 struct msr_def_t {
     static constexpr id_t id = _id;
+    uintn_t raw;
 };
 
 template<typename _t>
 struct is_msr_def : public meta::false_type {};
 template<id_t _id>
 struct is_msr_def<msr_def_t<_id>> : public meta::true_type {};
-
-#pragma pack(push, 1)
 
 template<>
 struct msr_def_t<0xc0000080> {
@@ -45,7 +48,7 @@ struct msr_def_t<0xc0000080> {
     };
 };
 using ia32_efer_t = msr_def_t<0xc0000080>;
-static_assert(sizeof(ia32_efer_t) == sizeof(uintn_t), "sizeof(ia32_efer_t)");
+static_assert(sizeof(ia32_efer_t) == msr_def_size, "sizeof(ia32_efer_t)");
 
 #pragma pack(pop)
 
@@ -72,8 +75,14 @@ template<
                 msr::is_msr_def<_t>::value,
                 bool>::type = 0
 >
-_t read() noexcept {
+inline _t read() noexcept {
+    static_assert(sizeof(_t) == msr::msr_def_size, "bad MSR size");
     return static_cast<_t>(msr::read(_t::id));
+}
+
+template<msr::id_t _id>
+inline msr::msr_def_t<_id> read() noexcept {
+    return read<msr::msr_def_t<_id>>();
 }
 
 template<
@@ -82,8 +91,14 @@ template<
                 msr::is_msr_def<_t>::value,
                 bool>::type = 0
 >
-void write(const _t& t) noexcept {
+inline void write(const _t& t) noexcept {
+    static_assert(sizeof(_t) == msr::msr_def_size, "bad MSR size");
     msr::write(_t::id, t.raw);
+}
+
+template<msr::id_t _id>
+inline void write(msr::msr_def_t<_id>& t) noexcept {
+    return write<msr::msr_def_t<_id>>(t);
 }
 
 }
