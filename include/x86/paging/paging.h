@@ -5,6 +5,7 @@
 namespace x86::paging {
 
 enum class mode_t {
+    DISABLED,
     BIT32,
     PAE,
     IA32E

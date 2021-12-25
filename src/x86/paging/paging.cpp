@@ -21,8 +21,10 @@ mode_t get_current_mode() noexcept {
         } else {
             return mode_t::PAE;
         }
-    } else {
+    } else if (cr0.bits.paging_enable) {
         return mode_t::BIT32;
+    } else {
+        return mode_t::DISABLED;
     }
 }
 
