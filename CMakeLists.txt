@@ -3,7 +3,6 @@ project(arch CXX ASM_NASM)
 
 set(CMAKE_CXX_STANDARD 20)
 
-include_directories(include)
 add_library(arch
         src/intrinsics.cpp
 
@@ -15,3 +14,4 @@ add_library(arch
 
 target_compile_options(arch PRIVATE -ffreestanding)
 target_link_options(arch PRIVATE -nostdlib -nolibc -nodefaultlibs)
+target_include_directories(arch PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
