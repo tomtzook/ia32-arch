@@ -10,7 +10,7 @@ add_library(arch
         include/x86/cr.h
         include/x86/msr.h
 
-        include/x86/io.h)
+        include/x86/io.h src/x86/paging/paging.cpp)
 
 target_compile_options(arch PRIVATE -ffreestanding)
 target_link_options(arch PRIVATE -nostdlib -nolibc -nodefaultlibs)
