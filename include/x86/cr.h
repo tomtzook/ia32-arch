@@ -103,37 +103,37 @@ allow_struct_read_write(cr4_t);
 template<>
 inline cr0_t read() noexcept {
     cr0_t reg;
-    asm volatile("mov %0, cr0" : "=r"(reg.raw));
+    asm volatile("mov %%cr0, %0" : "=r"(reg.raw));
     return reg;
 }
 
 template<>
 inline void write(const cr0_t& t) noexcept {
-    asm volatile("mov cr0, %0" : : "r"(t.raw));
+    asm volatile("mov %0, %%cr0" : : "r"(t.raw));
 }
 
 template<>
 inline cr3_t read() noexcept {
     cr3_t reg;
-    asm volatile("mov %0, cr3" : "=r"(reg.raw));
+    asm volatile("mov %%cr3, %0" : "=r"(reg.raw));
     return reg;
 }
 
 template<>
 inline void write(const cr3_t& t) noexcept {
-    asm volatile("mov cr3, %0" : : "r"(t.raw));
+    asm volatile("mov %0, %%cr3" : : "r"(t.raw));
 }
 
 template<>
 inline cr4_t read() noexcept {
     cr4_t reg;
-    asm volatile("mov %0, cr4" : "=r"(reg.raw));
+    asm volatile("mov %%cr4, %0" : "=r"(reg.raw));
     return reg;
 }
 
 template<>
 inline void write(const cr4_t& t) noexcept {
-    asm volatile("mov cr4, %0" : : "r"(t.raw));
+    asm volatile("mov %0, %%cr4" : : "r"(t.raw));
 }
 
 }
