@@ -41,4 +41,3 @@ typedef unsigned long int size_t;
 typedef long int ssize_t;
 
 typedef uintn_t physical_address_t;
-constexpr physical_address_t PHYSICAL_NULL_ADDRESS = 0;

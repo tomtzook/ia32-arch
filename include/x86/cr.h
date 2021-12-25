@@ -35,6 +35,7 @@ struct cr0_t {
     cr0_t(uintn_t raw) noexcept : raw(raw) {}
 };
 static_assert(sizeof(cr0_t) == sizeof(uintn_t), "sizeof(cr0_t)");
+allow_struct_read_write(cr0_t);
 
 struct cr3_t {
     union {
@@ -56,6 +57,7 @@ struct cr3_t {
     cr3_t(uintn_t raw) noexcept : raw(raw) {}
 };
 static_assert(sizeof(cr3_t) == sizeof(uintn_t), "sizeof(cr3_t)");
+allow_struct_read_write(cr3_t);
 
 struct cr4_t {
     union {
@@ -94,6 +96,7 @@ struct cr4_t {
     cr4_t(uintn_t raw) noexcept : raw(raw) {}
 };
 static_assert(sizeof(cr4_t) == sizeof(uintn_t), "sizeof(cr4_t)");
+allow_struct_read_write(cr4_t);
 
 #pragma pack(pop)
 

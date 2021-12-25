@@ -8,9 +8,11 @@
 
 namespace x86 {
 
-template<typename T>
+template<typename _t>
 struct __hack : public meta::false_type {};
-
+#define allow_struct_read_write(x) \
+    template<> \
+    struct __hack<x> : public meta::true_type {};
 
 template<
         typename _t,
