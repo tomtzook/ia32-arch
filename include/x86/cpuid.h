@@ -29,7 +29,8 @@ struct cpuid_regs_t {
 };
 static_assert(sizeof(cpuid_regs_t) == sizeof(int) * 4, "sizeof(cpuid_regs_t)");
 
-struct cpuid_eax01_t : public cpuid_def_t<0x1> {
+template<>
+struct cpuid_def_t<0x1> {
     union {
         struct {
             uint32_t stepping_id : 4;
@@ -97,6 +98,7 @@ struct cpuid_eax01_t : public cpuid_def_t<0x1> {
         uint32_t raw;
     } edx;
 };
+using cpuid_eax01_t = cpuid_def_t<0x1>;
 static_assert(sizeof(cpuid_eax01_t) == sizeof(cpuid_regs_t), "sizeof(cpuid_eax01_t)");
 
 #pragma pack(pop)

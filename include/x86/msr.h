@@ -21,7 +21,8 @@ struct is_msr_def<msr_def_t<_id>> : public meta::true_type {};
 
 #pragma pack(push, 1)
 
-struct ia32_efer_t : public msr_def_t<0xc0000080> {
+template<>
+struct msr_def_t<0xc0000080> {
     union {
         struct {
             uintn_t sce : 1;
@@ -43,6 +44,8 @@ struct ia32_efer_t : public msr_def_t<0xc0000080> {
         uintn_t raw;
     };
 };
+using ia32_efer_t = msr_def_t<0xc0000080>;
+static_assert(sizeof(ia32_efer_t) == sizeof(uintn_t), "sizeof(ia32_efer_t)");
 
 #pragma pack(pop)
 
