@@ -15,9 +15,9 @@ struct cpuid_def_t {
 };
 
 template<typename T>
-struct is_cpuid_def : meta::false_type {};
+struct is_cpuid_def : public meta::false_type {};
 template<cpuid_t _leaf, cpuid_t _subleaf>
-struct is_cpuid_def<cpuid_def_t<_leaf, _subleaf>> : meta::true_type {};
+struct is_cpuid_def<cpuid_def_t<_leaf, _subleaf>> : public meta::true_type {};
 
 #pragma pack(push, 1)
 

@@ -15,9 +15,9 @@ struct msr_def_t {
 };
 
 template<typename _t>
-struct is_msr_def : meta::false_type {};
+struct is_msr_def : public meta::false_type {};
 template<id_t _id>
-struct is_msr_def<msr_def_t<_id>> : meta::true_type {};
+struct is_msr_def<msr_def_t<_id>> : public meta::true_type {};
 
 #pragma pack(push, 1)
 
