@@ -16,6 +16,8 @@
 
 #define ARRAY_SIZE(array) sizeof(array) / sizeof(array[0])
 
+#define BIT(b) (1ULL << (b))
+
 #define REPEATARG1(arg) arg
 #define REPEATARG2(arg) arg, REPEATARG1(arg)
 #define REPEATARG3(arg) arg, REPEATARG2(arg)

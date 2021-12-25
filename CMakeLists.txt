@@ -5,4 +5,6 @@ set(CMAKE_CXX_STANDARD 20)
 
 include_directories(include)
 add_library(arch
-        src/intrinsics.cpp)
+        src/intrinsics.cpp src/x86/cpuid.cpp src/x86/cr.cpp)
+target_compile_options(arch PRIVATE -ffreestanding)
+target_link_options(arch PRIVATE -nostdlib -nolibc -nodefaultlibs)
