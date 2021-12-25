@@ -14,8 +14,12 @@ using id_t = uint32_t;
 static constexpr size_t msr_def_size = sizeof(uintn_t);
 
 template<id_t _id>
-struct msr_def_t {
+struct _msr_base_t {
     static constexpr id_t id = _id;
+};
+
+template<id_t _id>
+struct msr_def_t : public _msr_base_t<_id> {
     uintn_t raw;
 };
 
@@ -25,7 +29,7 @@ template<id_t _id>
 struct is_msr_def<msr_def_t<_id>> : public meta::true_type {};
 
 template<>
-struct msr_def_t<0xc0000080> {
+struct msr_def_t<0xc0000080> : public _msr_base_t<0xc0000080> {
     union {
         struct {
             uintn_t sce : 1;
