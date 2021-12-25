@@ -81,7 +81,9 @@ template<
 >
 inline _t read() noexcept {
     static_assert(sizeof(_t) == msr::msr_def_size, "bad MSR size");
-    return static_cast<_t>(msr::read(_t::id));
+    _t t;
+    t.raw = msr::read(_t::id);
+    return t;
 }
 
 template<msr::id_t _id>

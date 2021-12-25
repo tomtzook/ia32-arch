@@ -13,9 +13,13 @@ using cpuid_t = uint32_t;
 static constexpr size_t cpuid_def_size = sizeof(int) * 4;
 
 template<cpuid_t _leaf, cpuid_t _subleaf = 0>
-struct cpuid_def_t {
+struct _cpuid_base_t {
     static constexpr cpuid_t leaf = _leaf;
     static constexpr cpuid_t subleaf = _subleaf;
+};
+
+template<cpuid_t _leaf, cpuid_t _subleaf = 0>
+struct cpuid_def_t : public _cpuid_base_t<_leaf, _subleaf> {
     uint32_t eax;
     uint32_t ebx;
     uint32_t ecx;
@@ -28,7 +32,7 @@ template<cpuid_t _leaf, cpuid_t _subleaf>
 struct is_cpuid_def<cpuid_def_t<_leaf, _subleaf>> : public meta::true_type {};
 
 template<>
-struct cpuid_def_t<0x1> {
+struct cpuid_def_t<0x1> : public _cpuid_base_t<0x1> {
     union {
         struct {
             uint32_t stepping_id : 4;
@@ -100,15 +104,6 @@ using cpuid_eax01_t = cpuid_def_t<0x1>;
 static_assert(sizeof(cpuid_eax01_t) == cpuid_def_size, "sizeof(cpuid_eax01_t)");
 
 #pragma pack(pop)
-
-/*static inline cpuid_regs_t cpuid(cpuid_t leaf, cpuid_t subleaf = 0) noexcept {
-    cpuid_regs_t regs{};
-    asm volatile("cpuid"
-        : "=a"(regs.eax), "=b"(regs.ebx), "=c"(regs.ecx), "=d"(regs.edx)
-        : "0"(leaf), "2"(subleaf));
-
-    return regs;
-}*/
 
 template<
         typename _t,
