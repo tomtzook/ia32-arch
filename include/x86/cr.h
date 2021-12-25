@@ -31,8 +31,8 @@ struct cr0_t {
         uintn_t raw;
     };
 
-    cr0_t() noexcept;
-    cr0_t(uintn_t raw) noexcept;
+    cr0_t() noexcept : raw(0) {}
+    cr0_t(uintn_t raw) noexcept : raw(raw) {}
 };
 static_assert(sizeof(cr0_t) == sizeof(uintn_t), "sizeof(cr0_t)");
 
@@ -52,8 +52,8 @@ struct cr3_t {
         uintn_t raw;
     };
 
-    cr3_t() noexcept;
-    cr3_t(uintn_t raw) noexcept;
+    cr3_t() noexcept : raw(0) {}
+    cr3_t(uintn_t raw) noexcept : raw(raw) {}
 };
 static_assert(sizeof(cr3_t) == sizeof(uintn_t), "sizeof(cr3_t)");
 
@@ -90,26 +90,47 @@ struct cr4_t {
         uintn_t raw;
     };
 
-    cr4_t() noexcept;
-    cr4_t(uintn_t raw) noexcept;
+    cr4_t() noexcept : raw(0) {}
+    cr4_t(uintn_t raw) noexcept : raw(raw) {}
 };
 static_assert(sizeof(cr4_t) == sizeof(uintn_t), "sizeof(cr4_t)");
 
 #pragma pack(pop)
 
 template<>
-cr0_t read();
-template<>
-void write(const cr0_t& t);
+inline cr0_t read() noexcept {
+    cr0_t reg;
+    asm volatile("mov %0, cr0" : "=r"(reg.raw));
+    return reg;
+}
 
 template<>
-cr3_t read();
-template<>
-void write(const cr3_t& t);
+inline void write(const cr0_t& t) noexcept {
+    asm volatile("mov cr0, %0" : : "r"(t.raw));
+}
 
 template<>
-cr4_t read();
+inline cr3_t read() noexcept {
+    cr3_t reg;
+    asm volatile("mov %0, cr3" : "=r"(reg.raw));
+    return reg;
+}
+
 template<>
-void write(const cr4_t& t);
+inline void write(const cr3_t& t) noexcept {
+    asm volatile("mov cr3, %0" : : "r"(t.raw));
+}
+
+template<>
+inline cr4_t read() noexcept {
+    cr4_t reg;
+    asm volatile("mov %0, cr4" : "=r"(reg.raw));
+    return reg;
+}
+
+template<>
+inline void write(const cr4_t& t) noexcept {
+    asm volatile("mov cr4, %0" : : "r"(t.raw));
+}
 
 }

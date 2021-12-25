@@ -1,12 +1,23 @@
 #pragma once
 
-#include "types.h"
+#include "common.h"
 
 // https://c9x.me/x86/html/file_module_x86_id_45.html
 // https://wiki.osdev.org/CPUID
 namespace x86 {
 
 using cpuid_t = uint32_t;
+
+template<cpuid_t _leaf, cpuid_t _subleaf = 0>
+struct cpuid_def_t {
+    static constexpr cpuid_t leaf = _leaf;
+    static constexpr cpuid_t subleaf = _subleaf;
+};
+
+template<typename T>
+struct is_cpuid_def : meta::false_type {};
+template<cpuid_t _leaf, cpuid_t _subleaf>
+struct is_cpuid_def<cpuid_def_t<_leaf, _subleaf>> : meta::true_type {};
 
 #pragma pack(push, 1)
 
@@ -16,8 +27,9 @@ struct cpuid_regs_t {
     uint32_t ecx;
     uint32_t edx;
 };
+static_assert(sizeof(cpuid_regs_t) == sizeof(int) * 4, "sizeof(cpuid_regs_t)");
 
-struct cpuid_eax01_t {
+struct cpuid_eax01_t : public cpuid_def_t<0x1> {
     union {
         struct {
             uint32_t stepping_id : 4;
@@ -85,15 +97,27 @@ struct cpuid_eax01_t {
         uint32_t raw;
     } edx;
 };
+static_assert(sizeof(cpuid_eax01_t) == sizeof(cpuid_regs_t), "sizeof(cpuid_eax01_t)");
 
 #pragma pack(pop)
 
-cpuid_regs_t cpuid(cpuid_t leaf, cpuid_t sub_leaf = 0) noexcept;
+static inline cpuid_regs_t cpuid(cpuid_t leaf, cpuid_t subleaf = 0) noexcept {
+    cpuid_regs_t regs{};
+    asm volatile("cpuid"
+        : "=a"(regs.eax), "=b"(regs.ebx), "=c"(regs.ecx), "=d"(regs.edx)
+        : "0"(leaf), "2"(subleaf));
 
-template<typename _regs_struct>
-_regs_struct cpuid(cpuid_t leaf, cpuid_t sub_leaf = 0) noexcept {
-    static_assert(sizeof(_regs_struct) == sizeof(cpuid_regs_t), "mismatch in registers size");
-    return static_cast<_regs_struct>(cpuid(leaf, sub_leaf));
+    return regs;
+}
+
+template<
+        typename _t,
+        typename meta::enable_if<
+                is_cpuid_def<_t>::value,
+                bool>::type = 0
+>
+_t cpuid() noexcept {
+    return static_cast<_t>(cpuid(_t::leaf, _t::subleaf));
 }
 
 }
