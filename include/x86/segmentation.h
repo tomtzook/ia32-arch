@@ -9,7 +9,7 @@ namespace segmentation {
 #pragma pack(push, 1)
 
 // Segment Selectors [SDM 3 3.4.2 P95]
-enum class table_t : uint16_t {
+enum class table_type_t : uint16_t {
     GDT = 0,
     LDT = 1
 };
@@ -18,7 +18,7 @@ struct selector_t {
     union {
         struct {
             uint16_t rpl : 2;
-            table_t table : 1;
+            table_type_t table : 1;
             uint16_t index: 13;
         } bits;
         uint16_t value;
@@ -81,6 +81,9 @@ enum class granularity_t : uint64_t {
     PAGE = 1
 };
 
+// In 64-bit mode, the Base and Limit values are ignored,
+// each descriptor covers the entire linear address space
+// regardless of what they are set to.
 struct descriptor_t {
     union {
         struct {
@@ -109,13 +112,35 @@ struct descriptor_t {
 };
 static_assert(sizeof(descriptor_t) == 8, "sizeof(segment_descriptor_t)");
 
-struct gdtr_t {
+struct table_register_t {
     uint16_t limit;
     uint32_t base_address;
 };
-static_assert(sizeof(gdtr_t) == 6, "sizeof(gdtr_t)");
+static_assert(sizeof(table_register_t) == 6, "sizeof(table_register_t)");
+
+struct gdtr_t : public table_register_t {};
+struct ldtr_t : public table_register_t {};
 
 #pragma pack(pop)
+
+class table_t {
+public:
+    table_t(table_register_t table_register) noexcept;
+
+    const void* base_address() const noexcept;
+    void* base_address() noexcept;
+
+    size_t limit() const noexcept;
+
+    const descriptor_t& operator[](size_t index) const noexcept;
+    descriptor_t& operator[](size_t index) noexcept;
+
+    const descriptor_t& operator[](const selector_t& selector) const noexcept;
+    descriptor_t& operator[](const selector_t& selector) noexcept;
+
+private:
+    table_register_t m_table_register;
+};
 
 }
 
@@ -133,8 +158,23 @@ inline void write(const segmentation::gdtr_t& t) noexcept {
     asm volatile("lgdt %0" : : "m"(t));
 }
 
+allow_struct_read_write(segmentation::ldtr_t);
+
+template<>
+inline segmentation::ldtr_t read() noexcept {
+    segmentation::ldtr_t ldtr{};
+    asm volatile("sldt %0" : "=m"(ldtr));
+    return ldtr;
+}
+
+template<>
+inline void write(const segmentation::ldtr_t& t) noexcept {
+    asm volatile("lldt %0" : : "m"(t));
+}
+
 allow_struct_read_write(segmentation::cs_t);
 
+template<>
 inline segmentation::cs_t read() noexcept {
     segmentation::cs_t selector{};
     asm volatile("mov %%cs, %0" : "=rm"(selector.value));
