@@ -41,7 +41,7 @@ struct cr3_t {
     union {
         struct {
             uintn_t ignored0 : 3;
-            uintn_t oage_write_through : 1;
+            uintn_t page_write_through : 1;
             uintn_t page_cache_disable : 1;
             uintn_t ignored1 : 7;
 #ifdef X86_64

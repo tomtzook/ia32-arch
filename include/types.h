@@ -40,4 +40,7 @@ typedef unsigned long long int uintmax_t;
 typedef unsigned long int size_t;
 typedef long int ssize_t;
 
-typedef uintn_t physical_address_t;
+// even in 32 bit paging mode the address could some times be
+// up to 40 bits long. In order to handle all situations, this
+// type will always be big enough to hold all addresses.
+typedef uint64_t physical_address_t;

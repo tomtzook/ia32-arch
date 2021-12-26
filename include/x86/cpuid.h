@@ -105,6 +105,9 @@ static_assert(sizeof(cpuid_eax01_t) == cpuid_def_size, "sizeof(cpuid_eax01_t)");
 
 #pragma pack(pop)
 
+cpuid_t max_supported_cpuid_leaf() noexcept;
+bool is_cpuid_leaf_supported(cpuid_t leaf) noexcept;
+
 template<
         typename _t,
         typename meta::enable_if<
