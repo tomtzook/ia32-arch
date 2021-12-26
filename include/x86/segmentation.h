@@ -26,12 +26,18 @@ struct selector_t {
 };
 static_assert(sizeof(selector_t) == 2, "sizeof(segment_selector_t)");
 
-struct cs_t : public selector_t {};
-struct ds_t : public selector_t {};
-struct gs_t : public selector_t {};
-struct ss_t : public selector_t {};
-struct es_t : public selector_t {};
-struct fs_t : public selector_t {};
+template<typename _t>
+struct is_selector_t : public meta::false_type {};
+#define define_selector(name) \
+    struct name : public selector_t {}; \
+    template<> struct is_selector_t<name> : public meta::true_type {};
+
+define_selector(cs_t);
+define_selector(ds_t);
+define_selector(gs_t);
+define_selector(ss_t);
+define_selector(es_t);
+define_selector(fs_t);
 
 // Segment Descriptors [SDM 3 3.4.5 P98]
 
@@ -138,6 +144,28 @@ public:
 
     const descriptor_t& operator[](const selector_t& selector) const noexcept;
     descriptor_t& operator[](const selector_t& selector) noexcept;
+
+    template<
+            typename _t,
+            typename meta::enable_if<
+                    is_selector_t<_t>::value,
+                    bool>::type = 0
+    >
+    const descriptor_t& segment() const noexcept {
+        selector_t selector = read<_t>();
+        return this->operator[](selector);
+    }
+
+    template<
+            typename _t,
+            typename meta::enable_if<
+                    is_selector_t<_t>::value,
+                    bool>::type = 0
+    >
+    descriptor_t& segment() noexcept {
+        selector_t selector = read<_t>();
+        return this->operator[](selector);
+    }
 
 private:
     table_register_t m_table_register;
