@@ -28,6 +28,7 @@ namespace x86::paging::bit32 {
 // - Bits 11:0 are from the original linear address.
 
 static constexpr size_t pdes_in_directory = 1024;
+static constexpr size_t ptes_in_table = 1024;
 
 #pragma pack(push, 1)
 
