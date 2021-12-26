@@ -13,3 +13,4 @@ Add:
 - Configuration
   - ACPI
   - MADT
+- Segmentation

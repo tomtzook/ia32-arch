@@ -44,3 +44,4 @@ typedef long int ssize_t;
 // up to 40 bits long. In order to handle all situations, this
 // type will always be big enough to hold all addresses.
 typedef uint64_t physical_address_t;
+typedef uint32_t linear_address_t;
