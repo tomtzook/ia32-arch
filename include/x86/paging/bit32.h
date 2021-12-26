@@ -2,6 +2,7 @@
 
 #include "x86/common.h"
 #include "x86/paging/paging.h"
+#include "x86/cr.h"
 
 
 namespace x86::paging::bit32 {
