@@ -83,6 +83,7 @@ struct pde_t {
         uint32_t raw;
     };
 
+    bool is_present() const noexcept { return small.present; }
     bool is_big() const noexcept;
 
     physical_address_t address() const noexcept;
@@ -110,6 +111,8 @@ struct pte_t {
         uint32_t raw;
     };
 
+    bool is_present() const noexcept { return bits.present; }
+
     physical_address_t address() const noexcept;
     void address(physical_address_t address) noexcept;
 };
@@ -119,5 +122,7 @@ struct pte_t {
 bool are_4m_page_tables_supported() noexcept;
 bool are_4m_page_tables_enabled() noexcept;
 bool is_pse36_supported() noexcept;
+
+bool to_physical(x86::cr3_t& cr3, linear_address_t address, physical_address_t& out) noexcept;
 
 }

@@ -77,4 +77,26 @@ bool is_pse36_supported() noexcept {
     return cpuid.edx.bits.pse36 != 0;
 }
 
+bool to_physical(x86::cr3_t& cr3, linear_address_t address, physical_address_t& out) noexcept {
+    auto pde_address = cr3.address() | (address.big.directory << 2);
+    auto pde = reinterpret_cast<const x86::paging::bit32::pde_t*>(pde_address);
+    if (!pde->is_present()) {
+        return false;
+    }
+
+    if (pde->is_big()) { // assuming that CR4.PSE is actually enabled
+        out = pde->address() | (address.big.offset);
+        return true;
+    } else {
+        auto pte_address = pde->address() | (address.small.table << 2);
+        auto pte = reinterpret_cast<const x86::paging::bit32::pte_t*>(pte_address);
+        if (!pte->is_present()) {
+            return false;
+        }
+
+        out = pte->address() | (address.small.offset);
+        return true;
+    }
+}
+
 }
