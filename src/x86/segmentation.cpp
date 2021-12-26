@@ -41,6 +41,10 @@ size_t table_t::limit() const noexcept {
     return m_table_register.limit;
 }
 
+size_t table_t::count() const noexcept {
+    return static_cast<size_t>(limit() + 1) / sizeof(x86::segmentation::descriptor_t);
+}
+
 const descriptor_t& table_t::operator[](size_t index) const noexcept {
     return reinterpret_cast<const descriptor_t*>(base_address())[index];
 }

@@ -131,6 +131,7 @@ public:
     void* base_address() noexcept;
 
     size_t limit() const noexcept;
+    size_t count() const noexcept;
 
     const descriptor_t& operator[](size_t index) const noexcept;
     descriptor_t& operator[](size_t index) noexcept;
