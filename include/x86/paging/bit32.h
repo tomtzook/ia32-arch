@@ -8,7 +8,7 @@ namespace x86::paging::bit32 {
 
 // 32 BIT Paging [SDM 3 4.3 P111]
 // translation:
-// CR3 -> address to PD
+// CR3 -> address to PDE
 //  - Bits 39:32 are all 0.
 //  - Bits 31:12 are from CR3.
 //  - Bits 11:2 are bits 31:22 of the linear address.
@@ -17,7 +17,7 @@ namespace x86::paging::bit32 {
 // - Bits 39:32 are bits 20:13 of the PDE. [affected by PSE36]
 // - Bits 31:22 are bits 31:22 of the PDE.
 // — Bits 21:0 are from the original linear address.
-// If CR4.PSE = 0 or the PDE’s PS flag is 0 = maps to PT
+// If CR4.PSE = 0 or the PDE’s PS flag is 0 = maps to PTE
 // - Bits 39:32 are all 0.
 // - Bits 31:12 are from the PDE.
 // - Bits 11:2 are bits 21:12 of the linear address.

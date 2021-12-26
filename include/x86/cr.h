@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common.h"
+#include "x86/paging/paging.h"
 
 // https://wiki.osdev.org/CPU_Registers_x86
 namespace x86 {
@@ -55,6 +56,10 @@ struct cr3_t {
 
     cr3_t() noexcept : raw(0) {}
     cr3_t(uintn_t raw) noexcept : raw(raw) {}
+
+    physical_address_t address() const noexcept {
+        return static_cast<physical_address_t>(bits.page_table_address) << x86::paging::page_bits_4k;
+    }
 };
 static_assert(sizeof(cr3_t) == sizeof(uintn_t), "sizeof(cr3_t)");
 allow_struct_read_write(cr3_t);
