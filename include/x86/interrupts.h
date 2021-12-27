@@ -23,7 +23,7 @@ struct gate_descriptor_t {
         struct {
             uint64_t offset_low : 16;
             uint64_t segment_selector : 16;
-            uint64_t reserved0 : 7;
+            uint64_t reserved0 : 8;
             gate_type_t type : 4;
             uint64_t reserved1 : 1;
             uint64_t dpl : 2;
@@ -36,6 +36,7 @@ struct gate_descriptor_t {
     uint32_t address() const noexcept;
     void address(uint32_t address) noexcept;
 };
+static_assert(sizeof(gate_descriptor_t) == 8, "sizeof(gate_descriptor_t)");
 
 // Interrupt Descriptor Table [SDM 3 6.10 P195]
 
