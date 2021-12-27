@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common.h"
+#include "x86/common.h"
 
 
 namespace x86 {
