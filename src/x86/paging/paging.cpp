@@ -18,14 +18,14 @@ mode_t current_mode() noexcept {
 
     if (cr0.bits.paging_enable && cr4.bits.physical_address_extension) {
         if (efer.bits.lma) {
-            return mode_t::IA32E;
+            return mode_t::ia32e;
         } else {
-            return mode_t::PAE;
+            return mode_t::pae;
         }
     } else if (cr0.bits.paging_enable) {
-        return mode_t::BIT32;
+        return mode_t::bit32;
     } else {
-        return mode_t::DISABLED;
+        return mode_t::disabled;
     }
 }
 

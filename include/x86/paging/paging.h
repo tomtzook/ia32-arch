@@ -10,10 +10,10 @@ constexpr size_t page_bits_4m = 22;
 constexpr size_t page_size_4m = 1ull << page_bits_4m;
 
 enum class mode_t {
-    DISABLED,
-    BIT32,
-    PAE,
-    IA32E
+    disabled,
+    bit32,
+    pae,
+    ia32e
 };
 
 mode_t current_mode() noexcept;

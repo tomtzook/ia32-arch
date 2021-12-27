@@ -10,8 +10,8 @@ namespace segmentation {
 
 // Segment Selectors [SDM 3 3.4.2 P95]
 enum class table_type_t : uint16_t {
-    GDT = 0,
-    LDT = 1
+    gdt = 0,
+    ldt = 1
 };
 
 struct selector_t {
@@ -42,49 +42,49 @@ define_selector(fs_t);
 // Segment Descriptors [SDM 3 3.4.5 P98]
 
 enum class type_t : uint64_t {
-    DATA_READ_ONLY = 0b0000,
-    DATA_READ_ONLY_ACCESSED = 0b0001,
-    DATA_READ_WRITE = 0b0010,
-    DATA_READ_WRITE_ACCESSED = 0b0011,
-    DATA_READ_ONLY_EXPAND_DOWN = 0b0100,
-    DATA_READ_ONLY_EXPAND_DOWN_ACCESSED = 0b0101,
-    DATA_READ_WRITE_EXPAND_DOWN = 0b0110,
-    DATA_READ_WRITE_EXPAND_DOWN_ACCESSED = 0b0111,
-    CODE_EXECUTE_ONLY = 0b1000,
-    CODE_EXECUTE_ONLY_ACCESSED = 0b1001,
-    CODE_EXECUTE_READ = 0b1010,
-    CODE_EXECUTE_READ_ACCESSED = 0b1011,
-    CODE_EXECUTE_ONLY_CONFORMING = 0b1100,
-    CODE_EXECUTE_ONLY_CONFORMING_ACCESSED = 0b1101,
-    CODE_EXECUTE_READ_CONFORMING = 0b1110,
-    CODE_EXECUTE_READ_CONFORMING_ACCESSED = 0b1111,
+    data_read_only = 0b0000,
+    data_read_only_accessed = 0b0001,
+    data_read_write = 0b0010,
+    data_read_write_accessed = 0b0011,
+    data_read_only_expand_down = 0b0100,
+    data_read_only_expand_down_accessed = 0b0101,
+    data_read_write_expand_down = 0b0110,
+    data_read_write_expand_down_accessed = 0b0111,
+    code_execute_only = 0b1000,
+    code_execute_only_accessed = 0b1001,
+    code_execute_read = 0b1010,
+    code_execute_read_accessed = 0b1011,
+    code_execute_only_confirming = 0b1100,
+    code_execute_only_confirming_accessed = 0b1101,
+    code_execute_read_confirming = 0b1110,
+    code_execute_read_confirming_accessed = 0b1111,
 
-    SYSTEM_RESERVED0 = 0b0000,
-    SYSTEM_BITS16_TSS_AVAILABLE = 0b0001,
-    SYSTEM_LDT = 0b0010,
-    SYSTEM_BITS16_TSS_BUSY = 0b0011,
-    SYSTEM_BITS16_CALL_GATE = 0b0100,
-    SYSTEM_TASK_GATE = 0b0101,
-    SYSTEM_BITS16_INTERRUPT_GATE = 0b0110,
-    SYSTEM_BITS16_TRAP_GATE = 0b0111,
-    SYSTEM_RESERVED1 = 0b1000,
-    SYSTEM_BITS32_TSS_AVAILABLE = 0b1001,
-    SYSTEM_RESERVED2 = 0b1010,
-    SYSTEM_BITS32_TSS_BUSY = 0b1011,
-    SYSTEM_BITS32_CALL_GATE = 0b1100,
-    SYSTEM_RESERVED3 = 0b1101,
-    SYSTEM_BITS32_INTERRUPT = 0b1110,
-    SYSTEM_BITS32_TRAP_GATE = 0b1111
+    system_reserved0 = 0b0000,
+    system_bits16_tss_available = 0b0001,
+    system_ldt = 0b0010,
+    system_bits16_tss_busy = 0b0011,
+    system_bits16_call_gate = 0b0100,
+    system_task_gate = 0b0101,
+    system_bits16_interrupt_gate = 0b0110,
+    system_bits16_trap_gate = 0b0111,
+    system_reserved1 = 0b1000,
+    system_bits32_tss_available = 0b1001,
+    system_reserved2 = 0b1010,
+    system_bits32_tss_busy = 0b1011,
+    system_bits32_call_gate = 0b1100,
+    system_reserved3 = 0b1101,
+    system_bits32_interrupt = 0b1110,
+    system_bits32_trap_gate = 0b1111
 };
 
 enum class descriptor_type_t {
-    SYSTEM = 0,
-    CODE_OR_DATA = 1
+    system = 0,
+    code_or_data = 1
 };
 
 enum class granularity_t : uint64_t {
-    BYTE = 0,
-    PAGE = 1
+    byte = 0,
+    page = 1
 };
 
 // In 64-bit mode, the Base and Limit values are ignored,

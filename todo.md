@@ -1,8 +1,8 @@
 Add: 
 
 - Paging
-  - PAE
-  - IA32E
+  - pae
+  - ia32e
   - FIVE-LEVEL
   - API for easily interacting with page table
 - Interrupts
