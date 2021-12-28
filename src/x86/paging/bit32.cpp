@@ -78,7 +78,8 @@ bool is_pse36_supported() noexcept {
 }
 
 bool to_physical(x86::cr3_t& cr3, linear_address_t address, physical_address_t& out) noexcept {
-    auto pde_address = cr3.address() | (address.big.directory << 2);
+    auto pde_address = (static_cast<physical_address_t>(cr3.bit32.address) << page_bits_4k)
+            | (address.big.directory << 2);
     auto pde = reinterpret_cast<const x86::paging::bit32::pde_t*>(pde_address);
     if (!pde->is_present()) {
         return false;

@@ -36,36 +36,33 @@ struct cr0_t {
     cr0_t(uintn_t raw) noexcept : raw(raw) {}
 };
 static_assert(sizeof(cr0_t) == sizeof(uintn_t), "sizeof(cr0_t)");
-allow_struct_read_write(cr0_t);
 
 struct cr3_t {
     union {
         struct {
             uintn_t ignored0 : 3;
-            uintn_t page_write_through : 1;
-            uintn_t page_cache_disable : 1;
+            uintn_t pwt : 1;
+            uintn_t pcd : 1;
             uintn_t ignored1 : 7;
+            uintn_t address : 20;
 #ifdef X86_64
-            uintn_t page_table_address : 52;
-#else
-            uintn_t page_table_address : 20;
+            uintn_t reserved0 : 32;
 #endif
-        } bits;
+        } bit32;
+        struct {
+            uintn_t ignored0 : 5;
+            uintn_t address : 27;
+#ifdef X86_64
+            uintn_t reserved0 : 32;
+#endif
+        } pae;
         uintn_t raw;
     };
 
     cr3_t() noexcept : raw(0) {}
     cr3_t(uintn_t raw) noexcept : raw(raw) {}
-
-    physical_address_t address() const noexcept {
-        return static_cast<physical_address_t>(bits.page_table_address) << x86::paging::page_bits_4k;
-    }
-    void address(physical_address_t address) noexcept {
-        bits.page_table_address = address >> x86::paging::page_bits_4k;
-    }
 };
 static_assert(sizeof(cr3_t) == sizeof(uintn_t), "sizeof(cr3_t)");
-allow_struct_read_write(cr3_t);
 
 struct cr4_t {
     union {
@@ -104,9 +101,10 @@ struct cr4_t {
     cr4_t(uintn_t raw) noexcept : raw(raw) {}
 };
 static_assert(sizeof(cr4_t) == sizeof(uintn_t), "sizeof(cr4_t)");
-allow_struct_read_write(cr4_t);
 
 #pragma pack(pop)
+
+allow_struct_read_write(cr0_t);
 
 template<>
 inline cr0_t read() noexcept {
@@ -120,6 +118,8 @@ inline void write(const cr0_t& t) noexcept {
     asm volatile("mov %0, %%cr0" : : "r"(t.raw));
 }
 
+allow_struct_read_write(cr3_t);
+
 template<>
 inline cr3_t read() noexcept {
     cr3_t reg;
@@ -131,6 +131,8 @@ template<>
 inline void write(const cr3_t& t) noexcept {
     asm volatile("mov %0, %%cr3" : : "r"(t.raw));
 }
+
+allow_struct_read_write(cr4_t);
 
 template<>
 inline cr4_t read() noexcept {

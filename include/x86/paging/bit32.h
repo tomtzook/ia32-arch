@@ -48,6 +48,7 @@ struct linear_address_t {
         uint32_t raw;
     };
 };
+static_assert(sizeof(linear_address_t) == 4, "sizeof(linear_address_t)");
 
 // [SDM 3 4.3 P115 "Table 4-4/Table 4-5"]
 struct pde_t {
@@ -92,6 +93,7 @@ struct pde_t {
     physical_address_t pse36_address_bits() const noexcept;
     void pse36_address_bits(physical_address_t address) noexcept;
 };
+static_assert(sizeof(pde_t) == 4, "sizeof(pde_t)");
 
 // [SDM 3 4.3 P115 "Table 4-6"]
 struct pte_t {
@@ -117,6 +119,7 @@ struct pte_t {
     physical_address_t address() const noexcept;
     void address(physical_address_t address) noexcept;
 };
+static_assert(sizeof(pte_t) == 4, "sizeof(pte_t)");
 
 #pragma pack(pop)
 
