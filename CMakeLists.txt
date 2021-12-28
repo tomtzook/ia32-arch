@@ -4,7 +4,6 @@ project(arch CXX ASM_NASM)
 set(CMAKE_CXX_STANDARD 17)
 
 add_library(arch
-        src/intrinsics.cpp
         src/x86/paging/paging.cpp
         src/x86/paging/bit32.cpp
         src/x86/cpuid.cpp
