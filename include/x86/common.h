@@ -8,6 +8,8 @@
 
 namespace x86 {
 
+// only specific types will be able to specialize read/write
+// use allow_struct_read_write(type) for new types.
 template<typename _t>
 struct __hack : public meta::false_type {};
 #define allow_struct_read_write(x) \

@@ -28,8 +28,9 @@ struct is_msr_def : public meta::false_type {};
 template<id_t _id>
 struct is_msr_def<msr_def_t<_id>> : public meta::true_type {};
 
+constexpr id_t ia32_efer_id_t = 0xc0000080;
 template<>
-struct msr_def_t<0xc0000080> : public _msr_base_t<0xc0000080> {
+struct msr_def_t<ia32_efer_id_t> : public _msr_base_t<ia32_efer_id_t> {
     union {
         struct {
             uintn_t sce : 1;
@@ -51,26 +52,27 @@ struct msr_def_t<0xc0000080> : public _msr_base_t<0xc0000080> {
         uintn_t raw;
     };
 };
-using ia32_efer_t = msr_def_t<0xc0000080>;
+using ia32_efer_t = msr_def_t<ia32_efer_id_t>;
 static_assert(sizeof(ia32_efer_t) == msr_def_size, "sizeof(ia32_efer_t)");
 
 #pragma pack(pop)
 
-    static inline uintn_t read(id_t id) noexcept {
-        uintn_t value;
-        asm volatile("rdmsr" : "=A"(value) : "c"(id));
-        return value;
-    }
+static inline uintn_t read(id_t id) noexcept {
+    uintn_t value;
+    asm volatile("rdmsr" : "=A"(value) : "c"(id));
+    return value;
+}
 
-    static inline void write(id_t id, uintn_t value) noexcept {
+static inline void write(id_t id, uintn_t value) noexcept {
 #ifdef X86_64
-        uint32_t low = value & 0xFFFFFFFF;
-        uint32_t high = value >> 32;
-        asm volatile ("wrmsr" : : "c"(id), "a"(low), "d"(high));
+    uint32_t low = value & 0xFFFFFFFF;
+    uint32_t high = value >> 32;
+    asm volatile ("wrmsr" : : "c"(id), "a"(low), "d"(high));
 #else
-        asm volatile ("wrmsr" : : "c"(id), "a"(value));
+    asm volatile ("wrmsr" : : "c"(id), "a"(value));
 #endif
-    }
+}
+
 }
 
 template<
