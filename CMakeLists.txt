@@ -5,12 +5,22 @@ set(CMAKE_CXX_STANDARD 17)
 
 add_library(arch
         src/intrinsics.cpp
+        src/x86/paging/paging.cpp
+        src/x86/paging/bit32.cpp
+        src/x86/cpuid.cpp
+        src/x86/segmentation.cpp
+        src/x86/interrupts.cpp
+        src/x86/paging/pae.cpp
 
+        # adding headers just for IDE to work with them better
         include/x86/cpuid.h
         include/x86/cr.h
         include/x86/msr.h
-
-        include/x86/io.h src/x86/paging/paging.cpp include/x86/paging/bit32.h src/x86/paging/bit32.cpp src/x86/cpuid.cpp include/x86/segmentation.h src/x86/segmentation.cpp include/x86/interrupts.h src/x86/interrupts.cpp include/x86/paging/pae.h src/x86/paging/pae.cpp)
+        include/x86/io.h
+        include/x86/paging/bit32.h
+        include/x86/segmentation.h
+        include/x86/interrupts.h
+        include/x86/paging/pae.h)
 
 target_compile_options(arch PRIVATE -ffreestanding)
 target_link_options(arch PRIVATE -nostdlib -nolibc -nodefaultlibs)
