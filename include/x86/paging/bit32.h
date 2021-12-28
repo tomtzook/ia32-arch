@@ -28,6 +28,46 @@ namespace x86::paging::bit32 {
 // - Bits 31:12 are from the PTE.
 // - Bits 11:0 are from the original linear address.
 
+/*
+ * The following code shows an example of a page table
+ * which uses 4M pages and a single page directory
+
+    #define page_aligned __attribute__ ((aligned(4096)))
+
+    struct page_table_t {
+        x86::paging::bit32::pde_t pdes[x86::paging::bit32::pdes_in_directory] page_aligned;
+    } page_aligned;
+
+ * It is then possible to initialize paging with it.
+ * For example, setting up identity paging:
+
+    memset(&page_table, 0, sizeof(page_table_t));
+
+    for (size_t i = 0; i < ARRAY_SIZE(page_table.pdes); ++i) {
+        auto& pde = page_table.pdes[i];
+        pde.big.present = true;
+        pde.big.rw = true;
+        pde.big.ps = true;
+
+        pde.address(i * x86::paging::page_size_4m);
+    }
+
+ * And finally, paging must be set up and enabled.
+ * Assuming system is in protected mode:
+
+    auto cr3 = x86::read<x86::cr3_t>();
+    cr3.bit32.address = reinterpret_cast<physical_address_t>(&page_table) >> 12;
+    x86::write(cr3);
+
+    auto cr4 = x86::read<x86::cr4_t>();
+    cr4.bits.page_size_extensions = true; // only necessary for 4M pages
+    x86::write(cr4);
+
+    auto cr0 = x86::read<x86::cr0_t>();
+    cr0.bits.paging_enable = true;
+    x86::write(cr0);
+ */
+
 static constexpr size_t pdes_in_directory = 1024;
 static constexpr size_t ptes_in_table = 1024;
 
