@@ -10,7 +10,7 @@ physical_address_t pdpte_t::address() const noexcept {
 
 void pdpte_t::address(physical_address_t address) noexcept {
     auto maxphysaddr = max_physical_address_width();
-    physical_address_t mask = ~(1ull << maxphysaddr);
+    physical_address_t mask = (1ull << maxphysaddr) - 1;
 
     bits.address = (address >> page_bits_4k) & mask;
 }
@@ -30,12 +30,12 @@ physical_address_t pde_t::address() const noexcept {
 void pde_t::address(physical_address_t address) noexcept {
     if (is_big()) {
         auto maxphysaddr = max_physical_address_width();
-        physical_address_t mask = ~(1ull << maxphysaddr);
+        physical_address_t mask = (1ull << maxphysaddr) - 1;
 
         big.address = (address >> page_bits_2m) & mask;
     } else {
         auto maxphysaddr = max_physical_address_width();
-        physical_address_t mask = ~(1ull << maxphysaddr);
+        physical_address_t mask = (1ull << maxphysaddr) - 1;
 
         small.address = (address >> page_bits_4k) & mask;
     }
@@ -47,7 +47,7 @@ physical_address_t pte_t::address() const noexcept {
 
 void pte_t::address(physical_address_t address) noexcept {
     auto maxphysaddr = max_physical_address_width();
-    physical_address_t mask = ~(1ull << maxphysaddr);
+    physical_address_t mask = (1ull << maxphysaddr) - 1;
 
     bits.address = (address >> page_bits_4k) & mask;
 }
