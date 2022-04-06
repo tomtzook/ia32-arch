@@ -56,6 +56,15 @@ struct cr3_t {
             uintn_t reserved0 : 32;
 #endif
         } pae;
+#ifdef X86_64
+        struct {
+            uintn_t ignored0 : 3;
+            uintn_t pwt : 1;
+            uintn_t pcd : 1;
+            uintn_t ignored1 : 7;
+            uintn_t address : 52;
+        } ia32e;
+#endif
         uintn_t raw;
     };
 
