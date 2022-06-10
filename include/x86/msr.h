@@ -3,15 +3,29 @@
 #include "common.h"
 
 
+#define DEFINE_MSR(_id, _name, _bits) \
+constexpr id_t  _name## _id_t = _id; \
+template<> struct msr_def_t<_name## _id_t> : public _msr_base_t<_name## _id_t> { \
+    union {                              \
+        struct {                         \
+            _bits                                 \
+        } bits;                          \
+        value_t raw;\
+    }; \
+}; \
+using _name## _t = msr_def_t<_name## _id_t>; \
+static_assert(sizeof(_name## _t) == msr_def_size, "sizeof(_name## _t)");
+
+
 namespace x86 {
 
 namespace msr {
 
 using id_t = uint32_t;
+using value_t = uint64_t;
+static constexpr size_t msr_def_size = sizeof(value_t);
 
 #pragma pack(push, 1)
-
-static constexpr size_t msr_def_size = sizeof(uintn_t);
 
 template<id_t _id>
 struct _msr_base_t {
@@ -20,7 +34,7 @@ struct _msr_base_t {
 
 template<id_t _id>
 struct msr_def_t : public _msr_base_t<_id> {
-    uintn_t raw;
+    value_t raw;
 };
 
 template<typename _t>
@@ -28,49 +42,41 @@ struct is_msr_def : public meta::false_type {};
 template<id_t _id>
 struct is_msr_def<msr_def_t<_id>> : public meta::true_type {};
 
-constexpr id_t ia32_efer_id_t = 0xc0000080;
-template<>
-struct msr_def_t<ia32_efer_id_t> : public _msr_base_t<ia32_efer_id_t> {
-    union {
-        struct {
-            uintn_t sce : 1;
-            uintn_t reserved0 : 7;
-            uintn_t lme : 1;
-            uintn_t reserved1 : 1;
-            uintn_t lma : 1;
-            uintn_t nxe : 1;
-            uintn_t svme : 1;
-            uintn_t lmsle : 1;
-            uintn_t ffxsr : 1;
-            uintn_t tce : 1;
-#ifdef X86_64
-            uintn_t reserved2 : 48;
-#else
-            uintn_t reserved2 : 16;
-#endif
-        } bits;
-        uintn_t raw;
-    };
-};
-using ia32_efer_t = msr_def_t<ia32_efer_id_t>;
-static_assert(sizeof(ia32_efer_t) == msr_def_size, "sizeof(ia32_efer_t)");
+DEFINE_MSR(0xc0000080, ia32_efer,
+value_t sce : 1;
+value_t reserved0 : 7;
+value_t lme : 1;
+value_t reserved1 : 1;
+value_t lma : 1;
+value_t nxe : 1;
+value_t svme : 1;
+value_t lmsle : 1;
+value_t ffxsr : 1;
+value_t tce : 1;
+value_t reserved2 : 48;
+)
+
+DEFINE_MSR(0x1b, ia32_apic_base,
+value_t reserved0: 8;
+value_t bsp : 1;
+value_t reserved1 : 2;
+value_t global_enable : 1;
+value_t base : 52;
+)
 
 #pragma pack(pop)
 
-static inline uintn_t read(id_t id) noexcept {
-    uintn_t value;
-    asm volatile("rdmsr" : "=A"(value) : "c"(id));
-    return value;
+static inline value_t read(id_t id) noexcept {
+    uint32_t low;
+    uint32_t high;
+    asm volatile("rdmsr" : "=a"(low), "=d"(high) : "c"(id));
+    return low | (static_cast<value_t>(high) << 32);
 }
 
-static inline void write(id_t id, uintn_t value) noexcept {
-#ifdef X86_64
+static inline void write(id_t id, value_t value) noexcept {
     uint32_t low = value & 0xFFFFFFFF;
     uint32_t high = value >> 32;
     asm volatile ("wrmsr" : : "c"(id), "a"(low), "d"(high));
-#else
-    asm volatile ("wrmsr" : : "c"(id), "a"(value));
-#endif
 }
 
 }

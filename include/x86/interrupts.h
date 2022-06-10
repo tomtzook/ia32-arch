@@ -8,6 +8,31 @@ namespace interrupts {
 
 #pragma pack(push, 1)
 
+// [SDM 3 6.3.1 P188 "Table 6-1"]
+
+enum interrupt_t {
+    divide_error = 0,
+    debug_exception = 1,
+    nmi = 2,
+    breakpoint = 3,
+    overflow = 4,
+    bound_range_exceeded = 5,
+    invalid_opcode = 6,
+    device_not_available = 7,
+    double_fault = 8,
+    coprocessor_segment_overrun = 9,
+    invalid_tss = 10,
+    segment_not_present = 11,
+    stack_segment_fault = 12,
+    general_protection = 13,
+    page_fault = 14,
+    fpu_floating_point_error = 16,
+    alignment_check = 17,
+    machine_check = 18,
+    simd_floating_point_exception = 19,
+    virtualization_exception = 20,
+};
+
 // IDT Descriptors [SDM 3 6.11 P196]
 
 enum class gate_type_t : uint64_t {
