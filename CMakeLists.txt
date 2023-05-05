@@ -1,7 +1,3 @@
-cmake_minimum_required(VERSION 3.21)
-project(arch CXX ASM_NASM)
-
-set(CMAKE_CXX_STANDARD 17)
 
 add_library(arch
         src/x86/paging/paging.cpp
@@ -22,7 +18,7 @@ add_library(arch
         include/x86/interrupts.h
         include/x86/paging/pae.h
         include/x86/paging/ia32e.h
-        include/x86/apic.h src/x86/apic.cpp)
+        include/x86/apic.h src/x86/apic.cpp src/intrinsics.cpp)
 
 target_compile_options(arch PRIVATE -ffreestanding)
 target_link_options(arch PRIVATE -nostdlib -nolibc -nodefaultlibs)

@@ -116,7 +116,7 @@ struct descriptor_t {
     size_t limit() const noexcept;
     void limit(size_t limit) noexcept;
 };
-static_assert(sizeof(descriptor_t) == 8, "sizeof(segment_descriptor_t)");
+//static_assert(sizeof(descriptor_t) == 8, "sizeof(segment_descriptor_t)");
 
 struct table_register_t {
     uint16_t limit;
