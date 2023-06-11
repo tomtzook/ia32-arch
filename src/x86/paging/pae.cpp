@@ -5,14 +5,14 @@
 namespace x86::paging::pae {
 
 physical_address_t pdpte_t::address() const noexcept {
-    return static_cast<physical_address_t>(bits.address) << page_bits_4k;
+    return static_cast<physical_address_t>(bits.address) << x86::paging::page_bits_4k;
 }
 
 void pdpte_t::address(physical_address_t address) noexcept {
-    auto maxphysaddr = max_physical_address_width();
+    auto maxphysaddr = x86::paging::max_physical_address_width();
     physical_address_t mask = (1ull << maxphysaddr) - 1;
 
-    bits.address = (address >> page_bits_4k) & mask;
+    bits.address = (address >> x86::paging::page_bits_4k) & mask;
 }
 
 bool pde_t::is_big() const noexcept {
@@ -21,35 +21,35 @@ bool pde_t::is_big() const noexcept {
 
 physical_address_t pde_t::address() const noexcept {
     if (is_big()) {
-        return static_cast<physical_address_t>(big.address) << page_bits_2m;
+        return static_cast<physical_address_t>(big.address) << x86::paging::page_bits_2m;
     } else {
-        return static_cast<physical_address_t>(small.address) << page_bits_4k;
+        return static_cast<physical_address_t>(small.address) << x86::paging::page_bits_4k;
     }
 }
 
 void pde_t::address(physical_address_t address) noexcept {
     if (is_big()) {
-        auto maxphysaddr = max_physical_address_width();
+        auto maxphysaddr = x86::paging::max_physical_address_width();
         physical_address_t mask = (1ull << maxphysaddr) - 1;
 
-        big.address = (address >> page_bits_2m) & mask;
+        big.address = (address >> x86::paging::page_bits_2m) & mask;
     } else {
-        auto maxphysaddr = max_physical_address_width();
+        auto maxphysaddr = x86::paging::max_physical_address_width();
         physical_address_t mask = (1ull << maxphysaddr) - 1;
 
-        small.address = (address >> page_bits_4k) & mask;
+        small.address = (address >> x86::paging::page_bits_4k) & mask;
     }
 }
 
 physical_address_t pte_t::address() const noexcept {
-    return static_cast<physical_address_t>(bits.address) << page_bits_4k;
+    return static_cast<physical_address_t>(bits.address) << x86::paging::page_bits_4k;
 }
 
 void pte_t::address(physical_address_t address) noexcept {
-    auto maxphysaddr = max_physical_address_width();
+    auto maxphysaddr = x86::paging::max_physical_address_width();
     physical_address_t mask = (1ull << maxphysaddr) - 1;
 
-    bits.address = (address >> page_bits_4k) & mask;
+    bits.address = (address >> x86::paging::page_bits_4k) & mask;
 }
 
 bool to_physical(x86::cr3_t& cr3, linear_address_t address, physical_address_t& out) noexcept {

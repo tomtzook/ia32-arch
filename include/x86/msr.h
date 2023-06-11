@@ -64,6 +64,31 @@ value_t global_enable : 1;
 value_t base : 52;
 )
 
+DEFINE_MSR(0x480, ia32_vmx_basic,
+value_t vmcs_revision : 31;
+value_t must_be_zero : 1;
+value_t vm_struct_size : 13;
+value_t reserved0 : 3;
+value_t physaddr_width_type : 1;
+value_t dual_monitor_smi : 1;
+value_t vmcs_mem_type : 3;
+value_t ins_outs_vmexit_report : 1;
+value_t vm_ctrls_fixed : 1;
+value_t reserved1 : 8;
+)
+
+DEFINE_MSR(0x486, ia32_vmx_cr0_fixed0,
+)
+
+DEFINE_MSR(0x487, ia32_vmx_cr0_fixed1,
+)
+
+DEFINE_MSR(0x488, ia32_vmx_cr4_fixed0,
+)
+
+DEFINE_MSR(0x489, ia32_vmx_cr4_fixed1,
+)
+
 #pragma pack(pop)
 
 static inline value_t read(id_t id) noexcept {
