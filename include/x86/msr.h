@@ -59,7 +59,8 @@ value_t reserved2 : 48;
 DEFINE_MSR(0x1b, ia32_apic_base,
 value_t reserved0: 8;
 value_t bsp : 1;
-value_t reserved1 : 2;
+value_t reserved1 : 1;
+value_t extd : 1;
 value_t global_enable : 1;
 value_t base : 52;
 )
