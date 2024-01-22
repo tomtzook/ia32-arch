@@ -19,8 +19,8 @@ typedef uint64_t uintn_t;
 typedef uint64_t uintptr_t;
 typedef unsigned long int uintmax_t;
 
-typedef unsigned long int size_t;
-typedef long int ssize_t;
+typedef unsigned long long size_t;
+typedef long long ssize_t;
 
 // even in 32 bit paging mode the address could sometimes be
 // up to 40 bits long. In order to handle all situations, this
