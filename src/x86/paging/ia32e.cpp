@@ -1,4 +1,5 @@
 
+#include "x86/cpuid.h"
 #include "x86/paging/ia32e.h"
 
 
@@ -76,6 +77,12 @@ void pte_t::address(physical_address_t address) noexcept {
     physical_address_t mask = (1ull << maxphysaddr) - 1;
 
     bits.address = (address >> page_bits_4k) & mask;
+}
+
+bool are_huge_tables_supported() noexcept {
+    // CPUID[0x80000001].EDX[26] = 1 -> 1gb pages supported [SDM 3 4.1.4 P109]
+    auto regs = x86::cpuid<x86::cpuid_paging_features_t>();
+    return (regs.edx.raw & (1 << 26)) != 0;
 }
 
 bool to_physical(x86::cr3_t& cr3, linear_address_t address, physical_address_t& out) noexcept {

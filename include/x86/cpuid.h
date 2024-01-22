@@ -139,6 +139,16 @@ uint32_t reserved1 : 1;
 uint32_t pbe : 1;
 );
 
+DEFINE_CPUID(0x80000001, 0x0, cpuid_paging_features,
+uint32_t all : 32;
+,
+uint32_t all : 32;
+,
+uint32_t all : 32;
+,
+uint32_t all : 32;
+);
+
 #pragma pack(pop)
 
 cpuid_t max_supported_cpuid_leaf() noexcept;
