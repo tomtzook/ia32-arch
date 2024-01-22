@@ -25,9 +25,7 @@ struct cr0_t {
             uintn_t not_write_through : 1;
             uintn_t cache_disable : 1;
             uintn_t paging_enable : 1;
-#ifdef X86_64
             uintn_t reserved4 : 32;
-#endif
         } bits;
         uintn_t raw;
     };
@@ -45,18 +43,13 @@ struct cr3_t {
             uintn_t pcd : 1;
             uintn_t ignored1 : 7;
             uintn_t address : 20;
-#ifdef X86_64
             uintn_t reserved0 : 32;
-#endif
         } bit32;
         struct {
             uintn_t ignored0 : 5;
             uintn_t address : 27;
-#ifdef X86_64
             uintn_t reserved0 : 32;
-#endif
         } pae;
-#ifdef X86_64
         struct {
             uintn_t ignored0 : 3;
             uintn_t pwt : 1;
@@ -64,7 +57,6 @@ struct cr3_t {
             uintn_t ignored1 : 7;
             uintn_t address : 52;
         } ia32e;
-#endif
         uintn_t raw;
     };
 
@@ -99,9 +91,7 @@ struct cr4_t {
             uintn_t smep_enable : 1;
             uintn_t smap_enable : 1;
             uintn_t protection_key_enable : 1;
-#ifdef X86_64
             uintn_t reserved4 : 32;
-#endif
         } bits;
         uintn_t raw;
     };

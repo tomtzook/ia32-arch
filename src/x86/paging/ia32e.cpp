@@ -1,7 +1,6 @@
 
 #include "x86/paging/ia32e.h"
 
-#ifdef X86_64
 
 namespace x86::paging::ia32e {
 
@@ -120,5 +119,3 @@ bool to_physical(x86::cr3_t& cr3, linear_address_t address, physical_address_t& 
 }
 
 }
-
-#endif
