@@ -30,6 +30,4 @@ constexpr bool is_page_aligned(physical_address_t address) noexcept {
     return 0 == (address & (page_size - 1));
 }
 
-constexpr
-
 }
