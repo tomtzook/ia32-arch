@@ -89,7 +89,7 @@ bool prepare_for_vmxon() noexcept {
 
 bool initialize_vmstruct(vmstruct_t& vm_struct) noexcept {
     auto vmx_basic = x86::read<x86::msr::ia32_vmx_basic_t>();
-    if (sizeof(vm_struct) >= vmx_basic.bits.vm_struct_size) {
+    if (sizeof(vm_struct) > vmx_basic.bits.vm_struct_size) {
         return false;
     }
 
