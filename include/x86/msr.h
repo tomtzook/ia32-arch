@@ -56,6 +56,13 @@ value_t tce : 1;
 value_t reserved2 : 48;
 )
 
+DEFINE_MSR(0x3a, ia32_feature_ctrl,
+uint64_t lock_bit : 1;
+uint64_t vmx_smx : 1;
+uint64_t vmx_no_smx : 1;
+uint64_t reserved10 : 61;
+)
+
 DEFINE_MSR(0x1b, ia32_apic_base,
 value_t reserved0: 8;
 value_t bsp : 1;

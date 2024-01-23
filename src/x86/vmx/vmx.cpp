@@ -48,4 +48,55 @@ void adjust_cr4_fixed_bits(x86::cr4_t& cr) noexcept {
     cr.raw |= get_cr4_fixed_bits();
 }
 
+bool prepare_for_vmxon() noexcept {
+    // check IA32_FEATURE_CONTROL MSR [SDM 3 23.7 P1051]
+    //      bit[0] = 0 -> vmxon #GP
+    //      bit[1] = 0 -> vmxon [SMX mode] #GP
+    //      bit[2] = 0 -> vmxon [non-SMX mode] #GP
+    // SMX support CPUID.1:ECX[6] = 1 [SDM 2 6.2.1]
+    //      SMX enabled CR4.SMXE[14] = 1
+
+    auto feature_ctrl = x86::read<x86::msr::ia32_feature_ctrl_t>();
+    auto cr4 = x86::read<x86::cr4_t>();
+
+    if (!feature_ctrl.bits.lock_bit) {
+        // lock bit is off, so we set what we need and lock
+        if (cr4.bits.smx_enable) {
+            feature_ctrl.bits.vmx_smx = true;
+        } else {
+            feature_ctrl.bits.vmx_no_smx = true;
+        }
+        feature_ctrl.bits.lock_bit = true;
+        x86::write(feature_ctrl);
+    } else if ((cr4.bits.smx_enable && !feature_ctrl.bits.vmx_smx) ||
+               (!cr4.bits.smx_enable && !feature_ctrl.bits.vmx_no_smx)) {
+        // ia32_feature_ctrl does not support the current SMX mode
+        return false;
+    }
+
+    // Restrictions placed on CR0 and CR4 [SDM 3 23.8 P1051]
+    auto cr0 = x86::read<cr0_t>();
+    x86::vmx::adjust_cr0_fixed_bits(cr0);
+    x86::write(cr0);
+
+    x86::vmx::adjust_cr4_fixed_bits(cr4);
+    // enable vmx CR4.VMXE[13] = 1 [SDM 3 23.7 P1051]
+    cr4.bits.vmx_enable = 1;
+    x86::write(cr4);
+
+    return true;
+}
+
+bool initialize_vmstruct(vmstruct_t& vm_struct) noexcept {
+    auto vmx_basic = x86::read<x86::msr::ia32_vmx_basic_t>();
+    if (sizeof(vm_struct) >= vmx_basic.bits.vm_struct_size) {
+        return false;
+    }
+
+    vm_struct.revision = vmx_basic.bits.vmcs_revision;
+    vm_struct.shadow_indicator = false;
+
+    return true;
+}
+
 }

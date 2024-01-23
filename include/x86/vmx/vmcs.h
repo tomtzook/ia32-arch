@@ -163,4 +163,49 @@ enum class field_t : uint32_t {
     host_rip = 0x6c16
 };
 
+static inline bool vmclear(physical_address_t vmcs_address) noexcept {
+    bool error = false;
+    asm volatile("clc\n"
+                 "vmclear %1\n"
+                 "setna %0"
+            : "=q"(error) : "m"(vmcs_address) : "cc");
+    return error;
+}
+
+static inline bool vmread(field_t field, uintn_t& value) noexcept {
+    bool error = false;
+    asm volatile("clc\n"
+                 "vmread %1, %2\n"
+                 "setna %0"
+            : "=q"(error), "=r"(value) : "r"(field) : "cc");
+    return error;
+}
+
+static inline bool vmwrite(field_t field, uintn_t value) noexcept {
+    bool error = false;
+    asm volatile("clc\n"
+                 "vmwrite %1, %2\n"
+                 "setna %0"
+            : "=q"(error) : "r"(field), "r"(value) : "cc");
+    return error;
+}
+
+static inline bool vmptrld(physical_address_t vmcs_address) noexcept {
+    bool error = false;
+    asm volatile("clc\n"
+                 "vmptrld %1\n"
+                 "setna %0"
+            : "=q"(error) : "m"(vmcs_address) : "cc");
+    return error;
+}
+
+static inline bool vmptrst(physical_address_t& vmcs_address) noexcept {
+    bool error = false;
+    asm volatile("clc\n"
+                 "vmptrst %1\n"
+                 "setna %0"
+            : "=q"(error), "=m"(vmcs_address) : : "cc");
+    return error;
+}
+
 }
