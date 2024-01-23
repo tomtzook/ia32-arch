@@ -42,6 +42,10 @@ struct is_msr_def : public meta::false_type {};
 template<id_t _id>
 struct is_msr_def<msr_def_t<_id>> : public meta::true_type {};
 
+DEFINE_MSR(0xc0000100, ia32_fs_base,
+uint64_t all;
+)
+
 DEFINE_MSR(0xc0000080, ia32_efer,
 value_t sce : 1;
 value_t reserved0 : 7;

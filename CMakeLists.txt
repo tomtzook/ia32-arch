@@ -24,8 +24,7 @@ add_library(arch
         include/x86/paging/ia32e.h
         include/x86/apic.h
         include/x86/vmx/vmcs.h
-        include/x86/vmx/vmx.h
-)
+        include/x86/vmx/vmx.h)
 
 target_compile_options(arch PRIVATE -ffreestanding)
 target_link_options(arch PRIVATE -nostdlib -nolibc -nodefaultlibs)
