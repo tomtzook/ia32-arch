@@ -163,6 +163,8 @@ enum class field_t : uint32_t {
     host_rip = 0x6c16
 };
 
+// for improvement of instructions later: https://github.com/opnsense/src/blob/cdc5c1db54c5183add40a0a48a7692d7d4ac4a31/sys/amd64/vmm/intel/vmx_cpufunc.h#L118
+
 static inline bool vmclear(physical_address_t vmcs_address) noexcept {
     bool error = false;
     asm volatile("clc\n"
@@ -172,21 +174,21 @@ static inline bool vmclear(physical_address_t vmcs_address) noexcept {
     return error;
 }
 
-static inline bool vmread(field_t field, uintn_t& value) noexcept {
+static inline bool vmread(field_t field, uint64_t& value) noexcept {
     bool error = false;
     asm volatile("clc\n"
                  "vmread %1, %2\n"
                  "setna %0"
-            : "=q"(error), "=r"(value) : "r"(field) : "cc");
+            : "=q"(error), "=r"(value) : "r"(static_cast<uint32_t>(field)) : "cc");
     return error;
 }
 
-static inline bool vmwrite(field_t field, uintn_t value) noexcept {
+static inline bool vmwrite(field_t field, uint64_t value) noexcept {
     bool error = false;
     asm volatile("clc\n"
                  "vmwrite %1, %2\n"
                  "setna %0"
-            : "=q"(error) : "r"(field), "r"(value) : "cc");
+            : "=q"(error) : "r"(static_cast<uint64_t>(field)), "r"(value) : "cc");
     return error;
 }
 

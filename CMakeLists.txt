@@ -1,5 +1,8 @@
 cmake_minimum_required(VERSION 3.23)
 
+set(CMAKE_C_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
+
 add_library(arch
         src/x86/paging/paging.cpp
         src/x86/paging/bit32.cpp
