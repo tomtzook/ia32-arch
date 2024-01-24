@@ -1,6 +1,7 @@
 #pragma once
 
 #include "x86/common.h"
+#include "x86/vmx/error.h"
 
 
 namespace x86::vmx {
@@ -165,48 +166,43 @@ enum class field_t : uint32_t {
 
 // for improvement of instructions later: https://github.com/opnsense/src/blob/cdc5c1db54c5183add40a0a48a7692d7d4ac4a31/sys/amd64/vmm/intel/vmx_cpufunc.h#L118
 
-static inline bool vmclear(physical_address_t vmcs_address) noexcept {
-    bool error = false;
-    asm volatile("clc\n"
-                 "vmclear %1\n"
-                 "setna %0"
-            : "=q"(error) : "m"(vmcs_address) : "cc");
+static inline error_t vmclear(physical_address_t vmcs_address) noexcept {
+    auto error = error_t::success;
+    asm volatile("vmclear %1\n"
+                 VMX_SET_ERROR_CODE
+            : [error] "=r"(error) : "m"(vmcs_address) : "memory");
     return error;
 }
 
-static inline bool vmread(field_t field, uint64_t& value) noexcept {
-    bool error = false;
-    asm volatile("clc\n"
-                 "vmread %1, %2\n"
-                 "setna %0"
-            : "=q"(error), "=r"(value) : "r"(static_cast<uint32_t>(field)) : "cc");
+static inline error_t vmread(field_t field, uint64_t& value) noexcept {
+    auto error = error_t::success;
+    asm volatile("vmread %1, %2\n"
+                 VMX_SET_ERROR_CODE
+            : [error] "=r"(error), "=r"(value) : "r"(static_cast<uint32_t>(field)) : "memory");
     return error;
 }
 
-static inline bool vmwrite(field_t field, uint64_t value) noexcept {
-    bool error = false;
-    asm volatile("clc\n"
-                 "vmwrite %1, %2\n"
-                 "setna %0"
-            : "=q"(error) : "r"(static_cast<uint64_t>(field)), "r"(value) : "cc");
+static inline error_t vmwrite(field_t field, uint64_t value) noexcept {
+    auto error = error_t::success;
+    asm volatile("vmwrite %1, %2\n"
+                 VMX_SET_ERROR_CODE
+            : [error] "=r"(error) : "r"(static_cast<uint64_t>(field)), "r"(value) : "memory");
     return error;
 }
 
-static inline bool vmptrld(physical_address_t vmcs_address) noexcept {
-    bool error = false;
-    asm volatile("clc\n"
-                 "vmptrld %1\n"
-                 "setna %0"
-            : "=q"(error) : "m"(vmcs_address) : "cc");
+static inline error_t vmptrld(physical_address_t vmcs_address) noexcept {
+    auto error = error_t::success;
+    asm volatile("vmptrld %1\n"
+                 VMX_SET_ERROR_CODE
+            : [error] "=r"(error) : "m"(vmcs_address) : "cc");
     return error;
 }
 
-static inline bool vmptrst(physical_address_t& vmcs_address) noexcept {
-    bool error = false;
-    asm volatile("clc\n"
-                 "vmptrst %1\n"
-                 "setna %0"
-            : "=q"(error), "=m"(vmcs_address) : : "cc");
+static inline error_t vmptrst(physical_address_t& vmcs_address) noexcept {
+    auto error = error_t::success;
+    asm volatile("vmptrst %1\n"
+                 VMX_SET_ERROR_CODE
+            : [error] "=r"(error), "=m"(vmcs_address) : : "cc");
     return error;
 }
 

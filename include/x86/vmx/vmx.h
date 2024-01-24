@@ -3,7 +3,7 @@
 #include "x86/common.h"
 #include "x86/paging/paging.h"
 #include "x86/cr.h"
-
+#include "x86/vmx/error.h"
 
 namespace x86::vmx {
 
@@ -28,30 +28,26 @@ void adjust_cr4_fixed_bits(x86::cr4_t& cr) noexcept;
 bool prepare_for_vmxon() noexcept;
 bool initialize_vmstruct(vmstruct_t& vm_struct) noexcept;
 
-static inline bool vmxon(physical_address_t vmxon_region) noexcept {
-    bool error = false;
-    asm volatile("clc\n"
-                 "vmxon %1\n"
-                 "setna %0"
-            : "=q"(error) : "m" (vmxon_region) : "cc");
+static inline error_t vmxon(physical_address_t vmxon_region) noexcept {
+    auto error = error_t::success;
+    asm volatile("vmxon %1\n"
+                 VMX_SET_ERROR_CODE
+            : [error] "=r"(error) : "m" (vmxon_region) : "cc");
     return error;
 }
 
-static inline bool vmxoff() noexcept {
-    bool error = false;
-    asm volatile("clc\n"
-                 "vmxoff\n"
-                 "setna %0"
-            : "=q"(error) : : "cc");
+static inline error_t vmxoff() noexcept {
+    auto error = error_t::success;
+    asm volatile("vmxoff\n"
+            : [error] "=r"(error) : : "cc");
     return error;
 }
 
-static inline bool vmlaunch() noexcept {
-    bool error = false;
-    asm volatile("clc\n"
-                 "vmlaunch\n"
-                 "setna %0"
-            : "=q"(error) : : "cc");
+static inline error_t vmlaunch() noexcept {
+    auto error = error_t::success;
+    asm volatile("vmlaunch\n"
+                 VMX_SET_ERROR_CODE
+            : [error] "=r"(error) : : "cc");
     return error;
 }
 

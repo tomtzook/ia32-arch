@@ -48,7 +48,7 @@ namespace x86::paging::pae {
     pdpte.bits.present = true;
     pdpte.address(reinterpret_cast<physical_address_t>(page_table.pdes));
 
-    for (size_t i = 0; i < ARRAY_SIZE(page_table.pdes); ++i) {
+    for (size_t i = 0; i < array_size(page_table.pdes); ++i) {
         auto& pde = page_table.pdes[i];
         pde.big.present = true;
         pde.big.rw = true;

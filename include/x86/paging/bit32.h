@@ -7,7 +7,7 @@
 
 namespace x86::paging::bit32 {
 
-// 32 BIT Paging [SDM 3 4.3 P111]
+// 32 bit Paging [SDM 3 4.3 P111]
 // translation:
 // CR3 -> address to PDE
 //  - Bits 39:32 are all 0.
@@ -43,7 +43,7 @@ namespace x86::paging::bit32 {
 
     memset(&page_table, 0, sizeof(page_table_t));
 
-    for (size_t i = 0; i < ARRAY_SIZE(page_table.pdes); ++i) {
+    for (size_t i = 0; i < array_size(page_table.pdes); ++i) {
         auto& pde = page_table.pdes[i];
         pde.big.present = true;
         pde.big.rw = true;
