@@ -4,7 +4,7 @@
 
 
 #define DEFINE_CPUID(_leaf, _subleaf, _name, _eax_bits, _ebx_bits, _ecx_bits, _edx_bits) \
-template<> struct cpuid_def_t<_leaf, _subleaf> : public _cpuid_base_t<_leaf, _subleaf> { \
+template<> struct cpuid_def_t<_leaf, _subleaf> : public x86::_cpuid_base_t<_leaf, _subleaf> { \
     union {                              \
         struct {                         \
             _eax_bits                    \
@@ -30,8 +30,8 @@ template<> struct cpuid_def_t<_leaf, _subleaf> : public _cpuid_base_t<_leaf, _su
         uint32_t raw;                    \
     } edx;                               \
 }; \
-using _name## _t = cpuid_def_t<_leaf, _subleaf>; \
-static_assert(sizeof(_name## _t) == cpuid_def_size, "sizeof(_name## _t)");
+using _name## _t = x86::cpuid_def_t<_leaf, _subleaf>; \
+static_assert(sizeof(_name## _t) == x86::cpuid_def_size, "sizeof(_name## _t)");
 
 
 // https://c9x.me/x86/html/file_module_x86_id_45.html
@@ -73,7 +73,6 @@ uint32_t extended_model_id : 4;
 uint32_t extended_family_id : 8;
 uint32_t reserved1 : 4;
 ,
-uint32_t all : 32;
 ,
 uint32_t sse3 : 1;
 uint32_t pclmulqdq : 1;
@@ -140,13 +139,7 @@ uint32_t pbe : 1;
 );
 
 DEFINE_CPUID(0x80000001, 0x0, cpuid_paging_features,
-uint32_t all : 32;
-,
-uint32_t all : 32;
-,
-uint32_t all : 32;
-,
-uint32_t all : 32;
+,,,
 );
 
 #pragma pack(pop)

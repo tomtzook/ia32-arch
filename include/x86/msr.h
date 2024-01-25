@@ -4,17 +4,17 @@
 
 
 #define DEFINE_MSR(_id, _name, _bits) \
-constexpr id_t  _name## _id_t = _id; \
-template<> struct msr_def_t<_name## _id_t> : public _msr_base_t<_name## _id_t> { \
+constexpr x86::msr::id_t  _name## _id_t = _id; \
+template<> struct x86::msr::msr_def_t<_name## _id_t> : public x86::msr::_msr_base_t<_name## _id_t> { \
     union {                              \
         struct {                         \
             _bits                                 \
         } bits;                          \
-        value_t raw;\
+        x86::msr::value_t raw;\
     }; \
 }; \
-using _name## _t = msr_def_t<_name## _id_t>; \
-static_assert(sizeof(_name## _t) == msr_def_size, "sizeof(_name## _t)");
+using _name## _t = x86::msr::msr_def_t<_name## _id_t>; \
+static_assert(sizeof(_name## _t) == x86::msr::msr_def_size, "sizeof(_name## _t)");
 
 
 namespace x86 {
@@ -43,7 +43,7 @@ template<id_t _id>
 struct is_msr_def<msr_def_t<_id>> : public meta::true_type {};
 
 DEFINE_MSR(0xc0000100, ia32_fs_base,
-uint64_t all;
+
 )
 
 DEFINE_MSR(0xc0000080, ia32_efer,
@@ -100,6 +100,56 @@ DEFINE_MSR(0x488, ia32_vmx_cr4_fixed0,
 
 DEFINE_MSR(0x489, ia32_vmx_cr4_fixed1,
 )
+
+// [SDM 3 Appendix A.3.1]
+DEFINE_MSR(0x481, ia32_vmx_pinbased_ctls,
+value_t allowed0 : 32;
+value_t allowed1 : 32;
+);
+
+DEFINE_MSR(0x48d, ia32_vmx_true_pinbased_ctls,
+value_t allowed0 : 32;
+value_t allowed1 : 32;
+);
+
+// [SDM 3 Appendix A.3.2]
+DEFINE_MSR(0x482, ia32_vmx_procbased_ctls,
+value_t allowed0 : 32;
+value_t allowed1 : 32;
+);
+
+DEFINE_MSR(0x48e, ia32_vmx_true_procbased_ctls,
+value_t allowed0 : 32;
+value_t allowed1 : 32;
+);
+
+// [SDM 3 Appendix A.3.3]
+DEFINE_MSR(0x48b, ia32_vmx_procbased_ctls2,
+value_t allowed0 : 32;
+value_t allowed1 : 32;
+);
+
+// [SDM 3 Appendix A.4]
+DEFINE_MSR(0x483, ia32_vmx_exit_ctls,
+value_t allowed0 : 32;
+value_t allowed1 : 32;
+);
+
+DEFINE_MSR(0x48f, ia32_vmx_true_exit_ctls,
+value_t allowed0 : 32;
+value_t allowed1 : 32;
+);
+
+// [SDM 3 Appendix A.5]
+DEFINE_MSR(0x484, ia32_vmx_entry_ctls,
+value_t allowed0 : 32;
+value_t allowed1 : 32;
+);
+
+DEFINE_MSR(0x490, ia32_vmx_true_entry_ctls,
+value_t allowed0 : 32;
+value_t allowed1 : 32;
+);
 
 #pragma pack(pop)
 

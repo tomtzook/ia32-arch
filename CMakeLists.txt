@@ -31,7 +31,8 @@ add_library(arch
         include/x86/vmx/vmcs.h
         include/x86/vmx/vmx.h
         include/x86/vmx/error.h
-        include/x86/vmx/ept.h)
+        include/x86/vmx/ept.h
+        include/x86/vmx/controls.h)
 
 target_compile_options(arch PRIVATE -ffreestanding)
 target_link_options(arch PRIVATE -nostdlib -nolibc -nodefaultlibs)
