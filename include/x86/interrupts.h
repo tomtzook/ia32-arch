@@ -10,7 +10,7 @@ namespace interrupts {
 
 // [SDM 3 6.3.1 P188 "Table 6-1"]
 
-enum interrupt_t {
+enum class interrupt_t {
     divide_error = 0,
     debug_exception = 1,
     nmi = 2,

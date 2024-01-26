@@ -7,7 +7,7 @@ add_library(arch
         src/x86/paging/paging.cpp
         src/x86/paging/bit32.cpp
         src/x86/cpuid.cpp
-        src/x86/segmentation.cpp
+        src/x86/segments.cpp
         src/x86/interrupts.cpp
         src/x86/paging/pae.cpp
         src/x86/paging/ia32e.cpp
@@ -23,7 +23,7 @@ add_library(arch
         include/x86/msr.h
         include/x86/io.h
         include/x86/paging/bit32.h
-        include/x86/segmentation.h
+        include/x86/segments.h
         include/x86/interrupts.h
         include/x86/paging/pae.h
         include/x86/paging/ia32e.h
@@ -32,7 +32,7 @@ add_library(arch
         include/x86/vmx/vmx.h
         include/x86/vmx/error.h
         include/x86/vmx/ept.h
-        include/x86/vmx/controls.h)
+        include/x86/vmx/controls.h include/x86/vmx/segments.h)
 
 target_compile_options(arch PRIVATE -ffreestanding)
 target_link_options(arch PRIVATE -nostdlib -nolibc -nodefaultlibs)

@@ -3,9 +3,9 @@
 #include "common.h"
 
 
-#define DEFINE_MSR(_id, _name, _bits) \
-constexpr x86::msr::id_t  _name## _id_t = _id; \
-template<> struct x86::msr::msr_def_t<_name## _id_t> : public x86::msr::_msr_base_t<_name## _id_t> { \
+#define define_msr(_id, _name, _bits) \
+constexpr x86::msr::id_t  _ ##_name## _id_t = _id; \
+template<> struct x86::msr::msr_def_t<_ ##_name## _id_t> : public x86::msr::_msr_base_t<_ ##_name## _id_t> { \
     union {                              \
         struct {                         \
             _bits                                 \
@@ -13,7 +13,7 @@ template<> struct x86::msr::msr_def_t<_name## _id_t> : public x86::msr::_msr_bas
         x86::msr::value_t raw;\
     }; \
 }; \
-using _name## _t = x86::msr::msr_def_t<_name## _id_t>; \
+using _name## _t = x86::msr::msr_def_t<_ ##_name## _id_t>; \
 static_assert(sizeof(_name## _t) == x86::msr::msr_def_size, "sizeof(_name## _t)");
 
 
@@ -42,11 +42,15 @@ struct is_msr_def : public meta::false_type {};
 template<id_t _id>
 struct is_msr_def<msr_def_t<_id>> : public meta::true_type {};
 
-DEFINE_MSR(0xc0000100, ia32_fs_base,
+define_msr(0xc0000100, ia32_fs_base,
 
 )
 
-DEFINE_MSR(0xc0000080, ia32_efer,
+define_msr(0xc0000101, ia32_gs_base,
+
+)
+
+define_msr(0xc0000080, ia32_efer,
 value_t sce : 1;
 value_t reserved0 : 7;
 value_t lme : 1;
@@ -60,14 +64,14 @@ value_t tce : 1;
 value_t reserved2 : 48;
 )
 
-DEFINE_MSR(0x3a, ia32_feature_ctrl,
+define_msr(0x3a, ia32_feature_ctrl,
 uint64_t lock_bit : 1;
 uint64_t vmx_smx : 1;
 uint64_t vmx_no_smx : 1;
 uint64_t reserved10 : 61;
 )
 
-DEFINE_MSR(0x1b, ia32_apic_base,
+define_msr(0x1b, ia32_apic_base,
 value_t reserved0: 8;
 value_t bsp : 1;
 value_t reserved1 : 1;
@@ -76,7 +80,24 @@ value_t global_enable : 1;
 value_t base : 52;
 )
 
-DEFINE_MSR(0x480, ia32_vmx_basic,
+define_msr(0x1d9, ia32_debugctl,
+value_t lbr : 1;
+value_t btf : 1;
+value_t reserved0 : 4;
+value_t tr : 1;
+value_t bts : 1;
+value_t btint : 1;
+value_t bts_off_os : 1;
+value_t bts_off_usr : 1;
+value_t freeze_lbrs_on_pmi : 1;
+value_t freeze_prefmon_on_pmi : 1;
+value_t reserved1 : 1;
+value_t freeze_while_smm_en : 1;
+value_t rtm : 1;
+value_t reserved2 : 16;
+)
+
+define_msr(0x480, ia32_vmx_basic,
 value_t vmcs_revision : 31;
 value_t must_be_zero : 1;
 value_t vm_struct_size : 13;
@@ -89,66 +110,94 @@ value_t vm_ctrls_fixed : 1;
 value_t reserved1 : 8;
 )
 
-DEFINE_MSR(0x486, ia32_vmx_cr0_fixed0,
+define_msr(0x486, ia32_vmx_cr0_fixed0,
 )
 
-DEFINE_MSR(0x487, ia32_vmx_cr0_fixed1,
+define_msr(0x487, ia32_vmx_cr0_fixed1,
 )
 
-DEFINE_MSR(0x488, ia32_vmx_cr4_fixed0,
+define_msr(0x488, ia32_vmx_cr4_fixed0,
 )
 
-DEFINE_MSR(0x489, ia32_vmx_cr4_fixed1,
+define_msr(0x489, ia32_vmx_cr4_fixed1,
 )
 
 // [SDM 3 Appendix A.3.1]
-DEFINE_MSR(0x481, ia32_vmx_pinbased_ctls,
+define_msr(0x481, ia32_vmx_pinbased_ctls,
 value_t allowed0 : 32;
 value_t allowed1 : 32;
 );
 
-DEFINE_MSR(0x48d, ia32_vmx_true_pinbased_ctls,
+define_msr(0x48d, ia32_vmx_true_pinbased_ctls,
 value_t allowed0 : 32;
 value_t allowed1 : 32;
 );
 
 // [SDM 3 Appendix A.3.2]
-DEFINE_MSR(0x482, ia32_vmx_procbased_ctls,
+define_msr(0x482, ia32_vmx_procbased_ctls,
 value_t allowed0 : 32;
 value_t allowed1 : 32;
 );
 
-DEFINE_MSR(0x48e, ia32_vmx_true_procbased_ctls,
+define_msr(0x48e, ia32_vmx_true_procbased_ctls,
 value_t allowed0 : 32;
 value_t allowed1 : 32;
 );
 
 // [SDM 3 Appendix A.3.3]
-DEFINE_MSR(0x48b, ia32_vmx_procbased_ctls2,
+define_msr(0x48b, ia32_vmx_procbased_ctls2,
 value_t allowed0 : 32;
 value_t allowed1 : 32;
 );
 
 // [SDM 3 Appendix A.4]
-DEFINE_MSR(0x483, ia32_vmx_exit_ctls,
+define_msr(0x483, ia32_vmx_exit_ctls,
 value_t allowed0 : 32;
 value_t allowed1 : 32;
 );
 
-DEFINE_MSR(0x48f, ia32_vmx_true_exit_ctls,
+define_msr(0x48f, ia32_vmx_true_exit_ctls,
 value_t allowed0 : 32;
 value_t allowed1 : 32;
 );
 
 // [SDM 3 Appendix A.5]
-DEFINE_MSR(0x484, ia32_vmx_entry_ctls,
+define_msr(0x484, ia32_vmx_entry_ctls,
 value_t allowed0 : 32;
 value_t allowed1 : 32;
 );
 
-DEFINE_MSR(0x490, ia32_vmx_true_entry_ctls,
+define_msr(0x490, ia32_vmx_true_entry_ctls,
 value_t allowed0 : 32;
 value_t allowed1 : 32;
+);
+
+define_msr(0x48c, ia32_vmx_ept_vpid_cap,
+value_t execute_only : 1;
+value_t reserved0 : 5;
+value_t page_walk_length_4 : 1;
+value_t reserved1 : 1;
+value_t memory_type_uncachable : 1;
+value_t reserved2 : 5;
+value_t memory_type_write_back : 1;
+value_t reserved3 : 1;
+value_t ept_large_pages : 1;
+value_t ept_huge_pages : 1;
+value_t reserved4 : 2;
+value_t invept : 1;
+value_t ept_accessed_dirty : 1;
+value_t ept_violation_advanced_info : 1;
+value_t reserved5 : 2;
+value_t invept_single_context : 1;
+value_t invept_all_context : 1;
+value_t reserved6 : 5;
+value_t invvpid : 1;
+value_t reserved7 : 7;
+value_t invvpid_single_address : 1;
+value_t invvpid_single_context : 1;
+value_t invvpid_all_context : 1;
+value_t invvpid_single_context_retaining_globals : 1;
+value_t reserved8 : 20;
 );
 
 #pragma pack(pop)

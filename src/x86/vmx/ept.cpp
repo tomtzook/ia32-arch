@@ -95,6 +95,17 @@ void pte_t::address(physical_address_t address) noexcept {
     bits.address = (address >> x86::paging::page_bits_4k) & mask;
 }
 
+physical_address_t ept_pointer_t::address() const noexcept {
+    return static_cast<physical_address_t>(bits.address) << x86::paging::page_bits_4k;
+}
+
+void ept_pointer_t::address(physical_address_t address) noexcept {
+    auto maxphysaddr = x86::paging::max_physical_address_width();
+    physical_address_t mask = (1ull << maxphysaddr) - 1;
+
+    bits.address = (address >> x86::paging::page_bits_4k) & mask;
+}
+
 bool to_physical(ept_pointer_t& eptp, guest_physical_address_t address, physical_address_t& out) noexcept {
     auto pml4_address = static_cast<physical_address_t>(eptp.bits.address) << x86::paging::page_bits_4k;
     auto pml4 = reinterpret_cast<const pml4e_t*>(pml4_address);

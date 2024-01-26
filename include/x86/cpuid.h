@@ -3,7 +3,7 @@
 #include "common.h"
 
 
-#define DEFINE_CPUID(_leaf, _subleaf, _name, _eax_bits, _ebx_bits, _ecx_bits, _edx_bits) \
+#define define_cpuid(_leaf, _subleaf, _name, _eax_bits, _ebx_bits, _ecx_bits, _edx_bits) \
 template<> struct cpuid_def_t<_leaf, _subleaf> : public x86::_cpuid_base_t<_leaf, _subleaf> { \
     union {                              \
         struct {                         \
@@ -63,7 +63,7 @@ struct is_cpuid_def : public meta::false_type {};
 template<cpuid_t _leaf, cpuid_t _subleaf>
 struct is_cpuid_def<cpuid_def_t<_leaf, _subleaf>> : public meta::true_type {};
 
-DEFINE_CPUID(0x1, 0x0, cpuid_eax01,
+define_cpuid(0x1, 0x0, cpuid_eax01,
 uint32_t stepping_id : 4;
 uint32_t model : 4;
 uint32_t family_id : 4;
@@ -138,7 +138,7 @@ uint32_t reserved1 : 1;
 uint32_t pbe : 1;
 );
 
-DEFINE_CPUID(0x80000001, 0x0, cpuid_paging_features,
+define_cpuid(0x80000001, 0x0, cpuid_paging_features,
 ,,,
 );
 

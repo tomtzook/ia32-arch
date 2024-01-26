@@ -101,6 +101,42 @@ struct cr4_t {
 };
 static_assert(sizeof(cr4_t) == sizeof(uintn_t), "sizeof(cr4_t)");
 
+struct dr7_t {
+    union {
+        struct {
+            uintn_t local_enable_bp_0 : 1;
+            uintn_t global_enable_bp_0 : 1;
+            uintn_t local_enable_bp_1 : 1;
+            uintn_t global_enable_bp_1 : 1;
+            uintn_t local_enable_bp_2 : 1;
+            uintn_t global_enable_bp_2 : 1;
+            uintn_t local_enable_bp_3 : 1;
+            uintn_t global_enable_bp_3 : 1;
+            uintn_t local_exact_bp_enable : 1;
+            uintn_t  global_exact_bp_enable : 1;
+            uintn_t reserved0 : 1;
+            uintn_t adv_debug_rtm : 1;
+            uintn_t smie : 1;
+            uintn_t general_detect_enable : 1;
+            uintn_t reserved1 : 2;
+            uintn_t condition_bp_0 : 2;
+            uintn_t length_bp_0 : 2;
+            uintn_t condition_bp_1 : 2;
+            uintn_t length_bp_1 : 2;
+            uintn_t condition_bp_2 : 2;
+            uintn_t length_bp_2 : 2;
+            uintn_t condition_bp_3 : 2;
+            uintn_t length_bp_3 : 2;
+            uintn_t reserved4 : 32;
+        } bits;
+        uintn_t raw;
+    };
+
+    dr7_t() noexcept : raw(0) {}
+    dr7_t(uintn_t raw) noexcept : raw(raw) {}
+};
+static_assert(sizeof(dr7_t) == sizeof(uintn_t), "sizeof(dr7_t)");
+
 #pragma pack(pop)
 
 allow_struct_read_write(cr0_t);
@@ -143,6 +179,20 @@ inline cr4_t read() noexcept {
 template<>
 inline void write(const cr4_t& t) noexcept {
     asm volatile("mov %0, %%cr4" : : "r"(t.raw));
+}
+
+allow_struct_read_write(dr7_t);
+
+template<>
+inline dr7_t read() noexcept {
+    dr7_t reg;
+    asm volatile("mov %%dr7, %0" : "=r"(reg.raw));
+    return reg;
+}
+
+template<>
+inline void write(const dr7_t& t) noexcept {
+    asm volatile("mov %0, %%dr7" : : "r"(t.raw));
 }
 
 }

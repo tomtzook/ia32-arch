@@ -170,7 +170,7 @@ static inline error_t vmclear(physical_address_t vmcs_address) noexcept {
     auto error = error_t::success;
     asm volatile("vmclear %1\n"
                  VMX_SET_ERROR_CODE
-            : [error] "=r"(error) : "m"(vmcs_address) : "memory");
+            : [error] "=r"(error) : "m"(*reinterpret_cast<uint64_t*>(&vmcs_address)) : "memory");
     return error;
 }
 
@@ -194,7 +194,7 @@ static inline error_t vmptrld(physical_address_t vmcs_address) noexcept {
     auto error = error_t::success;
     asm volatile("vmptrld %1\n"
                  VMX_SET_ERROR_CODE
-            : [error] "=r"(error) : "m"(vmcs_address) : "cc");
+            : [error] "=r"(error) : "m"(*reinterpret_cast<uint64_t*>(&vmcs_address)) : "memory");
     return error;
 }
 
@@ -202,7 +202,7 @@ static inline error_t vmptrst(physical_address_t& vmcs_address) noexcept {
     auto error = error_t::success;
     asm volatile("vmptrst %1\n"
                  VMX_SET_ERROR_CODE
-            : [error] "=r"(error), "=m"(vmcs_address) : : "cc");
+            : [error] "=r"(error), "=m"(*reinterpret_cast<uint64_t*>(&vmcs_address)) : : "memory");
     return error;
 }
 

@@ -185,29 +185,29 @@ static_assert(sizeof(vmentery_controls_t) == 4, "sizeof(vmentery_controls_t)");
 
 #pragma pack(pop)
 
-template<typename controls>
-static inline controls adjust_vm_controls(const controls& wanted_controls) noexcept {
+template<typename _controls>
+static inline _controls adjust_vm_controls(const _controls& controls) noexcept {
     // [SDM 3 A.3.1]
     // bits allowed0: MSR bit x = 0 -> VMCS bit allowed 0
     // bits allowed1: MSR bit x = 1 -> VMCS bit allowed 1
-    controls copy{};
-    copy.raw = wanted_controls.raw;
+    _controls copy{};
+    copy.raw = controls.raw;
 
-    auto allowed = x86::read<typename controls::allowed_true_msr>();
+    auto allowed = x86::read<typename _controls::allowed_true_msr>();
     copy.raw &= allowed.bits.allowed1;
     copy.raw |= allowed.bits.allowed0;
 
     return copy;
 }
 
-template<typename controls>
-static inline bool are_vm_controls_supported(const controls& wanted_controls) noexcept {
+template<typename _controls>
+static inline bool are_vm_controls_supported(const _controls& controls) noexcept {
     // [SDM 3 A.3.1]
     // bits allowed0: MSR bit x = 0 -> VMCS bit allowed 0
     // bits allowed1: MSR bit x = 1 -> VMCS bit allowed 1
-    auto allowed = x86::read<typename controls::allowed_true_msr>();
+    auto allowed = x86::read<typename _controls::allowed_true_msr>();
     auto allowed_mask = ~allowed.bits.allowed0 & allowed.bits.allowed1;
-    return (wanted_controls.raw & allowed_mask) == wanted_controls.raw;
+    return (controls.raw & allowed_mask) == controls.raw;
 }
 
 }

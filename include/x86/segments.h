@@ -4,7 +4,7 @@
 
 
 namespace x86 {
-namespace segmentation {
+namespace segments {
 
 #pragma pack(push, 1)
 
@@ -77,7 +77,7 @@ enum class type_t : uint64_t {
     system_bits32_trap_gate = 0b1111
 };
 
-enum class descriptor_type_t {
+enum class descriptor_type_t : uint64_t {
     system = 0,
     code_or_data = 1
 };
@@ -96,7 +96,7 @@ struct descriptor_t {
             uint64_t limit_low : 16;
             uint64_t base_address_low : 16;
             uint64_t base_address_middle : 8;
-            uint64_t type : 4;
+            type_t type : 4;
             descriptor_type_t s : 1;
             uint64_t dpl : 2;
             uint64_t present : 1;
@@ -116,7 +116,7 @@ struct descriptor_t {
     size_t limit() const noexcept;
     void limit(size_t limit) noexcept;
 };
-//static_assert(sizeof(descriptor_t) == 8, "sizeof(segment_descriptor_t)");
+static_assert(sizeof(descriptor_t) == 8, "sizeof(descriptor_t)");
 
 struct table_register_t {
     uint16_t limit;
@@ -173,115 +173,115 @@ private:
 
 }
 
-allow_struct_read_write(segmentation::gdtr_t);
+allow_struct_read_write(segments::gdtr_t);
 
 template<>
-inline segmentation::gdtr_t read() noexcept {
-    segmentation::gdtr_t gdtr{};
+inline segments::gdtr_t read() noexcept {
+    segments::gdtr_t gdtr{};
     asm volatile("sgdt %0" : "=m"(gdtr));
     return gdtr;
 }
 
 template<>
-inline void write(const segmentation::gdtr_t& t) noexcept {
+inline void write(const segments::gdtr_t& t) noexcept {
     asm volatile("lgdt %0" : : "m"(t));
 }
 
-allow_struct_read_write(segmentation::ldtr_t);
+allow_struct_read_write(segments::ldtr_t);
 
 template<>
-inline segmentation::ldtr_t read() noexcept {
-    segmentation::ldtr_t ldtr{};
+inline segments::ldtr_t read() noexcept {
+    segments::ldtr_t ldtr{};
     asm volatile("sldt %0" : "=m"(ldtr));
     return ldtr;
 }
 
 template<>
-inline void write(const segmentation::ldtr_t& t) noexcept {
+inline void write(const segments::ldtr_t& t) noexcept {
     asm volatile("lldt %0" : : "m"(t));
 }
 
-allow_struct_read_write(segmentation::cs_t);
+allow_struct_read_write(segments::cs_t);
 
 template<>
-inline segmentation::cs_t read() noexcept {
-    segmentation::cs_t selector{};
+inline segments::cs_t read() noexcept {
+    segments::cs_t selector{};
     asm volatile("mov %%cs, %0" : "=rm"(selector.value));
     return selector;
 }
 
 template<>
-inline void write(const segmentation::cs_t& t) noexcept {
+inline void write(const segments::cs_t& t) noexcept {
     asm volatile("mov %0, %%cs" : : "rm"(t.value));
 }
 
-allow_struct_read_write(segmentation::ds_t);
+allow_struct_read_write(segments::ds_t);
 
 template<>
-inline segmentation::ds_t read() noexcept {
-    segmentation::ds_t selector{};
+inline segments::ds_t read() noexcept {
+    segments::ds_t selector{};
     asm volatile("mov %%ds, %0" : "=rm"(selector.value));
     return selector;
 }
 
 template<>
-inline void write(const segmentation::ds_t& t) noexcept {
+inline void write(const segments::ds_t& t) noexcept {
     asm volatile("mov %0, %%ds" : : "rm"(t.value));
 }
 
-allow_struct_read_write(segmentation::gs_t);
+allow_struct_read_write(segments::gs_t);
 
 template<>
-inline segmentation::gs_t read() noexcept {
-    segmentation::gs_t selector{};
+inline segments::gs_t read() noexcept {
+    segments::gs_t selector{};
     asm volatile("mov %%gs, %0" : "=rm"(selector.value));
     return selector;
 }
 
 template<>
-inline void write(const segmentation::gs_t& t) noexcept {
+inline void write(const segments::gs_t& t) noexcept {
     asm volatile("mov %0, %%gs" : : "rm"(t.value));
 }
 
-allow_struct_read_write(segmentation::ss_t);
+allow_struct_read_write(segments::ss_t);
 
 template<>
-inline segmentation::ss_t read() noexcept {
-    segmentation::ss_t selector{};
+inline segments::ss_t read() noexcept {
+    segments::ss_t selector{};
     asm volatile("mov %%ss, %0" : "=rm"(selector.value));
     return selector;
 }
 
 template<>
-inline void write(const segmentation::ss_t& t) noexcept {
+inline void write(const segments::ss_t& t) noexcept {
     asm volatile("mov %0, %%ss" : : "rm"(t.value));
 }
 
-allow_struct_read_write(segmentation::es_t);
+allow_struct_read_write(segments::es_t);
 
 template<>
-inline segmentation::es_t read() noexcept {
-    segmentation::es_t selector{};
+inline segments::es_t read() noexcept {
+    segments::es_t selector{};
     asm volatile("mov %%es, %0" : "=rm"(selector.value));
     return selector;
 }
 
 template<>
-inline void write(const segmentation::es_t& t) noexcept {
+inline void write(const segments::es_t& t) noexcept {
     asm volatile("mov %0, %%es" : : "rm"(t.value));
 }
 
-allow_struct_read_write(segmentation::fs_t);
+allow_struct_read_write(segments::fs_t);
 
 template<>
-inline segmentation::fs_t read() noexcept {
-    segmentation::fs_t selector{};
+inline segments::fs_t read() noexcept {
+    segments::fs_t selector{};
     asm volatile("mov %%fs, %0" : "=rm"(selector.value));
     return selector;
 }
 
 template<>
-inline void write(const segmentation::fs_t& t) noexcept {
+inline void write(const segments::fs_t& t) noexcept {
     asm volatile("mov %0, %%fs" : : "rm"(t.value));
 }
 

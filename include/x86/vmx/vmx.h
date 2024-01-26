@@ -28,18 +28,17 @@ void adjust_cr4_fixed_bits(x86::cr4_t& cr) noexcept;
 bool prepare_for_vmxon() noexcept;
 bool initialize_vmstruct(vmstruct_t& vm_struct) noexcept;
 
-static inline error_t vmxon(physical_address_t vmxon_region) noexcept {
+static inline error_t vmxon(physical_address_t vmxon_region_address) noexcept {
     auto error = error_t::success;
     asm volatile("vmxon %1\n"
                  VMX_SET_ERROR_CODE
-            : [error] "=r"(error) : "m" (vmxon_region) : "cc");
+            : [error] "=r"(error) : "m" (*reinterpret_cast<uint64_t*>(&vmxon_region_address)) : "memory");
     return error;
 }
 
 static inline error_t vmxoff() noexcept {
     auto error = error_t::success;
-    asm volatile("vmxoff\n"
-            : [error] "=r"(error) : : "cc");
+    asm volatile("vmxoff");
     return error;
 }
 
@@ -47,7 +46,7 @@ static inline error_t vmlaunch() noexcept {
     auto error = error_t::success;
     asm volatile("vmlaunch\n"
                  VMX_SET_ERROR_CODE
-            : [error] "=r"(error) : : "cc");
+            : [error] "=r"(error) : : "memory");
     return error;
 }
 

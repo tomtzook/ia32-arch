@@ -1,6 +1,7 @@
 #pragma once
 
 #include "x86/common.h"
+#include "x86/vmx/error.h"
 
 
 namespace x86::vmx {
@@ -189,11 +190,56 @@ struct ept_pointer_t {
         } bits;
         uint64_t raw;
     };
+
+    physical_address_t address() const noexcept;
+    void address(physical_address_t address) noexcept;
 };
 static_assert(sizeof(ept_pointer_t) == 8, "sizeof(ept_pointer_t)");
+
+enum class invept_type_t : uint64_t {
+    single_context = 1,
+    all_context = 2
+};
+
+struct invept_descriptor_t {
+    ept_pointer_t eptp;
+    uint64_t reserved;
+};
+static_assert(sizeof(invept_descriptor_t) == 16, "sizeof(invept_descriptor_t)");
+
+enum class invvpid_type_t : uint64_t {
+    individual_address = 0,
+    single_context = 1,
+    all_context = 2,
+    single_context_retaining_globals = 3
+};
+
+struct invvpid_descriptor_t {
+    uint16_t vpid;
+    uint16_t reserved0;
+    uint32_t reserved1;
+    uint64_t address;
+};
+static_assert(sizeof(invvpid_descriptor_t) == 16, "sizeof(invvpid_descriptor_t)");
 
 #pragma pack(pop)
 
 bool to_physical(ept_pointer_t& eptp, guest_physical_address_t address, physical_address_t& out) noexcept;
+
+static inline error_t invept(invept_type_t type, invept_descriptor_t descriptor = {}) noexcept {
+    auto error = error_t::success;
+    asm volatile("invept %1, %2\n"
+                 VMX_SET_ERROR_CODE
+            : [error] "=r"(error) : "m" (descriptor), "r"(type) : "memory");
+    return error;
+}
+
+static inline error_t invvpid(invept_type_t type, invvpid_descriptor_t descriptor = {}) noexcept {
+    auto error = error_t::success;
+    asm volatile("invvpid %1, %2\n"
+                 VMX_SET_ERROR_CODE
+            : [error] "=r"(error) : "m" (descriptor), "r"(type) : "memory");
+    return error;
+}
 
 }

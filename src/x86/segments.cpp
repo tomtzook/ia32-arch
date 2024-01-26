@@ -1,8 +1,8 @@
 
-#include "x86/segmentation.h"
+#include "x86/segments.h"
 
 
-namespace x86::segmentation {
+namespace x86::segments {
 
 linear_address_t descriptor_t::base_address() const noexcept {
     return bits.base_address_low |
@@ -42,7 +42,7 @@ size_t table_t::limit() const noexcept {
 }
 
 size_t table_t::count() const noexcept {
-    return static_cast<size_t>(limit() + 1) / sizeof(x86::segmentation::descriptor_t);
+    return static_cast<size_t>(limit() + 1) / sizeof(x86::segments::descriptor_t);
 }
 
 const descriptor_t& table_t::operator[](size_t index) const noexcept {
