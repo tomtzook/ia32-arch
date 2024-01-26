@@ -100,6 +100,8 @@ struct mtrr_cache_t {
         memory_type_t type;
         uint64_t base;
         uint64_t mask;
+        physical_address_t min;
+        physical_address_t max;
     };
 
     bool enabled;
@@ -113,6 +115,7 @@ struct mtrr_cache_t {
     variable_mtrr_t variable_mtrrs[max_variable_mtrr];
 
     memory_type_t type_for_range(physical_address_t start, size_t size) const noexcept;
+    memory_type_t type_for_2m(physical_address_t start) const noexcept;
     memory_type_t type_for_4k(physical_address_t start) const noexcept;
 
     static memory_type_t type_with_precedence(memory_type_t first, memory_type_t second) noexcept;

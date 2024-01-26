@@ -43,6 +43,10 @@ static void load_variable_mtrrs(x86::msr::ia32_mtrr_cap_t& mtrr_cap, mtrr_cache_
         mtrr.type = static_cast<memory_type_t>(base.bits.type);
         mtrr.base = base.bits.physbase;
         mtrr.mask = mask.bits.physmask;
+        mtrr.min = mtrr.base * x86::paging::page_bits_4k;
+
+        auto bit = bit_scan_forward(mtrr.mask * x86::paging::page_bits_4k);
+        mtrr.max = mtrr.min + (1ull << bit) - 1;
     }
 }
 
@@ -76,6 +80,64 @@ memory_type_t mtrr_cache_t::type_for_range(physical_address_t start, size_t size
     return type;
 }
 
+memory_type_t mtrr_cache_t::type_for_2m(physical_address_t start) const noexcept {
+    if (!enabled) {
+        return mtrr_disabled_memory_type;
+    }
+
+    // align address to 2m
+    start = start & ~(1 << x86::paging::page_bits_2m);
+    auto end = start + x86::paging::page_size_2m - 1;
+
+    // fixed mtrr is only up to 1m, so only if start is 0 then fixed
+    // are relevant.
+    if (fixed_mtrr_enabled && start == 0x0) {
+        auto last_type = memory_type_invalid;
+        for (int i = 0; i < fixed_mtrr_count; ++i) {
+            auto& mtrr = fixed_mtrrs[i];
+
+            auto type = mtrr.type[i];
+            if (last_type == memory_type_invalid) {
+                last_type = type;
+            }
+
+            for (int j = 1; j < 8; ++j) {
+                type = type_with_precedence(type, last_type);
+                if (type == memory_type_invalid) {
+                    return memory_type_invalid;
+                }
+            }
+        }
+
+        return last_type;
+    }
+
+    auto type = memory_type_invalid;
+    for (int i = 0; i < variable_mtrr_count; ++i) {
+        auto& mtrr = variable_mtrrs[i];
+        if (!mtrr.enabled) {
+            continue;
+        }
+
+        if (start >= mtrr.min && end <= mtrr.max) {
+            if (type == memory_type_invalid) {
+                type = mtrr.type;
+            } else {
+                type = type_with_precedence(type, mtrr.type);
+                if (type == memory_type_invalid) {
+                    return memory_type_invalid;
+                }
+            }
+        }
+    }
+
+    if (type == memory_type_invalid) {
+        type = default_type;
+    }
+
+    return type;
+}
+
 memory_type_t mtrr_cache_t::type_for_4k(physical_address_t start) const noexcept {
     // [SDM 3 11.11.7.1 "Example 11-5"]
     if (!enabled) {
@@ -84,9 +146,9 @@ memory_type_t mtrr_cache_t::type_for_4k(physical_address_t start) const noexcept
 
     // align address to 4k
     start = start & ~(1 << x86::paging::page_bits_4k);
-    auto end = start + x86::paging::page_bits_4k;
+    auto end = start + x86::paging::page_bits_4k - 1;
 
-    if (fixed_mtrr_enabled) {
+    if (fixed_mtrr_enabled && start < x86::paging::page_size_1m) {
         for (int i = 0; i < fixed_mtrr_count; ++i) {
             auto& mtrr = fixed_mtrrs[i];
 

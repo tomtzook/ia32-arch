@@ -184,7 +184,7 @@ static inline error_t vmread(field_t field, uint64_t& value) noexcept {
 
 static inline error_t vmwrite(field_t field, uint64_t value) noexcept {
     auto error = error_t::success;
-    asm volatile("vmwrite %1, %2\n"
+    asm volatile("vmwrite %2, %1\n"
                  VMX_SET_ERROR_CODE
             : [error] "=r"(error) : "r"(static_cast<uint64_t>(field)), "r"(value) : "memory");
     return error;
