@@ -32,7 +32,7 @@ add_library(arch
         include/x86/vmx/vmx.h
         include/x86/vmx/error.h
         include/x86/vmx/ept.h
-        include/x86/vmx/controls.h include/x86/vmx/segments.h include/x86/mtrr.h src/x86/mtrr.cpp)
+        include/x86/vmx/controls.h include/x86/vmx/segments.h include/x86/mtrr.h src/x86/mtrr.cpp include/x86/atomic.h)
 
 target_compile_options(arch PRIVATE -ffreestanding)
 target_link_options(arch PRIVATE -nostdlib -nolibc -nodefaultlibs)
