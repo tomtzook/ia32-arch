@@ -8,6 +8,7 @@ namespace x86::vmx {
 
 #pragma pack(push, 1)
 
+// [SDM 3 24.4.1]
 struct segment_access_rights_t {
     union {
         struct {

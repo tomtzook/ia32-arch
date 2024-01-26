@@ -97,6 +97,23 @@ value_t rtm : 1;
 value_t reserved2 : 16;
 )
 
+define_msr(0x0fe, ia32_mtrr_cap,
+value_t variable_range_count : 8;
+value_t fixed_range_supported : 1;
+value_t reserved0 : 1;
+value_t wc_supported : 1;
+value_t smrr_supported : 1;
+value_t reserved1 : 52;
+)
+
+define_msr(0x2ff, ia32_mtrr_def_type,
+value_t default_type : 8;
+value_t reserved0 : 1;
+value_t fixed_enable : 1;
+value_t enable : 1;
+value_t reserved1 : 52;
+)
+
 define_msr(0x480, ia32_vmx_basic,
 value_t vmcs_revision : 31;
 value_t must_be_zero : 1;

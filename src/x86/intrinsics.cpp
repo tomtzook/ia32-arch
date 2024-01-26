@@ -1,6 +1,6 @@
 #pragma once
 
-#include "intrinsics.h"
+#include "x86/intrinsics.h"
 
 // TODO: replace implementations to use some x86 instructions for dword/qword granularity
 

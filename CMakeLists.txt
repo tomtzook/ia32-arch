@@ -12,12 +12,12 @@ add_library(arch
         src/x86/paging/pae.cpp
         src/x86/paging/ia32e.cpp
         src/x86/apic.cpp
-        src/intrinsics.cpp
+        src/x86/intrinsics.cpp
         src/x86/vmx/vmx.cpp
         src/x86/vmx/ept.cpp
 
         # adding headers just for IDE to work with them better
-        include/meta.h
+        include/x86/meta.h
         include/x86/cpuid.h
         include/x86/cr.h
         include/x86/msr.h
@@ -32,7 +32,7 @@ add_library(arch
         include/x86/vmx/vmx.h
         include/x86/vmx/error.h
         include/x86/vmx/ept.h
-        include/x86/vmx/controls.h include/x86/vmx/segments.h)
+        include/x86/vmx/controls.h include/x86/vmx/segments.h include/x86/mtrr.h src/x86/mtrr.cpp)
 
 target_compile_options(arch PRIVATE -ffreestanding)
 target_link_options(arch PRIVATE -nostdlib -nolibc -nodefaultlibs)
