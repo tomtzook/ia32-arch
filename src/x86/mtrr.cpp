@@ -63,9 +63,9 @@ memory_type_t mtrr_cache_t::type_for_range(physical_address_t start, size_t size
 
     auto last_type = type_for_4k(start);
     auto type = last_type;
-    for (auto address = start + x86::paging::page_bits_4k;
+    for (auto address = start + x86::paging::page_size_4k;
         address < end;
-        address += x86::paging::page_bits_4k
+        address += x86::paging::page_size_4k
     ) {
         type = type_for_4k(address);
         type = type_with_precedence(type, last_type);
@@ -146,7 +146,7 @@ memory_type_t mtrr_cache_t::type_for_4k(physical_address_t start) const noexcept
 
     // align address to 4k
     start = start & ~(1 << x86::paging::page_bits_4k);
-    auto end = start + x86::paging::page_bits_4k - 1;
+    auto end = start + x86::paging::page_size_4k - 1;
 
     if (fixed_mtrr_enabled && start < x86::paging::page_size_1m) {
         for (int i = 0; i < fixed_mtrr_count; ++i) {
