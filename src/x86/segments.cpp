@@ -2,7 +2,8 @@
 #include "x86/segments.h"
 
 
-namespace x86::segments {
+namespace x86 {
+namespace segments {
 
 linear_address_t descriptor_t::base_address() const noexcept {
     return bits.base_address_low |
@@ -23,6 +24,24 @@ size_t descriptor_t::limit() const noexcept {
 void descriptor_t::limit(size_t limit) noexcept {
     bits.limit_low = limit & 0xffff;
     bits.limit_high = (limit >> 16) & 0xf;
+}
+
+linear_address_t descriptor64_t::base_address() const noexcept {
+    auto address = base.base_address();
+    return address | (static_cast<linear_address_t>(bits.base_address_upper) << 32);
+}
+
+void descriptor64_t::base_address(linear_address_t address) noexcept {
+    base.base_address(address);
+    bits.base_address_upper = (address >> 32) & 0xffff;
+}
+
+size_t descriptor64_t::limit() const noexcept {
+    return base.limit();
+}
+
+void descriptor64_t::limit(size_t limit) noexcept {
+    base.limit(limit);
 }
 
 table_t::table_t(table_register_t table_register) noexcept
@@ -61,4 +80,5 @@ descriptor_t& table_t::operator[](const selector_t& selector) noexcept {
     return this->operator[](selector.bits.index);
 }
 
+}
 }

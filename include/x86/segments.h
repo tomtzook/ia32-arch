@@ -38,6 +38,7 @@ define_selector(gs_t);
 define_selector(ss_t);
 define_selector(es_t);
 define_selector(fs_t);
+define_selector(tr_t);
 
 // Segment Descriptors [SDM 3 3.4.5 P98]
 
@@ -77,6 +78,15 @@ enum class type_t : uint64_t {
     system_bits32_trap_gate = 0b1111
 };
 
+enum class system64_type_t : uint64_t {
+    system_ldt = 0b0010,
+    system_bits64_tss_available = 0b1001,
+    system_bits64_tss_busy = 0b1011,
+    system_bits64_call_gate = 0b1100,
+    system_bits64_interrupt = 0b1110,
+    system_bits64_trap_gate = 0b1111
+};
+
 enum class descriptor_type_t : uint64_t {
     system = 0,
     code_or_data = 1
@@ -87,9 +97,7 @@ enum class granularity_t : uint64_t {
     page = 1
 };
 
-// In 64-bit mode, the Base and Limit values are ignored,
-// each descriptor covers the entire linear address space
-// regardless of what they are set to.
+// [SDM 3 3.4.5 "Figure 3-8"]
 struct descriptor_t {
     union {
         struct {
@@ -118,14 +126,47 @@ struct descriptor_t {
 };
 static_assert(sizeof(descriptor_t) == 8, "sizeof(descriptor_t)");
 
+// [SDM 3 7.2.3 "Figure 7-4"]
+struct descriptor64_t {
+    descriptor_t base;
+    union {
+        struct {
+            uint64_t base_address_upper : 32;
+            uint64_t ignored0 : 32;
+        } bits;
+        uint64_t raw;
+    };
+
+    linear_address_t base_address() const noexcept;
+    void base_address(linear_address_t address) noexcept;
+
+    size_t limit() const noexcept;
+    void limit(size_t limit) noexcept;
+};
+static_assert(sizeof(descriptor64_t) == 16, "sizeof(descriptor64_t)");
+
 struct table_register_t {
     uint16_t limit;
-    uint32_t base_address;
+    uint64_t base_address;
 };
-static_assert(sizeof(table_register_t) == 6, "sizeof(table_register_t)");
+static_assert(sizeof(table_register_t) == 10, "sizeof(table_register_t)");
 
 struct gdtr_t : public table_register_t {};
 struct ldtr_t : public table_register_t {};
+
+// [SDM 3 7.7 "Figure 7-11"]
+struct tss64_t {
+    uint32_t reserved0;
+    uint64_t rsp0;
+    uint64_t rsp1;
+    uint64_t rsp2;
+    uint64_t reserved1;
+    uint64_t ist[7]; // 1-7
+    uint64_t reserved2;
+    uint16_t reserved3;
+    uint16_t io_map_base;
+};
+static_assert(sizeof(tss64_t) == 104, "sizeof(tss64_t)");
 
 #pragma pack(pop)
 
@@ -283,6 +324,20 @@ inline segments::fs_t read() noexcept {
 template<>
 inline void write(const segments::fs_t& t) noexcept {
     asm volatile("mov %0, %%fs" : : "rm"(t.value));
+}
+
+allow_struct_read_write(segments::tr_t);
+
+template<>
+inline segments::tr_t read() noexcept {
+    segments::tr_t selector{};
+    asm volatile("str %0" : "=rm"(selector.value));
+    return selector;
+}
+
+template<>
+inline void write(const segments::tr_t& t) noexcept {
+    asm volatile("ltr %0" : : "rm"(t.value));
 }
 
 }
