@@ -78,14 +78,14 @@ static_assert(sizeof(idtr_t) == 6, "sizeof(idtr_t)");
 allow_struct_read_write(interrupts::idtr_t);
 
 template<>
-inline interrupts::idtr_t read() noexcept {
+inline interrupts::idtr_t read() {
     interrupts::idtr_t idtr{};
     asm volatile("sidt %0" : "=m"(idtr));
     return idtr;
 }
 
 template<>
-inline void write(const interrupts::idtr_t& t) noexcept {
+inline void write(const interrupts::idtr_t& t) {
     asm volatile("lidt %0" : : "m"(t));
 }
 

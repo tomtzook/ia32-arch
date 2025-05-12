@@ -4,22 +4,22 @@
 
 namespace x86::paging::pae {
 
-physical_address_t pdpte_t::address() const noexcept {
+physical_address_t pdpte_t::address() const {
     return static_cast<physical_address_t>(bits.address) << x86::paging::page_bits_4k;
 }
 
-void pdpte_t::address(physical_address_t address) noexcept {
+void pdpte_t::address(physical_address_t address) {
     auto maxphysaddr = x86::paging::max_physical_address_width();
     physical_address_t mask = (1ull << maxphysaddr) - 1;
 
     bits.address = (address >> x86::paging::page_bits_4k) & mask;
 }
 
-bool pde_t::is_big() const noexcept {
+bool pde_t::is_big() const {
     return big.ps == 1;
 }
 
-physical_address_t pde_t::address() const noexcept {
+physical_address_t pde_t::address() const {
     if (is_big()) {
         return static_cast<physical_address_t>(big.address) << x86::paging::page_bits_2m;
     } else {
@@ -27,7 +27,7 @@ physical_address_t pde_t::address() const noexcept {
     }
 }
 
-void pde_t::address(physical_address_t address) noexcept {
+void pde_t::address(physical_address_t address) {
     if (is_big()) {
         auto maxphysaddr = x86::paging::max_physical_address_width();
         physical_address_t mask = (1ull << maxphysaddr) - 1;
@@ -41,18 +41,18 @@ void pde_t::address(physical_address_t address) noexcept {
     }
 }
 
-physical_address_t pte_t::address() const noexcept {
+physical_address_t pte_t::address() const {
     return static_cast<physical_address_t>(bits.address) << x86::paging::page_bits_4k;
 }
 
-void pte_t::address(physical_address_t address) noexcept {
+void pte_t::address(physical_address_t address) {
     auto maxphysaddr = x86::paging::max_physical_address_width();
     physical_address_t mask = (1ull << maxphysaddr) - 1;
 
     bits.address = (address >> x86::paging::page_bits_4k) & mask;
 }
 
-bool to_physical(x86::cr3_t& cr3, linear_address_t address, physical_address_t& out) noexcept {
+bool to_physical(x86::cr3_t& cr3, linear_address_t address, physical_address_t& out) {
     auto pdpt_address = static_cast<physical_address_t>(cr3.pae.address) << 5;
     auto ptpt = reinterpret_cast<const pdpte_t*>(pdpt_address);
     auto& ptpte = ptpt[address.big.directory_pointer];

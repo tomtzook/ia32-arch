@@ -141,7 +141,7 @@ template<
                 mtrr::is_fixed_mtrr_def<_t>::value,
                 bool>::type = 0
 >
-inline typename _t::value_t read() noexcept {
+inline typename _t::value_t read() {
     using value_t = typename _t::value_t;
     value_t t;
     t.raw = msr::read(_t::msr_id);
@@ -149,7 +149,7 @@ inline typename _t::value_t read() noexcept {
 }
 
 template<msr::id_t _msr_id, uint64_t _base, uint64_t _size>
-inline mtrr::fixed_t<_msr_id, _base, _size> read() noexcept {
+inline mtrr::fixed_t<_msr_id, _base, _size> read() {
     return read<mtrr::fixed_t<_msr_id, _base, _size>>();
 }
 

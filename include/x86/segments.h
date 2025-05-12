@@ -192,7 +192,7 @@ public:
                     is_selector_t<_t>::value,
                     bool>::type = 0
     >
-    const descriptor_t& segment() const noexcept {
+    const descriptor_t& segment() const {
         selector_t selector = read<_t>();
         return this->operator[](selector);
     }
@@ -203,7 +203,7 @@ public:
                     is_selector_t<_t>::value,
                     bool>::type = 0
     >
-    descriptor_t& segment() noexcept {
+    descriptor_t& segment() {
         selector_t selector = read<_t>();
         return this->operator[](selector);
     }
@@ -217,126 +217,126 @@ private:
 allow_struct_read_write(segments::gdtr_t);
 
 template<>
-inline segments::gdtr_t read() noexcept {
+inline segments::gdtr_t read() {
     segments::gdtr_t gdtr{};
     asm volatile("sgdt %0" : "=m"(gdtr));
     return gdtr;
 }
 
 template<>
-inline void write(const segments::gdtr_t& t) noexcept {
+inline void write(const segments::gdtr_t& t) {
     asm volatile("lgdt %0" : : "m"(t));
 }
 
 allow_struct_read_write(segments::ldtr_t);
 
 template<>
-inline segments::ldtr_t read() noexcept {
+inline segments::ldtr_t read() {
     segments::ldtr_t ldtr{};
     asm volatile("sldt %0" : "=m"(ldtr));
     return ldtr;
 }
 
 template<>
-inline void write(const segments::ldtr_t& t) noexcept {
+inline void write(const segments::ldtr_t& t) {
     asm volatile("lldt %0" : : "m"(t));
 }
 
 allow_struct_read_write(segments::cs_t);
 
 template<>
-inline segments::cs_t read() noexcept {
+inline segments::cs_t read() {
     segments::cs_t selector{};
     asm volatile("mov %%cs, %0" : "=rm"(selector.value));
     return selector;
 }
 
 template<>
-inline void write(const segments::cs_t& t) noexcept {
+inline void write(const segments::cs_t& t) {
     asm volatile("mov %0, %%cs" : : "rm"(t.value));
 }
 
 allow_struct_read_write(segments::ds_t);
 
 template<>
-inline segments::ds_t read() noexcept {
+inline segments::ds_t read() {
     segments::ds_t selector{};
     asm volatile("mov %%ds, %0" : "=rm"(selector.value));
     return selector;
 }
 
 template<>
-inline void write(const segments::ds_t& t) noexcept {
+inline void write(const segments::ds_t& t) {
     asm volatile("mov %0, %%ds" : : "rm"(t.value));
 }
 
 allow_struct_read_write(segments::gs_t);
 
 template<>
-inline segments::gs_t read() noexcept {
+inline segments::gs_t read() {
     segments::gs_t selector{};
     asm volatile("mov %%gs, %0" : "=rm"(selector.value));
     return selector;
 }
 
 template<>
-inline void write(const segments::gs_t& t) noexcept {
+inline void write(const segments::gs_t& t) {
     asm volatile("mov %0, %%gs" : : "rm"(t.value));
 }
 
 allow_struct_read_write(segments::ss_t);
 
 template<>
-inline segments::ss_t read() noexcept {
+inline segments::ss_t read() {
     segments::ss_t selector{};
     asm volatile("mov %%ss, %0" : "=rm"(selector.value));
     return selector;
 }
 
 template<>
-inline void write(const segments::ss_t& t) noexcept {
+inline void write(const segments::ss_t& t) {
     asm volatile("mov %0, %%ss" : : "rm"(t.value));
 }
 
 allow_struct_read_write(segments::es_t);
 
 template<>
-inline segments::es_t read() noexcept {
+inline segments::es_t read() {
     segments::es_t selector{};
     asm volatile("mov %%es, %0" : "=rm"(selector.value));
     return selector;
 }
 
 template<>
-inline void write(const segments::es_t& t) noexcept {
+inline void write(const segments::es_t& t) {
     asm volatile("mov %0, %%es" : : "rm"(t.value));
 }
 
 allow_struct_read_write(segments::fs_t);
 
 template<>
-inline segments::fs_t read() noexcept {
+inline segments::fs_t read() {
     segments::fs_t selector{};
     asm volatile("mov %%fs, %0" : "=rm"(selector.value));
     return selector;
 }
 
 template<>
-inline void write(const segments::fs_t& t) noexcept {
+inline void write(const segments::fs_t& t) {
     asm volatile("mov %0, %%fs" : : "rm"(t.value));
 }
 
 allow_struct_read_write(segments::tr_t);
 
 template<>
-inline segments::tr_t read() noexcept {
+inline segments::tr_t read() {
     segments::tr_t selector{};
     asm volatile("str %0" : "=rm"(selector.value));
     return selector;
 }
 
 template<>
-inline void write(const segments::tr_t& t) noexcept {
+inline void write(const segments::tr_t& t) {
     asm volatile("ltr %0" : : "rm"(t.value));
 }
 

@@ -7,7 +7,7 @@
 
 namespace x86::paging {
 
-mode_t current_mode() noexcept {
+mode_t current_mode() {
     // PAE paging mode
     //  CR0.PG = 1, CR4.PAE = 1, IA32_EFER.LME = 0
     // IA32e paging mode [SDM 3 4.1.1 P106]
@@ -29,7 +29,7 @@ mode_t current_mode() noexcept {
     }
 }
 
-size_t max_physical_address_width() noexcept {
+size_t max_physical_address_width() {
     // [SDM 3 4.1.4 P109]
     // MAXPHYADDR
 

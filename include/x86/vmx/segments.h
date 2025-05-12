@@ -95,7 +95,7 @@ using vmcs_fs_segment = vmcs_segment_defs<
 
 #pragma pack(pop)
 
-static inline x86::vmx::segment_access_rights_t segment_access_rights(const segments::descriptor_t& descriptor) noexcept {
+static inline x86::vmx::segment_access_rights_t segment_access_rights(const segments::descriptor_t& descriptor) {
     segment_access_rights_t ar{};
     ar.bits.type = static_cast<uint32_t>(descriptor.bits.type);
     ar.bits.s = static_cast<uint32_t>(descriptor.bits.s);

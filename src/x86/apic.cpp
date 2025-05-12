@@ -6,7 +6,7 @@
 
 namespace x86::apic {
 
-mode_t current_mode() noexcept {
+mode_t current_mode() {
     // [SDM 3 10.12.1 P398]
     auto apic_base = read<msr::ia32_apic_base_t>();
     if (apic_base.bits.global_enable) {
@@ -21,7 +21,7 @@ mode_t current_mode() noexcept {
     return mode_t::disabled;
 }
 
-bool is_bsp() noexcept {
+bool is_bsp() {
     auto apic_base = read<msr::ia32_apic_base_t>();
     return apic_base.bits.bsp;
 }

@@ -7,13 +7,13 @@
 
 namespace x86::vmx {
 
-bool is_supported() noexcept {
+bool is_supported() {
     // CPUID.1:ECX.VMX[bit 5] = 1 [SDM 3 23.6 P1050]
     auto cpu_features = x86::cpuid<x86::cpuid_eax01_t>();
     return cpu_features.ecx.bits.vmx;
 }
 
-uintn_t get_cr0_fixed_bits(bool for_unrestricted_guest) noexcept {
+uintn_t get_cr0_fixed_bits(bool for_unrestricted_guest) {
     // [SDM 3 A.7 P1960]
     // F0[X] = 1 -> must be 1
     // F1[X] = 0 -> must be 0
@@ -32,7 +32,7 @@ uintn_t get_cr0_fixed_bits(bool for_unrestricted_guest) noexcept {
     return fixed0 & fixed1;
 }
 
-uintn_t get_cr4_fixed_bits() noexcept {
+uintn_t get_cr4_fixed_bits() {
     // [SDM 3 A.8 P1960]
     auto fixed0 = x86::read<x86::msr::ia32_vmx_cr4_fixed0_t>().raw;
     auto fixed1 = x86::read<x86::msr::ia32_vmx_cr4_fixed1_t>().raw;
@@ -40,15 +40,15 @@ uintn_t get_cr4_fixed_bits() noexcept {
     return fixed0 & fixed1;
 }
 
-void adjust_cr0_fixed_bits(x86::cr0_t& cr, bool for_unrestricted_guest) noexcept {
+void adjust_cr0_fixed_bits(x86::cr0_t& cr, bool for_unrestricted_guest) {
     cr.raw |= get_cr0_fixed_bits(for_unrestricted_guest);
 }
 
-void adjust_cr4_fixed_bits(x86::cr4_t& cr) noexcept {
+void adjust_cr4_fixed_bits(x86::cr4_t& cr) {
     cr.raw |= get_cr4_fixed_bits();
 }
 
-bool prepare_for_vmxon() noexcept {
+bool prepare_for_vmxon() {
     // check IA32_FEATURE_CONTROL MSR [SDM 3 23.7 P1051]
     //      bit[0] = 0 -> vmxon #GP
     //      bit[1] = 0 -> vmxon [SMX mode] #GP
@@ -87,7 +87,7 @@ bool prepare_for_vmxon() noexcept {
     return true;
 }
 
-bool initialize_vmstruct(vmstruct_t& vm_struct) noexcept {
+bool initialize_vmstruct(vmstruct_t& vm_struct) {
     auto vmx_basic = x86::read<x86::msr::ia32_vmx_basic_t>();
     if (sizeof(vm_struct) > vmx_basic.bits.vm_struct_size) {
         return false;

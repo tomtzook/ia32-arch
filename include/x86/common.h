@@ -22,7 +22,7 @@ template<
                 __hack<_t>::value,
                 bool>::type = 0
 >
-_t read() noexcept = delete;
+_t read() = delete;
 
 template<
         typename _t,
@@ -30,6 +30,6 @@ template<
                 __hack<_t>::value,
                 bool>::type = 0
 >
-void write(const _t& t) noexcept = delete;
+void write(const _t& t) = delete;
 
 }

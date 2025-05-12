@@ -5,30 +5,30 @@
 
 namespace x86::vmx {
 
-bool pml4e_t::present() const noexcept {
+bool pml4e_t::present() const {
     return bits.read | bits.write | bits.execute;
 }
 
-physical_address_t pml4e_t::address() const noexcept {
+physical_address_t pml4e_t::address() const {
     return static_cast<physical_address_t>(bits.address) << x86::paging::page_bits_4k;
 }
 
-void pml4e_t::address(physical_address_t address) noexcept {
+void pml4e_t::address(physical_address_t address) {
     auto maxphysaddr = x86::paging::max_physical_address_width();
     physical_address_t mask = (1ull << maxphysaddr) - 1;
 
     bits.address = (address >> x86::paging::page_bits_4k) & mask;
 }
 
-bool pdpte_t::present() const noexcept {
+bool pdpte_t::present() const {
     return huge.read | huge.write | huge.execute;
 }
 
-bool pdpte_t::is_huge() const noexcept {
+bool pdpte_t::is_huge() const {
     return huge.ps == 1;
 }
 
-physical_address_t pdpte_t::address() const noexcept {
+physical_address_t pdpte_t::address() const {
     if (is_huge()) {
         return static_cast<physical_address_t>(huge.address) << x86::paging::page_bits_1g;
     } else {
@@ -36,7 +36,7 @@ physical_address_t pdpte_t::address() const noexcept {
     }
 }
 
-void pdpte_t::address(physical_address_t address) noexcept {
+void pdpte_t::address(physical_address_t address) {
     if (is_huge()) {
         auto maxphysaddr = x86::paging::max_physical_address_width();
         physical_address_t mask = (1ull << maxphysaddr) - 1;
@@ -50,15 +50,15 @@ void pdpte_t::address(physical_address_t address) noexcept {
     }
 }
 
-bool pde_t::present() const noexcept {
+bool pde_t::present() const {
     return large.read | large.write | large.execute;
 }
 
-bool pde_t::is_large() const noexcept {
+bool pde_t::is_large() const {
     return large.ps == 1;
 }
 
-physical_address_t pde_t::address() const noexcept {
+physical_address_t pde_t::address() const {
     if (is_large()) {
         return static_cast<physical_address_t>(large.address) << x86::paging::page_bits_2m;
     } else {
@@ -66,7 +66,7 @@ physical_address_t pde_t::address() const noexcept {
     }
 }
 
-void pde_t::address(physical_address_t address) noexcept {
+void pde_t::address(physical_address_t address) {
     if (is_large()) {
         auto maxphysaddr = x86::paging::max_physical_address_width();
         physical_address_t mask = (1ull << maxphysaddr) - 1;
@@ -80,33 +80,33 @@ void pde_t::address(physical_address_t address) noexcept {
     }
 }
 
-bool pte_t::present() const noexcept {
+bool pte_t::present() const {
     return bits.read | bits.write | bits.execute;
 }
 
-physical_address_t pte_t::address() const noexcept {
+physical_address_t pte_t::address() const {
     return static_cast<physical_address_t>(bits.address) << x86::paging::page_bits_4k;
 }
 
-void pte_t::address(physical_address_t address) noexcept {
+void pte_t::address(physical_address_t address) {
     auto maxphysaddr = x86::paging::max_physical_address_width();
     physical_address_t mask = (1ull << maxphysaddr) - 1;
 
     bits.address = (address >> x86::paging::page_bits_4k) & mask;
 }
 
-physical_address_t ept_pointer_t::address() const noexcept {
+physical_address_t ept_pointer_t::address() const {
     return static_cast<physical_address_t>(bits.address) << x86::paging::page_bits_4k;
 }
 
-void ept_pointer_t::address(physical_address_t address) noexcept {
+void ept_pointer_t::address(physical_address_t address) {
     auto maxphysaddr = x86::paging::max_physical_address_width();
     physical_address_t mask = (1ull << maxphysaddr) - 1;
 
     bits.address = (address >> x86::paging::page_bits_4k) & mask;
 }
 
-bool to_physical(ept_pointer_t& eptp, guest_physical_address_t address, physical_address_t& out) noexcept {
+bool to_physical(ept_pointer_t& eptp, guest_physical_address_t address, physical_address_t& out) {
     auto pml4_address = static_cast<physical_address_t>(eptp.bits.address) << x86::paging::page_bits_4k;
     auto pml4 = reinterpret_cast<const pml4e_t*>(pml4_address);
     auto& pml4e = pml4[address.huge.pml4e];

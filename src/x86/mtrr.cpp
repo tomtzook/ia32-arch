@@ -16,7 +16,7 @@ static void load_fixed_mtrr(mtrr_cache_t& cache, size_t index) {
     mtrr.size = _fixed_type::size;
 }
 
-static void load_fixed_mtrrs(mtrr_cache_t& cache) noexcept {
+static void load_fixed_mtrrs(mtrr_cache_t& cache) {
     load_fixed_mtrr<fixed_64k_00000_t>(cache, 0);
     load_fixed_mtrr<fixed_16k_80000_t>(cache, 1);
     load_fixed_mtrr<fixed_16k_a0000_t>(cache, 2);
@@ -50,7 +50,7 @@ static void load_variable_mtrrs(x86::msr::ia32_mtrr_cap_t& mtrr_cap, mtrr_cache_
     }
 }
 
-memory_type_t mtrr_cache_t::type_for_range(physical_address_t start, size_t size) const noexcept {
+memory_type_t mtrr_cache_t::type_for_range(physical_address_t start, size_t size) const {
     // [SDM 3 11.11.4.1]
     // [SDM 3 11.11.7.1 "Example 11-4"]
     if (!enabled) {
@@ -80,7 +80,7 @@ memory_type_t mtrr_cache_t::type_for_range(physical_address_t start, size_t size
     return type;
 }
 
-memory_type_t mtrr_cache_t::type_for_2m(physical_address_t start) const noexcept {
+memory_type_t mtrr_cache_t::type_for_2m(physical_address_t start) const {
     if (!enabled) {
         return mtrr_disabled_memory_type;
     }
@@ -138,7 +138,7 @@ memory_type_t mtrr_cache_t::type_for_2m(physical_address_t start) const noexcept
     return type;
 }
 
-memory_type_t mtrr_cache_t::type_for_4k(physical_address_t start) const noexcept {
+memory_type_t mtrr_cache_t::type_for_4k(physical_address_t start) const {
     // [SDM 3 11.11.7.1 "Example 11-5"]
     if (!enabled) {
         return mtrr_disabled_memory_type;
@@ -178,7 +178,7 @@ memory_type_t mtrr_cache_t::type_for_4k(physical_address_t start) const noexcept
     return default_type;
 }
 
-memory_type_t mtrr_cache_t::type_with_precedence(memory_type_t first, memory_type_t second) noexcept {
+memory_type_t mtrr_cache_t::type_with_precedence(memory_type_t first, memory_type_t second) {
     // [SDM 3 11.11.4.1]
     if (first == second) {
         return first;
@@ -198,7 +198,7 @@ memory_type_t mtrr_cache_t::type_with_precedence(memory_type_t first, memory_typ
     return memory_type_invalid;
 }
 
-mtrr_cache_t initialize_cache() noexcept {
+mtrr_cache_t initialize_cache() {
     mtrr_cache_t cache{};
 
     auto mtrr_cap = x86::read<x86::msr::ia32_mtrr_cap_t>();

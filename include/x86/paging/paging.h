@@ -28,7 +28,7 @@ mode_t current_mode() noexcept;
 
 size_t max_physical_address_width() noexcept;
 
-constexpr bool is_page_aligned(physical_address_t address) noexcept {
+constexpr bool is_page_aligned(physical_address_t address) {
     return 0 == (address & (page_size - 1));
 }
 

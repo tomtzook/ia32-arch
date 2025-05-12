@@ -5,12 +5,12 @@
 
 namespace x86::paging::bit32 {
 
-bool pde_t::is_big() const noexcept {
+bool pde_t::is_big() const {
     // assuming it's supported and enabled
     return big.ps == 1;
 }
 
-physical_address_t pde_t::address() const noexcept {
+physical_address_t pde_t::address() const {
     if (is_big()) {
         return (static_cast<physical_address_t>(big.address2) << page_bits_4m) | pse36_address_bits();
     } else {
@@ -18,7 +18,7 @@ physical_address_t pde_t::address() const noexcept {
     }
 }
 
-void pde_t::address(physical_address_t address) noexcept {
+void pde_t::address(physical_address_t address) {
     if (is_big()) {
         big.address2 = (address >> page_bits_4m) & 0x3ff;
         pse36_address_bits(address);
@@ -27,7 +27,7 @@ void pde_t::address(physical_address_t address) noexcept {
     }
 }
 
-physical_address_t pde_t::pse36_address_bits() const noexcept {
+physical_address_t pde_t::pse36_address_bits() const {
     if (!is_pse36_supported()) {
         return 0;
     }
@@ -37,7 +37,7 @@ physical_address_t pde_t::pse36_address_bits() const noexcept {
     return (big.address2 & ~(1ull << mask)) << 32;
 }
 
-void pde_t::pse36_address_bits(physical_address_t address) noexcept {
+void pde_t::pse36_address_bits(physical_address_t address) {
     if (!is_pse36_supported()) {
         return;
     }
@@ -47,21 +47,21 @@ void pde_t::pse36_address_bits(physical_address_t address) noexcept {
     big.address = (address >> 32) & ~(1ull << mask);
 }
 
-physical_address_t pte_t::address() const noexcept {
+physical_address_t pte_t::address() const {
     return static_cast<physical_address_t>(bits.address) << page_bits_4k;
 }
 
-void pte_t::address(physical_address_t address) noexcept {
+void pte_t::address(physical_address_t address) {
     bits.address = static_cast<uint32_t>(address >> page_bits_4k);
 }
 
-bool are_4m_page_tables_supported() noexcept {
+bool are_4m_page_tables_supported() {
     // [SDM 3 4.1.4 P109]
     auto cpuid = x86::cpuid<cpuid_eax01_t>();
     return cpuid.edx.bits.pse != 0;
 }
 
-bool are_4m_page_tables_enabled() noexcept {
+bool are_4m_page_tables_enabled() {
     // [SDM 3 4.1.4 P109]
     if (!are_4m_page_tables_supported()) {
         return false;
@@ -71,13 +71,13 @@ bool are_4m_page_tables_enabled() noexcept {
     return cr4.bits.page_size_extensions != 0;
 }
 
-bool is_pse36_supported() noexcept {
+bool is_pse36_supported() {
     // [SDM 3 4.1.4 P109]
     auto cpuid = x86::cpuid<cpuid_eax01_t>();
     return cpuid.edx.bits.pse36 != 0;
 }
 
-bool to_physical(x86::cr3_t& cr3, linear_address_t address, physical_address_t& out) noexcept {
+bool to_physical(x86::cr3_t& cr3, linear_address_t address, physical_address_t& out) {
     auto pde_address = (static_cast<physical_address_t>(cr3.bit32.address) << page_bits_4k)
             | (address.big.directory << 2);
     auto pde = reinterpret_cast<const x86::paging::bit32::pde_t*>(pde_address);

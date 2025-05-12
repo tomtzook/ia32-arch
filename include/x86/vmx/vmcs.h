@@ -166,7 +166,7 @@ enum class field_t : uint32_t {
 
 // for improvement of instructions later: https://github.com/opnsense/src/blob/cdc5c1db54c5183add40a0a48a7692d7d4ac4a31/sys/amd64/vmm/intel/vmx_cpufunc.h#L118
 
-static inline error_t vmclear(physical_address_t vmcs_address) noexcept {
+static inline error_t vmclear(physical_address_t vmcs_address) {
     auto error = error_t::success;
     asm volatile("vmclear %1\n"
                  VMX_SET_ERROR_CODE
@@ -174,7 +174,7 @@ static inline error_t vmclear(physical_address_t vmcs_address) noexcept {
     return error;
 }
 
-static inline error_t vmread(field_t field, uint64_t& value) noexcept {
+static inline error_t vmread(field_t field, uint64_t& value) {
     auto error = error_t::success;
     asm volatile("vmread %1, %2\n"
                  VMX_SET_ERROR_CODE
@@ -182,7 +182,7 @@ static inline error_t vmread(field_t field, uint64_t& value) noexcept {
     return error;
 }
 
-static inline error_t vmwrite(field_t field, uint64_t value) noexcept {
+static inline error_t vmwrite(field_t field, uint64_t value) {
     auto error = error_t::success;
     asm volatile("vmwrite %2, %1\n"
                  VMX_SET_ERROR_CODE
@@ -190,7 +190,7 @@ static inline error_t vmwrite(field_t field, uint64_t value) noexcept {
     return error;
 }
 
-static inline error_t vmptrld(physical_address_t vmcs_address) noexcept {
+static inline error_t vmptrld(physical_address_t vmcs_address) {
     auto error = error_t::success;
     asm volatile("vmptrld %1\n"
                  VMX_SET_ERROR_CODE
@@ -198,7 +198,7 @@ static inline error_t vmptrld(physical_address_t vmcs_address) noexcept {
     return error;
 }
 
-static inline error_t vmptrst(physical_address_t& vmcs_address) noexcept {
+static inline error_t vmptrst(physical_address_t& vmcs_address) {
     auto error = error_t::success;
     asm volatile("vmptrst %1\n"
                  VMX_SET_ERROR_CODE

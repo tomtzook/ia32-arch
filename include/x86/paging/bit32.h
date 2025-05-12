@@ -125,7 +125,7 @@ struct pde_t {
         uint32_t raw;
     };
 
-    bool is_present() const noexcept { return small.present; }
+    bool is_present() const { return small.present; }
     bool is_big() const noexcept;
 
     physical_address_t address() const noexcept;
@@ -154,7 +154,7 @@ struct pte_t {
         uint32_t raw;
     };
 
-    bool is_present() const noexcept { return bits.present; }
+    bool is_present() const { return bits.present; }
 
     physical_address_t address() const noexcept;
     void address(physical_address_t address) noexcept;

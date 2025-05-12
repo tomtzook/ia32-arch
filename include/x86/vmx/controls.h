@@ -186,7 +186,7 @@ static_assert(sizeof(vmentery_controls_t) == 4, "sizeof(vmentery_controls_t)");
 #pragma pack(pop)
 
 template<typename _controls>
-static inline _controls adjust_vm_controls(const _controls& controls) noexcept {
+static inline _controls adjust_vm_controls(const _controls& controls) {
     // [SDM 3 A.3.1]
     // bits allowed0: MSR bit x = 0 -> VMCS bit allowed 0
     // bits allowed1: MSR bit x = 1 -> VMCS bit allowed 1
@@ -201,7 +201,7 @@ static inline _controls adjust_vm_controls(const _controls& controls) noexcept {
 }
 
 template<typename _controls>
-static inline bool are_vm_controls_supported(const _controls& controls) noexcept {
+static inline bool are_vm_controls_supported(const _controls& controls) {
     // [SDM 3 A.3.1]
     // bits allowed0: MSR bit x = 0 -> VMCS bit allowed 0
     // bits allowed1: MSR bit x = 1 -> VMCS bit allowed 1
