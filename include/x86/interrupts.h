@@ -58,8 +58,8 @@ struct gate_descriptor_t {
         uint64_t raw;
     };
 
-    uint32_t address() const noexcept;
-    void address(uint32_t address) noexcept;
+    uint32_t address() const;
+    void address(uint32_t address);
 };
 static_assert(sizeof(gate_descriptor_t) == 8, "sizeof(gate_descriptor_t)");
 

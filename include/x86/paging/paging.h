@@ -24,9 +24,9 @@ enum class mode_t {
     ia32e
 };
 
-mode_t current_mode() noexcept;
+mode_t current_mode();
 
-size_t max_physical_address_width() noexcept;
+size_t max_physical_address_width();
 
 constexpr bool is_page_aligned(physical_address_t address) {
     return 0 == (address & (page_size - 1));

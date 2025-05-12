@@ -113,8 +113,8 @@ struct pdpte_t {
         uint64_t raw;
     };
 
-    physical_address_t address() const noexcept;
-    void address(physical_address_t address) noexcept;
+    physical_address_t address() const;
+    void address(physical_address_t address);
 };
 static_assert(sizeof(pdpte_t) == 8, "sizeof(pdpte_t)");
 
@@ -153,10 +153,10 @@ struct pde_t {
         uint64_t raw;
     };
 
-    bool is_big() const noexcept;
+    bool is_big() const;
 
-    physical_address_t address() const noexcept;
-    void address(physical_address_t address) noexcept;
+    physical_address_t address() const;
+    void address(physical_address_t address);
 };
 static_assert(sizeof(pde_t) == 8, "sizeof(pde_t)");
 
@@ -180,13 +180,13 @@ struct pte_t {
         uint64_t raw;
     };
 
-    physical_address_t address() const noexcept;
-    void address(physical_address_t address) noexcept;
+    physical_address_t address() const;
+    void address(physical_address_t address);
 };
 static_assert(sizeof(pte_t) == 8, "sizeof(pte_t)");
 
 #pragma pack(pop)
 
-bool to_physical(x86::cr3_t& cr3, linear_address_t address, physical_address_t& out) noexcept;
+bool to_physical(x86::cr3_t& cr3, linear_address_t address, physical_address_t& out);
 
 }

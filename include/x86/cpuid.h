@@ -144,8 +144,8 @@ define_cpuid(0x80000001, 0x0, cpuid_paging_features,
 
 #pragma pack(pop)
 
-cpuid_t max_supported_cpuid_leaf() noexcept;
-bool is_cpuid_leaf_supported(cpuid_t leaf) noexcept;
+cpuid_t max_supported_cpuid_leaf();
+bool is_cpuid_leaf_supported(cpuid_t leaf);
 
 template<
         typename _t,

@@ -11,8 +11,8 @@ enum class mode_t {
     x2apic
 };
 
-mode_t current_mode() noexcept;
+mode_t current_mode();
 
-bool is_bsp() noexcept;
+bool is_bsp();
 
 }

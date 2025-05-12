@@ -118,11 +118,11 @@ struct descriptor_t {
         uint64_t raw;
     };
 
-    linear_address_t base_address() const noexcept;
-    void base_address(linear_address_t address) noexcept;
+    linear_address_t base_address() const;
+    void base_address(linear_address_t address);
 
-    size_t limit() const noexcept;
-    void limit(size_t limit) noexcept;
+    size_t limit() const;
+    void limit(size_t limit);
 };
 static_assert(sizeof(descriptor_t) == 8, "sizeof(descriptor_t)");
 
@@ -137,11 +137,11 @@ struct descriptor64_t {
         uint64_t raw;
     };
 
-    linear_address_t base_address() const noexcept;
-    void base_address(linear_address_t address) noexcept;
+    linear_address_t base_address() const;
+    void base_address(linear_address_t address);
 
-    size_t limit() const noexcept;
-    void limit(size_t limit) noexcept;
+    size_t limit() const;
+    void limit(size_t limit);
 };
 static_assert(sizeof(descriptor64_t) == 16, "sizeof(descriptor64_t)");
 
@@ -172,19 +172,19 @@ static_assert(sizeof(tss64_t) == 104, "sizeof(tss64_t)");
 
 class table_t {
 public:
-    table_t(table_register_t table_register) noexcept;
+    table_t(table_register_t table_register);
 
-    const void* base_address() const noexcept;
-    void* base_address() noexcept;
+    const void* base_address() const;
+    void* base_address();
 
-    size_t limit() const noexcept;
-    size_t count() const noexcept;
+    size_t limit() const;
+    size_t count() const;
 
-    const descriptor_t& operator[](size_t index) const noexcept;
-    descriptor_t& operator[](size_t index) noexcept;
+    const descriptor_t& operator[](size_t index) const;
+    descriptor_t& operator[](size_t index);
 
-    const descriptor_t& operator[](const selector_t& selector) const noexcept;
-    descriptor_t& operator[](const selector_t& selector) noexcept;
+    const descriptor_t& operator[](const selector_t& selector) const;
+    descriptor_t& operator[](const selector_t& selector);
 
     template<
             typename _t,

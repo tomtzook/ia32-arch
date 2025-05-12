@@ -58,9 +58,9 @@ struct pml4e_t {
         uint64_t raw;
     };
 
-    bool present() const noexcept;
-    physical_address_t address() const noexcept;
-    void address(physical_address_t address) noexcept;
+    bool present() const;
+    physical_address_t address() const;
+    void address(physical_address_t address);
 };
 static_assert(sizeof(pml4e_t) == 8, "sizeof(pml4e_t)");
 
@@ -99,11 +99,11 @@ struct pdpte_t {
         uint64_t raw;
     };
 
-    bool present() const noexcept;
-    bool is_huge() const noexcept;
+    bool present() const;
+    bool is_huge() const;
 
-    physical_address_t address() const noexcept;
-    void address(physical_address_t address) noexcept;
+    physical_address_t address() const;
+    void address(physical_address_t address);
 };
 static_assert(sizeof(pdpte_t) == 8, "sizeof(pdpte_t)");
 
@@ -142,11 +142,11 @@ struct pde_t {
         uint64_t raw;
     };
 
-    bool present() const noexcept;
-    bool is_large() const noexcept;
+    bool present() const;
+    bool is_large() const;
 
-    physical_address_t address() const noexcept;
-    void address(physical_address_t address) noexcept;
+    physical_address_t address() const;
+    void address(physical_address_t address);
 };
 static_assert(sizeof(pde_t) == 8, "sizeof(pde_t)");
 
@@ -171,10 +171,10 @@ struct pte_t {
         uint64_t raw;
     };
 
-    bool present() const noexcept;
+    bool present() const;
 
-    physical_address_t address() const noexcept;
-    void address(physical_address_t address) noexcept;
+    physical_address_t address() const;
+    void address(physical_address_t address);
 };
 static_assert(sizeof(pte_t) == 8, "sizeof(pte_t)");
 
@@ -191,8 +191,8 @@ struct ept_pointer_t {
         uint64_t raw;
     };
 
-    physical_address_t address() const noexcept;
-    void address(physical_address_t address) noexcept;
+    physical_address_t address() const;
+    void address(physical_address_t address);
 };
 static_assert(sizeof(ept_pointer_t) == 8, "sizeof(ept_pointer_t)");
 
@@ -224,7 +224,7 @@ static_assert(sizeof(invvpid_descriptor_t) == 16, "sizeof(invvpid_descriptor_t)"
 
 #pragma pack(pop)
 
-bool to_physical(ept_pointer_t& eptp, guest_physical_address_t address, physical_address_t& out) noexcept;
+bool to_physical(ept_pointer_t& eptp, guest_physical_address_t address, physical_address_t& out);
 
 static inline error_t invept(invept_type_t type, invept_descriptor_t descriptor = {}) {
     auto error = error_t::success;

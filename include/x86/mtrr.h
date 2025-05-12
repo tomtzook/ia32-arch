@@ -114,11 +114,11 @@ struct mtrr_cache_t {
     size_t variable_mtrr_count;
     variable_mtrr_t variable_mtrrs[max_variable_mtrr];
 
-    memory_type_t type_for_range(physical_address_t start, size_t size) const noexcept;
-    memory_type_t type_for_2m(physical_address_t start) const noexcept;
-    memory_type_t type_for_4k(physical_address_t start) const noexcept;
+    memory_type_t type_for_range(physical_address_t start, size_t size) const;
+    memory_type_t type_for_2m(physical_address_t start) const;
+    memory_type_t type_for_4k(physical_address_t start) const;
 
-    static memory_type_t type_with_precedence(memory_type_t first, memory_type_t second) noexcept;
+    static memory_type_t type_with_precedence(memory_type_t first, memory_type_t second);
 };
 
 static inline variable_base_t read_variable_base(size_t offset) {
@@ -131,7 +131,7 @@ static inline variable_mask_t read_variable_mask(size_t offset) {
     return variable_mask_t{.raw = value};
 }
 
-mtrr_cache_t initialize_cache() noexcept;
+mtrr_cache_t initialize_cache();
 
 }
 

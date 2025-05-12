@@ -17,16 +17,16 @@ struct vmstruct_t {
     uint8_t data[x86::paging::page_size_4k - 8];
 } packed;
 
-bool is_supported() noexcept;
+bool is_supported();
 
-uintn_t get_cr0_fixed_bits(bool for_unrestricted_guest=false) noexcept;
-uintn_t get_cr4_fixed_bits() noexcept;
+uintn_t get_cr0_fixed_bits(bool for_unrestricted_guest=false);
+uintn_t get_cr4_fixed_bits();
 
-void adjust_cr0_fixed_bits(x86::cr0_t& cr, bool for_unrestricted_guest=false) noexcept;
-void adjust_cr4_fixed_bits(x86::cr4_t& cr) noexcept;
+void adjust_cr0_fixed_bits(x86::cr0_t& cr, bool for_unrestricted_guest=false);
+void adjust_cr4_fixed_bits(x86::cr4_t& cr);
 
-bool prepare_for_vmxon() noexcept;
-bool initialize_vmstruct(vmstruct_t& vm_struct) noexcept;
+bool prepare_for_vmxon();
+bool initialize_vmstruct(vmstruct_t& vm_struct);
 
 static inline error_t vmxon(physical_address_t vmxon_region_address) {
     auto error = error_t::success;

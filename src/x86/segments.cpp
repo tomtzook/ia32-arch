@@ -44,7 +44,7 @@ void descriptor64_t::limit(size_t limit) {
     base.limit(limit);
 }
 
-table_t::table_t(table_register_t table_register) noexcept
+table_t::table_t(table_register_t table_register)
     : m_table_register(table_register) {
 }
 

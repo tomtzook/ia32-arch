@@ -126,12 +126,12 @@ struct pde_t {
     };
 
     bool is_present() const { return small.present; }
-    bool is_big() const noexcept;
+    bool is_big() const;
 
-    physical_address_t address() const noexcept;
-    void address(physical_address_t address) noexcept;
-    physical_address_t pse36_address_bits() const noexcept;
-    void pse36_address_bits(physical_address_t address) noexcept;
+    physical_address_t address() const;
+    void address(physical_address_t address);
+    physical_address_t pse36_address_bits() const;
+    void pse36_address_bits(physical_address_t address);
 };
 static_assert(sizeof(pde_t) == 4, "sizeof(pde_t)");
 
@@ -156,17 +156,17 @@ struct pte_t {
 
     bool is_present() const { return bits.present; }
 
-    physical_address_t address() const noexcept;
-    void address(physical_address_t address) noexcept;
+    physical_address_t address() const;
+    void address(physical_address_t address);
 };
 static_assert(sizeof(pte_t) == 4, "sizeof(pte_t)");
 
 #pragma pack(pop)
 
-bool are_4m_page_tables_supported() noexcept;
-bool are_4m_page_tables_enabled() noexcept;
-bool is_pse36_supported() noexcept;
+bool are_4m_page_tables_supported();
+bool are_4m_page_tables_enabled();
+bool is_pse36_supported();
 
-bool to_physical(x86::cr3_t& cr3, linear_address_t address, physical_address_t& out) noexcept;
+bool to_physical(x86::cr3_t& cr3, linear_address_t address, physical_address_t& out);
 
 }
