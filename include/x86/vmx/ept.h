@@ -226,16 +226,16 @@ static_assert(sizeof(invvpid_descriptor_t) == 16, "sizeof(invvpid_descriptor_t)"
 
 bool to_physical(ept_pointer_t& eptp, guest_physical_address_t address, physical_address_t& out);
 
-static inline error_t invept(invept_type_t type, invept_descriptor_t descriptor = {}) {
-    auto error = error_t::success;
+static inline instruction_result_t invept(invept_type_t type, invept_descriptor_t descriptor = {}) {
+    auto error = instruction_result_t::success;
     asm volatile("invept %1, %2\n"
                  VMX_SET_ERROR_CODE
             : [error] "=r"(error) : "m" (descriptor), "r"(type) : "memory");
     return error;
 }
 
-static inline error_t invvpid(invept_type_t type, invvpid_descriptor_t descriptor = {}) {
-    auto error = error_t::success;
+static inline instruction_result_t invvpid(invept_type_t type, invvpid_descriptor_t descriptor = {}) {
+    auto error = instruction_result_t::success;
     asm volatile("invvpid %1, %2\n"
                  VMX_SET_ERROR_CODE
             : [error] "=r"(error) : "m" (descriptor), "r"(type) : "memory");

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "common.h"
-#include "x86/paging/paging.h"
 
 // https://wiki.osdev.org/CPU_Registers_x86
 namespace x86 {

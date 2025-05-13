@@ -43,7 +43,7 @@ enum class gate_type_t : uint64_t {
     trap_32 = 0b1111,
 };
 
-struct gate_descriptor_t {
+struct descriptor_t {
     union {
         struct {
             uint64_t offset_low : 16;
@@ -61,7 +61,35 @@ struct gate_descriptor_t {
     uint32_t address() const;
     void address(uint32_t address);
 };
-static_assert(sizeof(gate_descriptor_t) == 8, "sizeof(gate_descriptor_t)");
+static_assert(sizeof(descriptor_t) == 8, "sizeof(descriptor_t)");
+
+struct descriptor64_t {
+    union {
+        struct {
+            uint64_t offset_low : 16;
+            uint64_t segment_selector : 16;
+            uint64_t ist : 3;
+            uint64_t reserved0 : 5;
+            gate_type_t type : 4;
+            uint64_t reserved1 : 1;
+            uint64_t dpl : 2;
+            uint64_t present : 1;
+            uint64_t offset_high : 16;
+        } bits;
+        uint64_t raw;
+    } low;
+    union {
+        struct {
+            uint64_t offset_upper : 32;
+            uint64_t ignored0 : 32;
+        } bits;
+        uint64_t raw;
+    } high;
+
+    uint64_t address() const;
+    void address(uint64_t address);
+};
+static_assert(sizeof(descriptor64_t) == 16, "sizeof(descriptor_t)");
 
 // Interrupt Descriptor Table [SDM 3 6.10 P195]
 
@@ -72,6 +100,26 @@ struct idtr_t {
 static_assert(sizeof(idtr_t) == 6, "sizeof(idtr_t)");
 
 #pragma pack(pop)
+
+class table64_t {
+public:
+    table64_t(idtr_t idtr);
+
+    const void* base_address() const;
+    void* base_address();
+
+    size_t limit() const;
+    size_t count() const;
+
+    const descriptor64_t& operator[](size_t index) const;
+    descriptor64_t& operator[](size_t index);
+
+    const descriptor64_t& operator[](interrupt_t interrupt) const;
+    descriptor64_t& operator[](interrupt_t interrupt);
+
+private:
+    idtr_t m_idtr;
+};
 
 }
 

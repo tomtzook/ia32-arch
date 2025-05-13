@@ -194,8 +194,8 @@ static inline _controls adjust_vm_controls(const _controls& controls) {
     copy.raw = controls.raw;
 
     auto allowed = x86::read<typename _controls::allowed_true_msr>();
-    copy.raw &= allowed.bits.allowed1;
     copy.raw |= allowed.bits.allowed0;
+    copy.raw &= allowed.bits.allowed1;
 
     return copy;
 }

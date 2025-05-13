@@ -6,7 +6,7 @@
 #error "only x86-64 is supported"
 #endif
 
-#define packed __attribute__ ((packed));
+// #define packed __attribute__ ((packed));
 // https://aaronbloomfield.github.io/pdr/book/x86-64bit-ccc-chapter.pdf
 // i386 fastcall ASM calling convention.
 // In GCC (system V), params are, from left to right :

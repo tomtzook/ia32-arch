@@ -1,7 +1,4 @@
-cmake_minimum_required(VERSION 3.23)
 
-set(CMAKE_C_STANDARD 11)
-set(CMAKE_CXX_STANDARD 17)
 
 add_library(arch
         src/x86/paging/paging.cpp
@@ -32,8 +29,10 @@ add_library(arch
         include/x86/vmx/vmx.h
         include/x86/vmx/error.h
         include/x86/vmx/ept.h
-        include/x86/vmx/controls.h include/x86/vmx/segments.h include/x86/mtrr.h src/x86/mtrr.cpp include/x86/atomic.h)
+        include/x86/vmx/controls.h include/x86/vmx/segments.h include/x86/mtrr.h src/x86/mtrr.cpp include/x86/atomic.h
+        include/x86/rflags.h
+        include/x86/vmx/vmexit.h)
 
-target_compile_options(arch PRIVATE -ffreestanding)
+target_compile_options(arch PRIVATE -ffreestanding -std=gnu++20)
 target_link_options(arch PRIVATE -nostdlib -nolibc -nodefaultlibs)
 target_include_directories(arch PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
