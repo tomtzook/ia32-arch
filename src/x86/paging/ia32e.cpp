@@ -81,8 +81,8 @@ void pte_t::address(physical_address_t address) {
 
 bool are_huge_tables_supported() {
     // CPUID[0x80000001].EDX[26] = 1 -> 1gb pages supported [SDM 3 4.1.4 P109]
-    auto regs = x86::cpuid<x86::cpuid_paging_features_t>();
-    return (regs.edx.raw & (1 << 26)) != 0;
+    const auto regs = x86::cpuid<x86::cpuid_extended_processor_info_t>();
+    return regs.edx.bits.page1gb != 0;
 }
 
 bool to_physical(x86::cr3_t& cr3, linear_address_t address, physical_address_t& out) {

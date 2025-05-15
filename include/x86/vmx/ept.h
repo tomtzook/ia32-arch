@@ -2,6 +2,7 @@
 
 #include "x86/common.h"
 #include "x86/vmx/error.h"
+#include "x86/mtrr.h"
 
 
 namespace x86::vmx {
@@ -182,7 +183,7 @@ static_assert(sizeof(pte_t) == 8, "sizeof(pte_t)");
 struct ept_pointer_t {
     union {
         struct {
-            uint64_t mem_type : 3;
+            mtrr::memory_type_t mem_type : 3;
             uint64_t walk_length : 3;
             uint64_t access_dirty_enable : 1;
             uint64_t reserved0 : 5;

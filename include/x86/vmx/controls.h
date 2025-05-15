@@ -37,7 +37,7 @@ struct pin_based_exec_controls_t :
             uint32_t nmi_exiting : 1;
             uint32_t unused1 : 1;
             uint32_t virtual_nmis : 1;
-            uint32_t activate_preemption_time : 1;
+            uint32_t activate_preemption_timer : 1;
             uint32_t process_posted_interrupts : 1;
             uint32_t unused2 : 21;
         } bits;
@@ -138,7 +138,7 @@ struct vmexit_controls_t :
             uint32_t unused1 : 6;
             uint32_t host_address_space_size : 1;
             uint32_t unused2 : 2;
-            uint32_t load_pref_glob : 1;
+            uint32_t load_perf_glob : 1;
             uint32_t unused3 : 2;
             uint32_t acknowledge_interrupt_on_exit : 1;
             uint32_t unused4 : 2;
@@ -185,6 +185,32 @@ static_assert(sizeof(vmentery_controls_t) == 4, "sizeof(vmentery_controls_t)");
 
 #pragma pack(pop)
 
+struct controls_allowed_t {
+    uint32_t allowed0;
+    uint32_t allowed1;
+};
+
+static inline bool are_true_allowed_msr_supported() {
+    const auto msr = x86::read<msr::ia32_vmx_basic_t>();
+    return msr.bits.vm_ctrls_fixed != 0;
+}
+
+template<typename _controls>
+static inline controls_allowed_t get_controls_allowed() {
+    controls_allowed_t result{};
+    if (are_true_allowed_msr_supported()) {
+        auto allowed = x86::read<typename _controls::allowed_true_msr>();
+        result.allowed0 = allowed.bits.allowed0;
+        result.allowed1 = allowed.bits.allowed1;
+    } else {
+        auto allowed = x86::read<typename _controls::allowed_msr>();
+        result.allowed0 = allowed.bits.allowed0;
+        result.allowed1 = allowed.bits.allowed1;
+    }
+
+    return result;
+}
+
 template<typename _controls>
 static inline _controls adjust_vm_controls(const _controls& controls) {
     // [SDM 3 A.3.1]
@@ -193,9 +219,9 @@ static inline _controls adjust_vm_controls(const _controls& controls) {
     _controls copy{};
     copy.raw = controls.raw;
 
-    auto allowed = x86::read<typename _controls::allowed_true_msr>();
-    copy.raw |= allowed.bits.allowed0;
-    copy.raw &= allowed.bits.allowed1;
+    const auto allowed = get_controls_allowed<_controls>();
+    copy.raw |= allowed.allowed0;
+    copy.raw &= allowed.allowed1;
 
     return copy;
 }
@@ -205,8 +231,9 @@ static inline bool are_vm_controls_supported(const _controls& controls) {
     // [SDM 3 A.3.1]
     // bits allowed0: MSR bit x = 0 -> VMCS bit allowed 0
     // bits allowed1: MSR bit x = 1 -> VMCS bit allowed 1
-    auto allowed = x86::read<typename _controls::allowed_true_msr>();
-    auto allowed_mask = ~allowed.bits.allowed0 & allowed.bits.allowed1;
+    const auto allowed = get_controls_allowed<_controls>();
+
+    auto allowed_mask = ~allowed.allowed0 & allowed.allowed1;
     return (controls.raw & allowed_mask) == controls.raw;
 }
 

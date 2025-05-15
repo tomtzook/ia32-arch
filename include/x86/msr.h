@@ -12,6 +12,7 @@ template<> struct x86::msr::msr_def_t<_ ##_name## _id_t> : public x86::msr::_msr
         } bits;                          \
         x86::msr::value_t raw;\
     }; \
+    explicit x86::msr::msr_def_t(x86::msr::value_t val) : raw(val) {}\
 }; \
 using _name## _t = x86::msr::msr_def_t<_ ##_name## _id_t>; \
 static_assert(sizeof(_name## _t) == x86::msr::msr_def_size, "sizeof(_name## _t)");
@@ -106,12 +107,41 @@ value_t smrr_supported : 1;
 value_t reserved1 : 52;
 )
 
+define_msr(0x277, ia32_pat,
+value_t pa0 : 3;
+value_t reserved0 : 5;
+value_t pa1 : 3;
+value_t reserved1 : 5;
+value_t pa2 : 3;
+value_t reserved2 : 5;
+value_t pa3 : 3;
+value_t reserved3 : 5;
+value_t pa4 : 3;
+value_t reserved4 : 5;
+value_t pa5 : 3;
+value_t reserved5 : 5;
+value_t pa6 : 3;
+value_t reserved6 : 5;
+value_t pa7 : 3;
+value_t reserved7 : 5;
+)
+
 define_msr(0x2ff, ia32_mtrr_def_type,
 value_t default_type : 8;
 value_t reserved0 : 1;
 value_t fixed_enable : 1;
 value_t enable : 1;
 value_t reserved1 : 52;
+)
+
+define_msr(0x38f, ia32_pref_global_ctrl,
+value_t ia32_pmc0_enable : 1;
+value_t ia32_pmc1_enable : 1;
+value_t reserved0 : 30;
+value_t ia32_fixed_ctr0 : 1;
+value_t ia32_fixed_ctr1 : 1;
+value_t ia32_fixed_ctr2 : 1;
+value_t reserved1 : 29;
 )
 
 define_msr(0x480, ia32_vmx_basic,
@@ -121,7 +151,7 @@ value_t vm_struct_size : 13;
 value_t reserved0 : 3;
 value_t physaddr_width_type : 1;
 value_t dual_monitor_smi : 1;
-value_t vmcs_mem_type : 3;
+value_t vmcs_mem_type : 4;
 value_t ins_outs_vmexit_report : 1;
 value_t vm_ctrls_fixed : 1;
 value_t reserved1 : 8;
@@ -184,6 +214,23 @@ value_t allowed0 : 32;
 value_t allowed1 : 32;
 );
 
+// [SDM 3 Appendix A.6]
+define_msr(0x485, ia32_vmx_misc,
+value_t preemption_timer_rate_to_tsc : 5;
+value_t efer_lma_save : 1;
+value_t activity_states_supported : 3;
+value_t reserved0 : 6;
+value_t intel_pt_in_vmx : 1;
+value_t rdmsr_in_smm : 1;
+value_t cr3_target_values : 8;
+value_t recommended_msr_store_size : 3;
+value_t smm_monitor_ctrl_supported : 1;
+value_t vmwrite_to_all_fields : 1;
+value_t software_inject : 1;
+value_t reserved1 : 1;
+value_t mseg_revision_id : 32;
+);
+
 define_msr(0x490, ia32_vmx_true_entry_ctls,
 value_t allowed0 : 32;
 value_t allowed1 : 32;
@@ -215,6 +262,10 @@ value_t invvpid_single_context : 1;
 value_t invvpid_all_context : 1;
 value_t invvpid_single_context_retaining_globals : 1;
 value_t reserved8 : 20;
+);
+
+define_msr(0x491, ia32_vmx_vmfunc,
+value_t allowed : 64;
 );
 
 #pragma pack(pop)

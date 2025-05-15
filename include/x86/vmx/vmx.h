@@ -22,8 +22,10 @@ struct vmstruct_t {
 
 bool is_supported();
 
-uintn_t get_cr0_fixed_bits(bool for_unrestricted_guest=false);
-uintn_t get_cr4_fixed_bits();
+uintn_t get_cr0_fixed0_bits(bool for_unrestricted_guest=false);
+uintn_t get_cr0_fixed1_bits(bool for_unrestricted_guest=false);
+uintn_t get_cr4_fixed0_bits();
+uintn_t get_cr4_fixed1_bits();
 
 void adjust_cr0_fixed_bits(x86::cr0_t& cr, bool for_unrestricted_guest=false);
 void adjust_cr4_fixed_bits(x86::cr4_t& cr);

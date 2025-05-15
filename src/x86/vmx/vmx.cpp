@@ -13,11 +13,12 @@ bool is_supported() {
     return cpu_features.ecx.bits.vmx;
 }
 
-uintn_t get_cr0_fixed_bits(bool for_unrestricted_guest) {
-    // [SDM 3 A.7 P1960]
-    // F0[X] = 1 -> must be 1
-    // F1[X] = 0 -> must be 0
-    auto fixed0 = x86::read<x86::msr::ia32_vmx_cr0_fixed0_t>().raw;
+// [SDM 3 A.7 P1960]
+uintn_t get_cr0_fixed0_bits(bool for_unrestricted_guest) {
+    return x86::read<x86::msr::ia32_vmx_cr0_fixed0_t>().raw;
+}
+
+uintn_t get_cr0_fixed1_bits(bool for_unrestricted_guest) {
     auto fixed1 = x86::read<x86::msr::ia32_vmx_cr0_fixed1_t>().raw;
 
     if (for_unrestricted_guest) {
@@ -29,23 +30,26 @@ uintn_t get_cr0_fixed_bits(bool for_unrestricted_guest) {
         fixed1 = cr_0.raw;
     }
 
-    return fixed0 & fixed1;
+    return fixed1;
 }
 
-uintn_t get_cr4_fixed_bits() {
-    // [SDM 3 A.8 P1960]
-    auto fixed0 = x86::read<x86::msr::ia32_vmx_cr4_fixed0_t>().raw;
-    auto fixed1 = x86::read<x86::msr::ia32_vmx_cr4_fixed1_t>().raw;
+// [SDM 3 A.8 P1960]
+uintn_t get_cr4_fixed0_bits() {
+    return x86::read<x86::msr::ia32_vmx_cr4_fixed0_t>().raw;
+}
 
-    return fixed0 & fixed1;
+uintn_t get_cr4_fixed1_bits() {
+    return x86::read<x86::msr::ia32_vmx_cr4_fixed1_t>().raw;
 }
 
 void adjust_cr0_fixed_bits(x86::cr0_t& cr, bool for_unrestricted_guest) {
-    cr.raw |= get_cr0_fixed_bits(for_unrestricted_guest);
+    cr.raw |= get_cr0_fixed0_bits(for_unrestricted_guest);
+    cr.raw &= get_cr0_fixed1_bits(for_unrestricted_guest);
 }
 
 void adjust_cr4_fixed_bits(x86::cr4_t& cr) {
-    cr.raw |= get_cr4_fixed_bits();
+    cr.raw |= get_cr0_fixed0_bits();
+    cr.raw &= get_cr0_fixed1_bits();
 }
 
 bool prepare_for_vmxon() {

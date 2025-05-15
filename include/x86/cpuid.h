@@ -138,8 +138,39 @@ uint32_t reserved1 : 1;
 uint32_t pbe : 1;
 );
 
-define_cpuid(0x80000001, 0x0, cpuid_paging_features,
+define_cpuid(0x80000001, 0x0, cpuid_extended_processor_info,
 ,,,
+uint32_t fpu : 1;
+uint32_t vme : 1;
+uint32_t de : 1;
+uint32_t pse : 1;
+uint32_t tsc : 1;
+uint32_t msr : 1;
+uint32_t pae : 1;
+uint32_t mce : 1;
+uint32_t cmpxchg8b : 1;
+uint32_t apic : 1;
+uint32_t reserved1 : 1;
+uint32_t syscall_sysret : 1;
+uint32_t mtrr : 1;
+uint32_t pge : 1;
+uint32_t mca : 1;
+uint32_t cmov : 1;
+uint32_t pat : 1;
+uint32_t pse36 : 1;
+uint32_t reserved2 : 2;
+uint32_t execution_disable : 1;
+uint32_t reserved3 : 1;
+uint32_t mmx_ext : 1;
+uint32_t mmx : 1;
+uint32_t fxsr : 1;
+uint32_t ffxsr : 1;
+uint32_t page1gb : 1;
+uint32_t rdtscp : 1;
+uint32_t reserved4 : 1;
+uint32_t long_mode : 1;
+uint32_t bit30 : 1;
+uint32_t bit31 : 1;
 );
 
 #pragma pack(pop)

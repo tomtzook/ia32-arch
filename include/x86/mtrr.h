@@ -7,7 +7,7 @@ namespace x86 {
 namespace mtrr {
 
 // [SDM 3 11.11 "Table 11-8"]
-enum class memory_type_t : uint8_t {
+enum class memory_type_t : uint64_t {
     uncacheable = 0,
     write_coombining = 1,
     write_through = 4,

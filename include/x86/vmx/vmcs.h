@@ -164,6 +164,46 @@ enum class field_t : uint32_t {
     host_rip = 0x6c16
 };
 
+#pragma pack(push, 1)
+
+struct vmfunc_control_t {
+    union {
+        struct {
+            uint64_t eptp_switching : 1;
+            uint64_t reserved0 : 63;
+        } bits;
+        uint64_t raw;
+    };
+};
+static_assert(sizeof(vmfunc_control_t) == 8, "sizeof(vmfunc_control_t)");
+
+enum class vmentry_interrupt_type_t : uint32_t {
+    external_interrupt = 0,
+    reserved = 1,
+    nmi = 2,
+    hardware_exception = 3,
+    software_interrupt = 4,
+    privileged_software_exception = 5,
+    software_exception = 6,
+    other_event = 7
+};
+
+struct vmentry_interruption_info_t {
+    union {
+        struct {
+            uint32_t vector : 8;
+            vmentry_interrupt_type_t type : 2;
+            uint32_t deliver_error_code : 1;
+            uint32_t reserved : 19;
+            uint32_t valid : 1;
+        } bits;
+        uint32_t raw;
+    };
+};
+static_assert(sizeof(vmentry_interruption_info_t) == 4, "sizeof(vmentry_interruption_info_t)");
+
+#pragma pack(pop)
+
 // for improvement of instructions later: https://github.com/opnsense/src/blob/cdc5c1db54c5183add40a0a48a7692d7d4ac4a31/sys/amd64/vmm/intel/vmx_cpufunc.h#L118
 
 static inline instruction_result_t vmclear(physical_address_t vmcs_address) {
