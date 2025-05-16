@@ -26,6 +26,8 @@ struct segment_access_rights_t {
         } bits;
         uint32_t raw;
     };
+
+    explicit segment_access_rights_t(const uint32_t value=0) : raw{value} {}
 };
 static_assert(sizeof(segment_access_rights_t) == 4, "sizeof(segment_access_rights_t)");
 

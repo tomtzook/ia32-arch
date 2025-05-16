@@ -12,7 +12,7 @@ template<> struct x86::msr::msr_def_t<_ ##_name## _id_t> : public x86::msr::_msr
         } bits;                          \
         x86::msr::value_t raw;\
     }; \
-    explicit x86::msr::msr_def_t(x86::msr::value_t val) : raw(val) {}\
+    explicit msr_def_t(x86::msr::value_t val = 0) : raw(val) {}\
 }; \
 using _name## _t = x86::msr::msr_def_t<_ ##_name## _id_t>; \
 static_assert(sizeof(_name## _t) == x86::msr::msr_def_size, "sizeof(_name## _t)");

@@ -30,7 +30,30 @@ uintn_t get_cr4_fixed1_bits();
 void adjust_cr0_fixed_bits(x86::cr0_t& cr, bool for_unrestricted_guest=false);
 void adjust_cr4_fixed_bits(x86::cr4_t& cr);
 
-bool prepare_for_vmxon();
+static inline bool is_cr_valid(const uintn_t cr, const uintn_t fixed0, const uintn_t fixed1) {
+    if ((cr & fixed0) != fixed0) {
+        return false;
+    }
+    if ((cr & ~fixed1) != 0) {
+        return false;
+    }
+
+    return true;
+}
+
+static inline bool is_cr0_valid(const uintn_t cr, const bool for_unrestricted_guest=false) {
+    const auto fixed0_bits = x86::vmx::get_cr0_fixed0_bits(for_unrestricted_guest);
+    const auto fixed1_bits = x86::vmx::get_cr0_fixed1_bits(for_unrestricted_guest);
+    return is_cr_valid(cr, fixed0_bits, fixed1_bits);
+}
+
+static inline bool is_cr4_valid(const uintn_t cr) {
+    const auto fixed0_bits = x86::vmx::get_cr4_fixed0_bits();
+    const auto fixed1_bits = x86::vmx::get_cr4_fixed1_bits();
+    return is_cr_valid(cr, fixed0_bits, fixed1_bits);
+}
+
+bool prepare_for_vmxon(bool for_unrestricted_guest=false);
 bool initialize_vmstruct(vmstruct_t& vm_struct);
 
 static inline instruction_result_t vmxon(physical_address_t vmxon_region_address) {

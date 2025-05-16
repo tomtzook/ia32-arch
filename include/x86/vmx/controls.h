@@ -171,7 +171,7 @@ struct vmentery_controls_t :
             uint32_t entry_to_smm : 1;
             uint32_t deactivate_dual_monitor : 1;
             uint32_t unused2 : 1;
-            uint32_t load_pre_global_ctrl : 1;
+            uint32_t load_perf_global_ctrl : 1;
             uint32_t load_pat : 1;
             uint32_t load_efer : 1;
             uint32_t load_bndcfgs : 1;
@@ -220,10 +220,27 @@ static inline _controls adjust_vm_controls(const _controls& controls) {
     copy.raw = controls.raw;
 
     const auto allowed = get_controls_allowed<_controls>();
-    copy.raw |= allowed.allowed0;
     copy.raw &= allowed.allowed1;
+    copy.raw |= allowed.allowed0;
 
     return copy;
+}
+
+template<typename _controls>
+static inline bool are_controls_valid(const _controls& controls) {
+    // [SDM 3 A.3.1]
+    // bits allowed0: MSR bit x = 0 -> VMCS bit allowed 0
+    // bits allowed1: MSR bit x = 1 -> VMCS bit allowed 1
+    const auto allowed = get_controls_allowed<_controls>();
+
+    if ((controls.raw & allowed.allowed0) != allowed.allowed0) {
+        return false;
+    }
+    if ((controls.raw & ~allowed.allowed1) != 0) {
+        return false;
+    }
+
+    return true;
 }
 
 template<typename _controls>
@@ -236,5 +253,4 @@ static inline bool are_vm_controls_supported(const _controls& controls) {
     auto allowed_mask = ~allowed.allowed0 & allowed.allowed1;
     return (controls.raw & allowed_mask) == controls.raw;
 }
-
 }

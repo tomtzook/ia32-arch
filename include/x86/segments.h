@@ -23,6 +23,8 @@ struct selector_t {
         } bits;
         uint16_t value;
     };
+
+    selector_t(const uint16_t value=0) : value(value) {}
 };
 static_assert(sizeof(selector_t) == 2, "sizeof(segment_selector_t)");
 

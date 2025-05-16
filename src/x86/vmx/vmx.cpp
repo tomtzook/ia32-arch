@@ -14,23 +14,23 @@ bool is_supported() {
 }
 
 // [SDM 3 A.7 P1960]
-uintn_t get_cr0_fixed0_bits(bool for_unrestricted_guest) {
-    return x86::read<x86::msr::ia32_vmx_cr0_fixed0_t>().raw;
-}
-
-uintn_t get_cr0_fixed1_bits(bool for_unrestricted_guest) {
-    auto fixed1 = x86::read<x86::msr::ia32_vmx_cr0_fixed1_t>().raw;
+uintn_t get_cr0_fixed0_bits(const bool for_unrestricted_guest) {
+    auto fixed0 = x86::read<x86::msr::ia32_vmx_cr0_fixed0_t>().raw;
 
     if (for_unrestricted_guest) {
         // when in unrestricted guest mode, we don't need to account
         // for PG or PE bits
-        cr0_t cr_0 = {fixed1};
+        cr0_t cr_0 = {fixed0};
         cr_0.bits.protection_enable = false;
         cr_0.bits.paging_enable = false;
-        fixed1 = cr_0.raw;
+        fixed0 = cr_0.raw;
     }
 
-    return fixed1;
+    return fixed0;
+}
+
+uintn_t get_cr0_fixed1_bits(const bool for_unrestricted_guest) {
+    return x86::read<x86::msr::ia32_vmx_cr0_fixed1_t>().raw;
 }
 
 // [SDM 3 A.8 P1960]
@@ -42,17 +42,17 @@ uintn_t get_cr4_fixed1_bits() {
     return x86::read<x86::msr::ia32_vmx_cr4_fixed1_t>().raw;
 }
 
-void adjust_cr0_fixed_bits(x86::cr0_t& cr, bool for_unrestricted_guest) {
-    cr.raw |= get_cr0_fixed0_bits(for_unrestricted_guest);
+void adjust_cr0_fixed_bits(x86::cr0_t& cr, const bool for_unrestricted_guest) {
     cr.raw &= get_cr0_fixed1_bits(for_unrestricted_guest);
+    cr.raw |= get_cr0_fixed0_bits(for_unrestricted_guest);
 }
 
 void adjust_cr4_fixed_bits(x86::cr4_t& cr) {
-    cr.raw |= get_cr0_fixed0_bits();
-    cr.raw &= get_cr0_fixed1_bits();
+    cr.raw &= get_cr4_fixed1_bits();
+    cr.raw |= get_cr4_fixed0_bits();
 }
 
-bool prepare_for_vmxon() {
+bool prepare_for_vmxon(const bool for_unrestricted_guest) {
     // check IA32_FEATURE_CONTROL MSR [SDM 3 23.7 P1051]
     //      bit[0] = 0 -> vmxon #GP
     //      bit[1] = 0 -> vmxon [SMX mode] #GP
@@ -80,7 +80,7 @@ bool prepare_for_vmxon() {
 
     // Restrictions placed on CR0 and CR4 [SDM 3 23.8 P1051]
     auto cr0 = x86::read<cr0_t>();
-    x86::vmx::adjust_cr0_fixed_bits(cr0);
+    x86::vmx::adjust_cr0_fixed_bits(cr0, for_unrestricted_guest);
     x86::write(cr0);
 
     x86::vmx::adjust_cr4_fixed_bits(cr4);
