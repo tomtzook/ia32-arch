@@ -47,6 +47,8 @@ struct vmcs_segment_defs {
     static constexpr field_t host_selector = _host_selector;
 };
 
+static constexpr auto vmcs_segment_no_host_selector = static_cast<field_t>(-1);
+
 using vmcs_cs_segment = vmcs_segment_defs<
         x86::segments::cs_t,
         field_t::guest_cs_selector,
@@ -94,6 +96,22 @@ using vmcs_fs_segment = vmcs_segment_defs<
         field_t::guest_fs_limit,
         field_t::guest_fs_access_rights,
         field_t::host_fs_selector>;
+
+using vmcs_tr_segment = vmcs_segment_defs<
+        x86::segments::tr_t,
+        field_t::guest_tr_selector,
+        field_t::guest_tr_base,
+        field_t::guest_tr_limit,
+        field_t::guest_tr_access_rights,
+        field_t::host_tr_selector>;
+
+using vmcs_ldtr_segment = vmcs_segment_defs<
+        x86::segments::ldtr_t,
+        field_t::guest_ldtr_selector,
+        field_t::guest_ldtr_base,
+        field_t::guest_ldtr_limit,
+        field_t::guest_ldtr_access_rights,
+        vmcs_segment_no_host_selector>;
 
 #pragma pack(pop)
 

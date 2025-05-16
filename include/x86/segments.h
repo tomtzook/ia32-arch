@@ -41,6 +41,7 @@ define_selector(ss_t);
 define_selector(es_t);
 define_selector(fs_t);
 define_selector(tr_t);
+define_selector(ldtr_t);
 
 // Segment Descriptors [SDM 3 3.4.5 P98]
 
@@ -154,7 +155,6 @@ struct table_register_t {
 static_assert(sizeof(table_register_t) == 10, "sizeof(table_register_t)");
 
 struct gdtr_t : public table_register_t {};
-struct ldtr_t : public table_register_t {};
 
 // [SDM 3 7.7 "Figure 7-11"]
 struct tss64_t {
