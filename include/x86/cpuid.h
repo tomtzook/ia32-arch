@@ -50,6 +50,13 @@ struct _cpuid_base_t {
     static constexpr cpuid_t subleaf = _subleaf;
 };
 
+struct cpuid_raw_t {
+    uint32_t eax;
+    uint32_t ebx;
+    uint32_t ecx;
+    uint32_t edx;
+};
+
 template<cpuid_t _leaf, cpuid_t _subleaf = 0>
 struct cpuid_def_t : public _cpuid_base_t<_leaf, _subleaf> {
     uint32_t eax;
@@ -177,6 +184,15 @@ uint32_t bit31 : 1;
 
 cpuid_t max_supported_cpuid_leaf();
 bool is_cpuid_leaf_supported(cpuid_t leaf);
+
+inline cpuid_raw_t cpuid(cpuid_t leaf, cpuid_t subleaf=0) {
+    cpuid_raw_t regs{};
+    asm volatile("cpuid"
+    : "=a"(regs.eax), "=b"(regs.ebx), "=c"(regs.ecx), "=d"(regs.edx)
+    : "0"(leaf), "2"(subleaf));
+
+    return regs;
+}
 
 template<
         typename _t,

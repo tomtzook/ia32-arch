@@ -78,4 +78,12 @@ static inline instruction_result_t vmlaunch() {
     return error;
 }
 
+static inline instruction_result_t vmresume() {
+    auto error = instruction_result_t::success;
+    asm volatile("vmresume\n"
+                 VMX_SET_ERROR_CODE
+            : [error] "=r"(error) : : "memory");
+    return error;
+}
+
 }

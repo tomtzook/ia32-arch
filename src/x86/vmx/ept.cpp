@@ -10,14 +10,14 @@ bool pml4e_t::present() const {
 }
 
 physical_address_t pml4e_t::address() const {
-    return static_cast<physical_address_t>(bits.address) << x86::paging::page_bits_4k;
+    return static_cast<physical_address_t>(bits.pfn) << x86::paging::page_bits_4k;
 }
 
 void pml4e_t::address(physical_address_t address) {
     auto maxphysaddr = x86::paging::max_physical_address_width();
     physical_address_t mask = (1ull << maxphysaddr) - 1;
 
-    bits.address = (address >> x86::paging::page_bits_4k) & mask;
+    bits.pfn = (address >> x86::paging::page_bits_4k) & mask;
 }
 
 bool pdpte_t::present() const {
@@ -30,9 +30,9 @@ bool pdpte_t::is_huge() const {
 
 physical_address_t pdpte_t::address() const {
     if (is_huge()) {
-        return static_cast<physical_address_t>(huge.address) << x86::paging::page_bits_1g;
+        return static_cast<physical_address_t>(huge.pfn) << x86::paging::page_bits_1g;
     } else {
-        return static_cast<physical_address_t>(small.address) << x86::paging::page_bits_4k;
+        return static_cast<physical_address_t>(small.pfn) << x86::paging::page_bits_4k;
     }
 }
 
@@ -41,12 +41,12 @@ void pdpte_t::address(physical_address_t address) {
         auto maxphysaddr = x86::paging::max_physical_address_width();
         physical_address_t mask = (1ull << maxphysaddr) - 1;
 
-        huge.address = (address >> x86::paging::page_bits_1g) & mask;
+        huge.pfn = (address >> x86::paging::page_bits_1g) & mask;
     } else {
         auto maxphysaddr = x86::paging::max_physical_address_width();
         physical_address_t mask = (1ull << maxphysaddr) - 1;
 
-        small.address = (address >> x86::paging::page_bits_4k) & mask;
+        small.pfn = (address >> x86::paging::page_bits_4k) & mask;
     }
 }
 
@@ -60,9 +60,9 @@ bool pde_t::is_large() const {
 
 physical_address_t pde_t::address() const {
     if (is_large()) {
-        return static_cast<physical_address_t>(large.address) << x86::paging::page_bits_2m;
+        return static_cast<physical_address_t>(large.pfn) << x86::paging::page_bits_2m;
     } else {
-        return static_cast<physical_address_t>(small.address) << x86::paging::page_bits_4k;
+        return static_cast<physical_address_t>(small.pfn) << x86::paging::page_bits_4k;
     }
 }
 
@@ -71,12 +71,12 @@ void pde_t::address(physical_address_t address) {
         auto maxphysaddr = x86::paging::max_physical_address_width();
         physical_address_t mask = (1ull << maxphysaddr) - 1;
 
-        large.address = (address >> x86::paging::page_bits_2m) & mask;
+        large.pfn = (address >> x86::paging::page_bits_2m) & mask;
     } else {
         auto maxphysaddr = x86::paging::max_physical_address_width();
         physical_address_t mask = (1ull << maxphysaddr) - 1;
 
-        small.address = (address >> x86::paging::page_bits_4k) & mask;
+        small.pfn = (address >> x86::paging::page_bits_4k) & mask;
     }
 }
 
@@ -85,14 +85,14 @@ bool pte_t::present() const {
 }
 
 physical_address_t pte_t::address() const {
-    return static_cast<physical_address_t>(bits.address) << x86::paging::page_bits_4k;
+    return static_cast<physical_address_t>(bits.pfn) << x86::paging::page_bits_4k;
 }
 
 void pte_t::address(physical_address_t address) {
     auto maxphysaddr = x86::paging::max_physical_address_width();
     physical_address_t mask = (1ull << maxphysaddr) - 1;
 
-    bits.address = (address >> x86::paging::page_bits_4k) & mask;
+    bits.pfn = (address >> x86::paging::page_bits_4k) & mask;
 }
 
 physical_address_t ept_pointer_t::address() const {

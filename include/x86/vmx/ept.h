@@ -53,7 +53,7 @@ struct pml4e_t {
             uint64_t ignored0 : 1;
             uint64_t user_mode_execute : 1;
             uint64_t ignored1 : 1;
-            uint64_t address : 40; // [12:51] depends on maxphysaddr
+            uint64_t pfn : 40; // [12:51] depends on maxphysaddr
             uint64_t ignored2 : 12;
         } bits;
         uint64_t raw;
@@ -77,7 +77,7 @@ struct pdpte_t {
             uint64_t ignored0 : 1;
             uint64_t user_mode_execute : 1;
             uint64_t ignored1 : 1;
-            uint64_t address : 40; // [12:51] depends on maxphysaddr
+            uint64_t pfn : 40; // [12:51] depends on maxphysaddr
             uint64_t ignored2 : 12;
         } small;
         struct {
@@ -93,7 +93,7 @@ struct pdpte_t {
             uint64_t user_mode_execute : 1;
             uint64_t ignored0 : 1;
             uint64_t reserved0 : 18;
-            uint64_t address : 22; // [30:51] depends on maxphysaddr
+            uint64_t pfn : 22; // [30:51] depends on maxphysaddr
             uint64_t ignored1 : 11;
             uint64_t suppress_ve : 1;
         } huge;
@@ -120,7 +120,7 @@ struct pde_t {
             uint64_t ignored0 : 1;
             uint64_t user_mode_execute : 1;
             uint64_t ignored1 : 1;
-            uint64_t address : 40; // [12:51] depends on maxphysaddr
+            uint64_t pfn : 40; // [12:51] depends on maxphysaddr
             uint64_t ignored2 : 12;
         } small;
         struct {
@@ -136,7 +136,7 @@ struct pde_t {
             uint64_t user_mode_execute : 1;
             uint64_t ignored0 : 1;
             uint64_t reserved0 : 9;
-            uint64_t address : 31; // [21:51] depends on maxphysaddr
+            uint64_t pfn : 31; // [21:51] depends on maxphysaddr
             uint64_t ignored1 : 11;
             uint64_t suppress_ve : 1;
         } large;
@@ -165,7 +165,7 @@ struct pte_t {
             uint64_t dirty : 1;
             uint64_t user_mode_execute : 1;
             uint64_t ignored1 : 1;
-            uint64_t address : 40; // [12:51] depends on maxphysaddr
+            uint64_t pfn : 40; // [12:51] depends on maxphysaddr
             uint64_t ignored2 : 11;
             uint64_t suppress_ve : 1;
         } bits;

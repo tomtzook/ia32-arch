@@ -64,6 +64,8 @@ struct linear_address_t {
         } huge;
         uint64_t raw;
     };
+
+    explicit linear_address_t(const uint64_t address=0) : raw(address) {}
 };
 static_assert(sizeof(linear_address_t) == 8, "sizeof(linear_address_t)");
 
@@ -80,7 +82,7 @@ struct pml4e_t {
             uint64_t ignored0 : 1;
             uint64_t reserved0 : 1;
             uint64_t ignored1 : 4;
-            uint64_t address : 40; // [12:51] depends on maxphysaddr
+            uint64_t pfn : 40; // [12:51] depends on maxphysaddr
             uint64_t ignored2 : 11;
             uint64_t xd : 1;
         } bits;
@@ -105,7 +107,7 @@ struct pdpte_t {
             uint64_t ignored0 : 1;
             uint64_t ps : 1;
             uint64_t ignored1 : 4;
-            uint64_t address : 40; // [12:51] depends on maxphysaddr
+            uint64_t pfn : 40; // [12:51] depends on maxphysaddr
             uint64_t ignored2 : 11;
             uint64_t xd : 1;
         } small;
@@ -122,7 +124,7 @@ struct pdpte_t {
             uint64_t ignored0 : 3;
             uint64_t pat : 1;
             uint64_t reserved0 : 17;
-            uint64_t address : 22; // [30:51] depends on maxphysaddr
+            uint64_t pfn : 22; // [30:51] depends on maxphysaddr
             uint64_t ignored1 : 7;
             uint64_t protection_key : 4;
             uint64_t xd : 1;
@@ -150,7 +152,7 @@ struct pde_t {
             uint64_t ignored0 : 1;
             uint64_t ps : 1;
             uint64_t ignored1 : 4;
-            uint64_t address : 40; // [12:51] depends on maxphysaddr
+            uint64_t pfn : 40; // [12:51] depends on maxphysaddr
             uint64_t ignored2 : 11;
             uint64_t xd : 1;
         } small;
@@ -167,7 +169,7 @@ struct pde_t {
             uint64_t ignored0 : 3;
             uint64_t pat : 1;
             uint64_t reserved0 : 8;
-            uint64_t address : 31; // [21:51] depends on maxphysaddr
+            uint64_t pfn : 31; // [21:51] depends on maxphysaddr
             uint64_t ignored1 : 7;
             uint64_t protection_key : 4;
             uint64_t xd : 1;
@@ -196,7 +198,7 @@ struct pte_t {
             uint64_t pat : 1;
             uint64_t global : 1;
             uint64_t ignored0 : 3;
-            uint64_t address : 40; // [12:51] depends on maxphysaddr
+            uint64_t pfn : 40; // [12:51] depends on maxphysaddr
             uint64_t ignored1 : 7;
             uint64_t protection_key : 4;
             uint64_t xd : 1;
@@ -213,6 +215,7 @@ static_assert(sizeof(pte_t) == 8, "sizeof(pte_t)");
 
 bool are_huge_tables_supported();
 
-bool to_physical(x86::cr3_t& cr3, linear_address_t address, physical_address_t& out);
+bool to_physical(const pml4e_t* pml4, linear_address_t address, physical_address_t& out);
+bool to_physical(const x86::cr3_t& cr3, linear_address_t address, physical_address_t& out);
 
 }
