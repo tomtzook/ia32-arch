@@ -95,9 +95,9 @@ static_assert(sizeof(descriptor64_t) == 16, "sizeof(descriptor_t)");
 
 struct idtr_t {
     uint16_t limit;
-    uint32_t base_address;
+    uint64_t base_address;
 };
-static_assert(sizeof(idtr_t) == 6, "sizeof(idtr_t)");
+static_assert(sizeof(idtr_t) == 10, "sizeof(idtr_t)");
 
 #pragma pack(pop)
 

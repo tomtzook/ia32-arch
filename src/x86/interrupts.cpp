@@ -8,7 +8,7 @@ uint32_t descriptor_t::address() const {
     return bits.offset_low | (static_cast<uint32_t>(bits.offset_high) << 16);
 }
 
-void descriptor_t::address(uint32_t address) {
+void descriptor_t::address(const uint32_t address) {
     bits.offset_low = address & 0xffff;
     bits.offset_high = (address >> 16) & 0xffff;
 }
@@ -19,7 +19,7 @@ uint64_t descriptor64_t::address() const {
             (static_cast<uint64_t>(high.bits.offset_upper) << 32);
 }
 
-void descriptor64_t::address(uint64_t address) {
+void descriptor64_t::address(const uint64_t address) {
     low.bits.offset_low = address & 0xffff;
     low.bits.offset_high = (address >> 16) & 0xffff;
     high.bits.offset_upper = (address >> 32) & 0xffff;

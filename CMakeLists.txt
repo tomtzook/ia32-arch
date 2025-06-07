@@ -1,6 +1,6 @@
 
 
-add_library(arch
+add_library(arch STATIC
         src/x86/paging/paging.cpp
         src/x86/paging/bit32.cpp
         src/x86/cpuid.cpp
@@ -33,6 +33,6 @@ add_library(arch
         include/x86/rflags.h
         include/x86/vmx/vmexit.h)
 
-target_compile_options(arch PRIVATE -ffreestanding -std=gnu++20)
+target_compile_options(arch PRIVATE -ffreestanding -std=gnu++20 -mstack-alignment=16)
 target_link_options(arch PRIVATE -nostdlib -nolibc -nodefaultlibs)
 target_include_directories(arch PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)

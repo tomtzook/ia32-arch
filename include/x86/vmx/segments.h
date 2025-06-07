@@ -125,7 +125,7 @@ static inline x86::vmx::segment_access_rights_t segment_access_rights(const segm
     ar.bits.long_mode = descriptor.bits.long_mode;
     ar.bits.default_db = descriptor.bits.default_db;
     ar.bits.granularity = static_cast<uint32_t>(descriptor.bits.granularity);
-    ar.bits.unusable = false;
+    ar.bits.unusable = !descriptor.bits.present;
 
     return ar;
 }
