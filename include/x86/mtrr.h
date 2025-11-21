@@ -19,8 +19,8 @@ static constexpr msr::id_t variable_base_msr_id = 0x200;
 static constexpr msr::id_t variable_mask_msr_id = 0x201;
 
 // [SDM 3 11.11.4.1]
-static constexpr memory_type_t mtrr_disabled_memory_type = memory_type_t::uncacheable;
-static constexpr memory_type_t memory_type_invalid = static_cast<memory_type_t>(-1);
+static constexpr auto mtrr_disabled_memory_type = memory_type_t::uncacheable;
+static constexpr auto memory_type_invalid = static_cast<memory_type_t>(-1);
 
 #pragma pack(push, 1)
 
@@ -114,20 +114,20 @@ struct mtrr_cache_t {
     size_t variable_mtrr_count;
     variable_mtrr_t variable_mtrrs[max_variable_mtrr];
 
-    memory_type_t type_for_range(physical_address_t start, size_t size) const;
-    memory_type_t type_for_2m(physical_address_t start) const;
-    memory_type_t type_for_4k(physical_address_t start) const;
+    [[nodiscard]] memory_type_t type_for_range(physical_address_t start, size_t size) const;
+    [[nodiscard]] memory_type_t type_for_2m(physical_address_t start) const;
+    [[nodiscard]] memory_type_t type_for_4k(physical_address_t start) const;
 
     static memory_type_t type_with_precedence(memory_type_t first, memory_type_t second);
 };
 
-static inline variable_base_t read_variable_base(size_t offset) {
-    auto value = msr::read(variable_base_msr_id + offset * 2);
+inline variable_base_t read_variable_base(const size_t offset) {
+    const auto value = msr::read(variable_base_msr_id + offset * 2);
     return variable_base_t{.raw = value};
 }
 
-static inline variable_mask_t read_variable_mask(size_t offset) {
-    auto value = msr::read(variable_mask_msr_id + offset * 2);
+inline variable_mask_t read_variable_mask(const size_t offset) {
+    const auto value = msr::read(variable_mask_msr_id + offset * 2);
     return variable_mask_t{.raw = value};
 }
 
@@ -141,15 +141,15 @@ template<
                 mtrr::is_fixed_mtrr_def<_t>::value,
                 bool>::type = 0
 >
-inline typename _t::value_t read() {
-    using value_t = typename _t::value_t;
+_t::value_t read() {
+    using value_t = _t::value_t;
     value_t t;
     t.raw = msr::read(_t::msr_id);
     return t;
 }
 
 template<msr::id_t _msr_id, uint64_t _base, uint64_t _size>
-inline mtrr::fixed_t<_msr_id, _base, _size> read() {
+mtrr::fixed_t<_msr_id, _base, _size> read() {
     return read<mtrr::fixed_t<_msr_id, _base, _size>>();
 }
 

@@ -190,13 +190,13 @@ struct controls_allowed_t {
     uint32_t allowed1;
 };
 
-static inline bool are_true_allowed_msr_supported() {
+inline bool are_true_allowed_msr_supported() {
     const auto msr = x86::read<msr::ia32_vmx_basic_t>();
     return msr.bits.vm_ctrls_fixed != 0;
 }
 
 template<typename _controls>
-static inline controls_allowed_t get_controls_allowed() {
+controls_allowed_t get_controls_allowed() {
     controls_allowed_t result{};
     if (are_true_allowed_msr_supported()) {
         auto allowed = x86::read<typename _controls::allowed_true_msr>();
@@ -212,7 +212,7 @@ static inline controls_allowed_t get_controls_allowed() {
 }
 
 template<typename _controls>
-static inline _controls adjust_vm_controls(const _controls& controls) {
+_controls adjust_vm_controls(const _controls& controls) {
     // [SDM 3 A.3.1]
     // bits allowed0: MSR bit x = 0 -> VMCS bit allowed 0
     // bits allowed1: MSR bit x = 1 -> VMCS bit allowed 1
@@ -227,7 +227,7 @@ static inline _controls adjust_vm_controls(const _controls& controls) {
 }
 
 template<typename _controls>
-static inline bool are_controls_valid(const _controls& controls) {
+bool are_controls_valid(const _controls& controls) {
     // [SDM 3 A.3.1]
     // bits allowed0: MSR bit x = 0 -> VMCS bit allowed 0
     // bits allowed1: MSR bit x = 1 -> VMCS bit allowed 1
@@ -244,7 +244,7 @@ static inline bool are_controls_valid(const _controls& controls) {
 }
 
 template<typename _controls>
-static inline bool are_vm_controls_supported(const _controls& controls) {
+bool are_vm_controls_supported(const _controls& controls) {
     // [SDM 3 A.3.1]
     // bits allowed0: MSR bit x = 0 -> VMCS bit allowed 0
     // bits allowed1: MSR bit x = 1 -> VMCS bit allowed 1

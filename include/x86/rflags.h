@@ -36,7 +36,7 @@ struct rflags_t {
     };
 
     rflags_t() : raw(0) {}
-    rflags_t(uintn_t raw) : raw(raw) {}
+    explicit rflags_t(const uintn_t raw) : raw(raw) {}
 };
 static_assert(sizeof(rflags_t) == sizeof(uintn_t), "sizeof(rflags_t)");
 

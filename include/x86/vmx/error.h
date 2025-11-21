@@ -13,7 +13,7 @@
 
 namespace x86::vmx {
 
-enum class instruction_result_t : uint8_t{
+enum class instruction_result_t : uint8_t {
     success = 0,
     vm_fail_invalid = 1,
     vm_fail_valid = 2

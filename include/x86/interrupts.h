@@ -58,7 +58,7 @@ struct descriptor_t {
         uint64_t raw;
     };
 
-    uint32_t address() const;
+    [[nodiscard]] uint32_t address() const;
     void address(uint32_t address);
 };
 static_assert(sizeof(descriptor_t) == 8, "sizeof(descriptor_t)");
@@ -86,7 +86,7 @@ struct descriptor64_t {
         uint64_t raw;
     } high;
 
-    uint64_t address() const;
+    [[nodiscard]] uint64_t address() const;
     void address(uint64_t address);
 };
 static_assert(sizeof(descriptor64_t) == 16, "sizeof(descriptor_t)");
@@ -103,19 +103,19 @@ static_assert(sizeof(idtr_t) == 10, "sizeof(idtr_t)");
 
 class table64_t {
 public:
-    table64_t(idtr_t idtr);
+    explicit table64_t(idtr_t idtr);
 
-    const void* base_address() const;
-    void* base_address();
+    [[nodiscard]] const void* base_address() const;
+    [[nodiscard]] void* base_address();
 
-    size_t limit() const;
-    size_t count() const;
+    [[nodiscard]] size_t limit() const;
+    [[nodiscard]] size_t count() const;
 
-    const descriptor64_t& operator[](size_t index) const;
-    descriptor64_t& operator[](size_t index);
+    [[nodiscard]] const descriptor64_t& operator[](size_t index) const;
+    [[nodiscard]] descriptor64_t& operator[](size_t index);
 
-    const descriptor64_t& operator[](interrupt_t interrupt) const;
-    descriptor64_t& operator[](interrupt_t interrupt);
+    [[nodiscard]] const descriptor64_t& operator[](interrupt_t interrupt) const;
+    [[nodiscard]] descriptor64_t& operator[](interrupt_t interrupt);
 
 private:
     idtr_t m_idtr;

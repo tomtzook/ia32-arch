@@ -30,9 +30,21 @@ struct cr0_t {
     };
 
     cr0_t() : raw(0) {}
-    cr0_t(uintn_t raw) : raw(raw) {}
+    explicit cr0_t(const uintn_t raw) : raw(raw) {}
 };
 static_assert(sizeof(cr0_t) == sizeof(uintn_t), "sizeof(cr0_t)");
+
+struct cr2_t {
+    union {
+        struct {
+        } bits;
+        uintn_t raw;
+    };
+
+    cr2_t() : raw(0) {}
+    explicit cr2_t(const uintn_t raw) : raw(raw) {}
+};
+static_assert(sizeof(cr2_t) == sizeof(uintn_t), "sizeof(cr2_t)");
 
 struct cr3_t {
     union {
@@ -60,7 +72,7 @@ struct cr3_t {
     };
 
     cr3_t() : raw(0) {}
-    cr3_t(uintn_t raw) : raw(raw) {}
+    explicit cr3_t(const uintn_t raw) : raw(raw) {}
 };
 static_assert(sizeof(cr3_t) == sizeof(uintn_t), "sizeof(cr3_t)");
 
@@ -96,7 +108,7 @@ struct cr4_t {
     };
 
     cr4_t() : raw(0) {}
-    cr4_t(uintn_t raw) : raw(raw) {}
+    explicit cr4_t(const uintn_t raw) : raw(raw) {}
 };
 static_assert(sizeof(cr4_t) == sizeof(uintn_t), "sizeof(cr4_t)");
 
@@ -132,7 +144,7 @@ struct dr7_t {
     };
 
     dr7_t() : raw(0) {}
-    dr7_t(uintn_t raw) : raw(raw) {}
+    explicit dr7_t(const uintn_t raw) : raw(raw) {}
 };
 static_assert(sizeof(dr7_t) == sizeof(uintn_t), "sizeof(dr7_t)");
 
@@ -150,6 +162,20 @@ inline cr0_t read() {
 template<>
 inline void write(const cr0_t& t) {
     asm volatile("mov %0, %%cr0" : : "r"(t.raw));
+}
+
+allow_struct_read_write(cr2_t);
+
+template<>
+inline cr2_t read() {
+    cr2_t reg;
+    asm volatile("mov %%cr2, %0" : "=r"(reg.raw));
+    return reg;
+}
+
+template<>
+inline void write(const cr2_t& t) {
+    asm volatile("mov %0, %%cr2" : : "r"(t.raw));
 }
 
 allow_struct_read_write(cr3_t);

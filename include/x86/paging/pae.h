@@ -113,7 +113,7 @@ struct pdpte_t {
         uint64_t raw;
     };
 
-    physical_address_t address() const;
+    [[nodiscard]] physical_address_t address() const;
     void address(physical_address_t address);
 };
 static_assert(sizeof(pdpte_t) == 8, "sizeof(pdpte_t)");
@@ -153,9 +153,9 @@ struct pde_t {
         uint64_t raw;
     };
 
-    bool is_big() const;
+    [[nodiscard]] bool is_big() const;
 
-    physical_address_t address() const;
+    [[nodiscard]] physical_address_t address() const;
     void address(physical_address_t address);
 };
 static_assert(sizeof(pde_t) == 8, "sizeof(pde_t)");
@@ -180,7 +180,7 @@ struct pte_t {
         uint64_t raw;
     };
 
-    physical_address_t address() const;
+    [[nodiscard]] physical_address_t address() const;
     void address(physical_address_t address);
 };
 static_assert(sizeof(pte_t) == 8, "sizeof(pte_t)");

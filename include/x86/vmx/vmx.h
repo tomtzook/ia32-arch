@@ -30,7 +30,7 @@ uintn_t get_cr4_fixed1_bits();
 void adjust_cr0_fixed_bits(x86::cr0_t& cr, bool for_unrestricted_guest=false);
 void adjust_cr4_fixed_bits(x86::cr4_t& cr);
 
-static inline bool is_cr_valid(const uintn_t cr, const uintn_t fixed0, const uintn_t fixed1) {
+inline bool is_cr_valid(const uintn_t cr, const uintn_t fixed0, const uintn_t fixed1) {
     if ((cr & fixed0) != fixed0) {
         return false;
     }
@@ -41,13 +41,13 @@ static inline bool is_cr_valid(const uintn_t cr, const uintn_t fixed0, const uin
     return true;
 }
 
-static inline bool is_cr0_valid(const uintn_t cr, const bool for_unrestricted_guest=false) {
+inline bool is_cr0_valid(const uintn_t cr, const bool for_unrestricted_guest=false) {
     const auto fixed0_bits = x86::vmx::get_cr0_fixed0_bits(for_unrestricted_guest);
     const auto fixed1_bits = x86::vmx::get_cr0_fixed1_bits(for_unrestricted_guest);
     return is_cr_valid(cr, fixed0_bits, fixed1_bits);
 }
 
-static inline bool is_cr4_valid(const uintn_t cr) {
+inline bool is_cr4_valid(const uintn_t cr) {
     const auto fixed0_bits = x86::vmx::get_cr4_fixed0_bits();
     const auto fixed1_bits = x86::vmx::get_cr4_fixed1_bits();
     return is_cr_valid(cr, fixed0_bits, fixed1_bits);
@@ -56,7 +56,7 @@ static inline bool is_cr4_valid(const uintn_t cr) {
 bool prepare_for_vmxon(bool for_unrestricted_guest=false);
 bool initialize_vmstruct(vmstruct_t& vm_struct);
 
-static inline instruction_result_t vmxon(physical_address_t vmxon_region_address) {
+inline instruction_result_t vmxon(physical_address_t vmxon_region_address) {
     auto error = instruction_result_t::success;
     asm volatile("vmxon %1\n"
                  VMX_SET_ERROR_CODE
@@ -64,13 +64,13 @@ static inline instruction_result_t vmxon(physical_address_t vmxon_region_address
     return error;
 }
 
-static inline instruction_result_t vmxoff() {
+inline instruction_result_t vmxoff() {
     auto error = instruction_result_t::success;
     asm volatile("vmxoff");
     return error;
 }
 
-static inline instruction_result_t vmlaunch() {
+inline instruction_result_t vmlaunch() {
     auto error = instruction_result_t::success;
     asm volatile("vmlaunch\n"
                  VMX_SET_ERROR_CODE
@@ -78,7 +78,7 @@ static inline instruction_result_t vmlaunch() {
     return error;
 }
 
-static inline instruction_result_t vmresume() {
+inline instruction_result_t vmresume() {
     auto error = instruction_result_t::success;
     asm volatile("vmresume\n"
                  VMX_SET_ERROR_CODE

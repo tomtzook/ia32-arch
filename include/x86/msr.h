@@ -26,8 +26,6 @@ using id_t = uint32_t;
 using value_t = uint64_t;
 static constexpr size_t msr_def_size = sizeof(value_t);
 
-#pragma pack(push, 1)
-
 template<id_t _id>
 struct _msr_base_t {
     static constexpr id_t id = _id;
@@ -42,6 +40,59 @@ template<typename _t>
 struct is_msr_def : public meta::false_type {};
 template<id_t _id>
 struct is_msr_def<msr_def_t<_id>> : public meta::true_type {};
+
+inline value_t read(id_t id) {
+    uint32_t low;
+    uint32_t high;
+    asm volatile("rdmsr" : "=a"(low), "=d"(high) : "c"(id));
+    return low | (static_cast<value_t>(high) << 32);
+}
+
+inline void write(id_t id, value_t value) {
+    uint32_t low = value & 0xFFFFFFFF;
+    uint32_t high = value >> 32;
+    asm volatile ("wrmsr" : : "c"(id), "a"(low), "d"(high));
+}
+
+}
+
+template<
+        typename _t,
+        typename meta::enable_if<
+                msr::is_msr_def<_t>::value,
+                bool>::type = 0
+>
+_t read() {
+    static_assert(sizeof(_t) == msr::msr_def_size, "bad MSR size");
+    _t t;
+    t.raw = msr::read(_t::id);
+    return t;
+}
+
+template<msr::id_t _id>
+msr::msr_def_t<_id> read() {
+    return read<msr::msr_def_t<_id>>();
+}
+
+template<
+        typename _t,
+        typename meta::enable_if<
+                msr::is_msr_def<_t>::value,
+                bool>::type = 0
+>
+void write(const _t& t) {
+    static_assert(sizeof(_t) == msr::msr_def_size, "bad MSR size");
+    msr::write(_t::id, t.raw);
+}
+
+template<msr::id_t _id>
+void write(msr::msr_def_t<_id>& t) {
+    return write<msr::msr_def_t<_id>>(t);
+}
+
+}
+
+#pragma pack(push, 1)
 
 define_msr(0xc0000100, ia32_fs_base,
 
@@ -269,54 +320,3 @@ value_t allowed : 64;
 );
 
 #pragma pack(pop)
-
-static inline value_t read(id_t id) {
-    uint32_t low;
-    uint32_t high;
-    asm volatile("rdmsr" : "=a"(low), "=d"(high) : "c"(id));
-    return low | (static_cast<value_t>(high) << 32);
-}
-
-static inline void write(id_t id, value_t value) {
-    uint32_t low = value & 0xFFFFFFFF;
-    uint32_t high = value >> 32;
-    asm volatile ("wrmsr" : : "c"(id), "a"(low), "d"(high));
-}
-
-}
-
-template<
-        typename _t,
-        typename meta::enable_if<
-                msr::is_msr_def<_t>::value,
-                bool>::type = 0
->
-inline _t read() {
-    static_assert(sizeof(_t) == msr::msr_def_size, "bad MSR size");
-    _t t;
-    t.raw = msr::read(_t::id);
-    return t;
-}
-
-template<msr::id_t _id>
-inline msr::msr_def_t<_id> read() {
-    return read<msr::msr_def_t<_id>>();
-}
-
-template<
-        typename _t,
-        typename meta::enable_if<
-                msr::is_msr_def<_t>::value,
-                bool>::type = 0
->
-inline void write(const _t& t) {
-    static_assert(sizeof(_t) == msr::msr_def_size, "bad MSR size");
-    msr::write(_t::id, t.raw);
-}
-
-template<msr::id_t _id>
-inline void write(msr::msr_def_t<_id>& t) {
-    return write<msr::msr_def_t<_id>>(t);
-}
-
-}

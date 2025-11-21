@@ -2,7 +2,6 @@
 
 #include "types.h"
 
-
 namespace x86::apic {
 
 enum class mode_t {

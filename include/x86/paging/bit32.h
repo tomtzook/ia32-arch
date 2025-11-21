@@ -125,12 +125,12 @@ struct pde_t {
         uint32_t raw;
     };
 
-    bool is_present() const { return small.present; }
-    bool is_big() const;
+    [[nodiscard]] bool is_present() const { return small.present; }
+    [[nodiscard]] bool is_big() const;
 
-    physical_address_t address() const;
+    [[nodiscard]] physical_address_t address() const;
     void address(physical_address_t address);
-    physical_address_t pse36_address_bits() const;
+    [[nodiscard]] physical_address_t pse36_address_bits() const;
     void pse36_address_bits(physical_address_t address);
 };
 static_assert(sizeof(pde_t) == 4, "sizeof(pde_t)");
@@ -154,9 +154,9 @@ struct pte_t {
         uint32_t raw;
     };
 
-    bool is_present() const { return bits.present; }
+    [[nodiscard]] bool is_present() const { return bits.present; }
 
-    physical_address_t address() const;
+    [[nodiscard]] physical_address_t address() const;
     void address(physical_address_t address);
 };
 static_assert(sizeof(pte_t) == 4, "sizeof(pte_t)");

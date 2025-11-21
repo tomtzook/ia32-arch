@@ -200,7 +200,7 @@ template<
                 is_cpuid_def<_t>::value,
                 bool>::type = 0
 >
-inline _t cpuid() {
+_t cpuid() {
     static_assert(sizeof(_t) == cpuid_def_size, "bad CPUID size");
 
     _t regs{};
@@ -212,7 +212,7 @@ inline _t cpuid() {
 }
 
 template<cpuid_t _leaf, cpuid_t _subleaf = 0>
-inline cpuid_def_t<_leaf, _subleaf> cpuid() {
+cpuid_def_t<_leaf, _subleaf> cpuid() {
     return cpuid<cpuid_def_t<_leaf, _subleaf>>();
 }
 

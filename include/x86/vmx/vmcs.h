@@ -206,7 +206,7 @@ static_assert(sizeof(vmentry_interruption_info_t) == 4, "sizeof(vmentry_interrup
 
 // for improvement of instructions later: https://github.com/opnsense/src/blob/cdc5c1db54c5183add40a0a48a7692d7d4ac4a31/sys/amd64/vmm/intel/vmx_cpufunc.h#L118
 
-static inline instruction_result_t vmclear(physical_address_t vmcs_address) {
+inline instruction_result_t vmclear(physical_address_t vmcs_address) {
     auto error = instruction_result_t::success;
     asm volatile("vmclear %1\n"
                  VMX_SET_ERROR_CODE
@@ -214,7 +214,7 @@ static inline instruction_result_t vmclear(physical_address_t vmcs_address) {
     return error;
 }
 
-static inline instruction_result_t vmread(field_t field, uint64_t& value) {
+inline instruction_result_t vmread(field_t field, uint64_t& value) {
     auto error = instruction_result_t::success;
     asm volatile("vmread %[field], %[value]\n"
                  VMX_SET_ERROR_CODE
@@ -222,7 +222,7 @@ static inline instruction_result_t vmread(field_t field, uint64_t& value) {
     return error;
 }
 
-static inline instruction_result_t vmwrite(field_t field, uint64_t value) {
+inline instruction_result_t vmwrite(field_t field, uint64_t value) {
     auto error = instruction_result_t::success;
     asm volatile("vmwrite %2, %1\n"
                  VMX_SET_ERROR_CODE
@@ -230,7 +230,7 @@ static inline instruction_result_t vmwrite(field_t field, uint64_t value) {
     return error;
 }
 
-static inline instruction_result_t vmptrld(physical_address_t vmcs_address) {
+inline instruction_result_t vmptrld(physical_address_t vmcs_address) {
     auto error = instruction_result_t::success;
     asm volatile("vmptrld %1\n"
                  VMX_SET_ERROR_CODE
@@ -238,7 +238,7 @@ static inline instruction_result_t vmptrld(physical_address_t vmcs_address) {
     return error;
 }
 
-static inline instruction_result_t vmptrst(physical_address_t& vmcs_address) {
+inline instruction_result_t vmptrst(physical_address_t& vmcs_address) {
     auto error = instruction_result_t::success;
     asm volatile("vmptrst %1\n"
                  VMX_SET_ERROR_CODE
@@ -246,7 +246,7 @@ static inline instruction_result_t vmptrst(physical_address_t& vmcs_address) {
     return error;
 }
 
-static inline instruction_error_t vm_instruction_error() {
+inline instruction_error_t vm_instruction_error() {
     uint64_t value;
     const auto error = vmread(field_t::vm_instruction_error, value);
     // ReSharper disable once CppDFAConstantConditions

@@ -24,7 +24,7 @@ struct selector_t {
         uint16_t value;
     };
 
-    selector_t(const uint16_t value=0) : value(value) {}
+    explicit selector_t(const uint16_t value=0) : value(value) {}
 };
 static_assert(sizeof(selector_t) == 2, "sizeof(segment_selector_t)");
 
@@ -121,10 +121,10 @@ struct descriptor_t {
         uint64_t raw;
     };
 
-    linear_address_t base_address() const;
+    [[nodiscard]] linear_address_t base_address() const;
     void base_address(linear_address_t address);
 
-    size_t limit() const;
+    [[nodiscard]] size_t limit() const;
     void limit(size_t limit);
 };
 static_assert(sizeof(descriptor_t) == 8, "sizeof(descriptor_t)");
@@ -140,10 +140,10 @@ struct descriptor64_t {
         uint64_t raw;
     };
 
-    linear_address_t base_address() const;
+    [[nodiscard]] linear_address_t base_address() const;
     void base_address(linear_address_t address);
 
-    size_t limit() const;
+    [[nodiscard]] size_t limit() const;
     void limit(size_t limit);
 };
 static_assert(sizeof(descriptor64_t) == 16, "sizeof(descriptor64_t)");
@@ -174,19 +174,19 @@ static_assert(sizeof(tss64_t) == 104, "sizeof(tss64_t)");
 
 class table_t {
 public:
-    table_t(table_register_t table_register);
+    explicit table_t(table_register_t table_register);
 
-    const void* base_address() const;
-    void* base_address();
+    [[nodiscard]] const void* base_address() const;
+    [[nodiscard]] void* base_address();
 
-    size_t limit() const;
-    size_t count() const;
+    [[nodiscard]] size_t limit() const;
+    [[nodiscard]] size_t count() const;
 
-    const descriptor_t& operator[](size_t index) const;
-    descriptor_t& operator[](size_t index);
+    [[nodiscard]] const descriptor_t& operator[](size_t index) const;
+    [[nodiscard]] descriptor_t& operator[](size_t index);
 
-    const descriptor_t& operator[](const selector_t& selector) const;
-    descriptor_t& operator[](const selector_t& selector);
+    [[nodiscard]] const descriptor_t& operator[](const selector_t& selector) const;
+    [[nodiscard]] descriptor_t& operator[](const selector_t& selector);
 
     template<
             typename _t,
@@ -194,8 +194,8 @@ public:
                     is_selector_t<_t>::value,
                     bool>::type = 0
     >
-    const descriptor_t& segment() const {
-        selector_t selector = read<_t>();
+    [[nodiscard]] const descriptor_t& segment() const {
+        const selector_t selector = read<_t>();
         return this->operator[](selector);
     }
 
@@ -206,7 +206,7 @@ public:
                     bool>::type = 0
     >
     descriptor_t& segment() {
-        selector_t selector = read<_t>();
+        const selector_t selector = read<_t>();
         return this->operator[](selector);
     }
 

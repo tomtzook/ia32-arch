@@ -59,8 +59,8 @@ struct pml4e_t {
         uint64_t raw;
     };
 
-    bool present() const;
-    physical_address_t address() const;
+    [[nodiscard]] bool present() const;
+    [[nodiscard]] physical_address_t address() const;
     void address(physical_address_t address);
 };
 static_assert(sizeof(pml4e_t) == 8, "sizeof(pml4e_t)");
@@ -100,10 +100,10 @@ struct pdpte_t {
         uint64_t raw;
     };
 
-    bool present() const;
-    bool is_huge() const;
+    [[nodiscard]] bool present() const;
+    [[nodiscard]] bool is_huge() const;
 
-    physical_address_t address() const;
+    [[nodiscard]] physical_address_t address() const;
     void address(physical_address_t address);
 };
 static_assert(sizeof(pdpte_t) == 8, "sizeof(pdpte_t)");
@@ -143,10 +143,10 @@ struct pde_t {
         uint64_t raw;
     };
 
-    bool present() const;
-    bool is_large() const;
+    [[nodiscard]] bool present() const;
+    [[nodiscard]] bool is_large() const;
 
-    physical_address_t address() const;
+    [[nodiscard]] physical_address_t address() const;
     void address(physical_address_t address);
 };
 static_assert(sizeof(pde_t) == 8, "sizeof(pde_t)");
@@ -172,9 +172,9 @@ struct pte_t {
         uint64_t raw;
     };
 
-    bool present() const;
+    [[nodiscard]] bool present() const;
 
-    physical_address_t address() const;
+    [[nodiscard]] physical_address_t address() const;
     void address(physical_address_t address);
 };
 static_assert(sizeof(pte_t) == 8, "sizeof(pte_t)");
@@ -192,7 +192,7 @@ struct ept_pointer_t {
         uint64_t raw;
     };
 
-    physical_address_t address() const;
+    [[nodiscard]] physical_address_t address() const;
     void address(physical_address_t address);
 };
 static_assert(sizeof(ept_pointer_t) == 8, "sizeof(ept_pointer_t)");
@@ -227,7 +227,7 @@ static_assert(sizeof(invvpid_descriptor_t) == 16, "sizeof(invvpid_descriptor_t)"
 
 bool to_physical(ept_pointer_t& eptp, guest_physical_address_t address, physical_address_t& out);
 
-static inline instruction_result_t invept(invept_type_t type, invept_descriptor_t descriptor = {}) {
+inline instruction_result_t invept(invept_type_t type, invept_descriptor_t descriptor = {}) {
     auto error = instruction_result_t::success;
     asm volatile("invept %1, %2\n"
                  VMX_SET_ERROR_CODE
@@ -235,7 +235,7 @@ static inline instruction_result_t invept(invept_type_t type, invept_descriptor_
     return error;
 }
 
-static inline instruction_result_t invvpid(invept_type_t type, invvpid_descriptor_t descriptor = {}) {
+inline instruction_result_t invvpid(invept_type_t type, invvpid_descriptor_t descriptor = {}) {
     auto error = instruction_result_t::success;
     asm volatile("invvpid %1, %2\n"
                  VMX_SET_ERROR_CODE

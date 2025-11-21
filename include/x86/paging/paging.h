@@ -48,14 +48,14 @@ constexpr bool is_canonical(const linear_address_t address) {
     return address == sign_extended(address);
 }
 
-static inline bool is_in_physical_address_width(const physical_address_t address) {
+inline bool is_in_physical_address_width(const physical_address_t address) {
     const auto maxphysaddr = max_physical_address_width();
     const physical_address_t mask = ~((1ull << maxphysaddr) - 1);
 
     return (address & mask) == 0;
 }
 
-static inline physical_address_t align_in_max_physical_address_width(const physical_address_t address) {
+inline physical_address_t align_in_max_physical_address_width(const physical_address_t address) {
     const auto maxphysaddr = max_physical_address_width();
     const physical_address_t mask = (1ull << maxphysaddr) - 1;
 
