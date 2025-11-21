@@ -4,8 +4,9 @@
 
 
 #define define_msr(_id, _name, _bits) \
+namespace x86::msr {                    \
 constexpr x86::msr::id_t  _ ##_name## _id_t = _id; \
-template<> struct x86::msr::msr_def_t<_ ##_name## _id_t> : public x86::msr::_msr_base_t<_ ##_name## _id_t> { \
+template<> struct msr_def_t<_ ##_name## _id_t> : public x86::msr::_msr_base_t<_ ##_name## _id_t> { \
     union {                              \
         struct {                         \
             _bits                                 \
@@ -15,7 +16,8 @@ template<> struct x86::msr::msr_def_t<_ ##_name## _id_t> : public x86::msr::_msr
     explicit msr_def_t(x86::msr::value_t val = 0) : raw(val) {}\
 }; \
 using _name## _t = x86::msr::msr_def_t<_ ##_name## _id_t>; \
-static_assert(sizeof(_name## _t) == x86::msr::msr_def_size, "sizeof(_name## _t)");
+static_assert(sizeof(_name## _t) == x86::msr::msr_def_size, "sizeof(_name## _t)");\
+}
 
 
 namespace x86 {

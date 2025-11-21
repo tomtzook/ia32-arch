@@ -220,7 +220,7 @@ allow_struct_read_write(segments::gdtr_t);
 
 template<>
 inline segments::gdtr_t read() {
-    segments::gdtr_t gdtr{};
+    segments::gdtr_t gdtr;
     asm volatile("sgdt %0" : "=m"(gdtr));
     return gdtr;
 }
@@ -234,7 +234,7 @@ allow_struct_read_write(segments::ldtr_t);
 
 template<>
 inline segments::ldtr_t read() {
-    segments::ldtr_t ldtr{};
+    segments::ldtr_t ldtr;
     asm volatile("sldt %0" : "=m"(ldtr));
     return ldtr;
 }
@@ -248,7 +248,7 @@ allow_struct_read_write(segments::cs_t);
 
 template<>
 inline segments::cs_t read() {
-    segments::cs_t selector{};
+    segments::cs_t selector;
     asm volatile("mov %%cs, %0" : "=rm"(selector.value));
     return selector;
 }
@@ -262,7 +262,7 @@ allow_struct_read_write(segments::ds_t);
 
 template<>
 inline segments::ds_t read() {
-    segments::ds_t selector{};
+    segments::ds_t selector;
     asm volatile("mov %%ds, %0" : "=rm"(selector.value));
     return selector;
 }
@@ -276,7 +276,7 @@ allow_struct_read_write(segments::gs_t);
 
 template<>
 inline segments::gs_t read() {
-    segments::gs_t selector{};
+    segments::gs_t selector;
     asm volatile("mov %%gs, %0" : "=rm"(selector.value));
     return selector;
 }
@@ -290,7 +290,7 @@ allow_struct_read_write(segments::ss_t);
 
 template<>
 inline segments::ss_t read() {
-    segments::ss_t selector{};
+    segments::ss_t selector;
     asm volatile("mov %%ss, %0" : "=rm"(selector.value));
     return selector;
 }
@@ -304,7 +304,7 @@ allow_struct_read_write(segments::es_t);
 
 template<>
 inline segments::es_t read() {
-    segments::es_t selector{};
+    segments::es_t selector;
     asm volatile("mov %%es, %0" : "=rm"(selector.value));
     return selector;
 }
@@ -318,7 +318,7 @@ allow_struct_read_write(segments::fs_t);
 
 template<>
 inline segments::fs_t read() {
-    segments::fs_t selector{};
+    segments::fs_t selector;
     asm volatile("mov %%fs, %0" : "=rm"(selector.value));
     return selector;
 }
@@ -332,7 +332,7 @@ allow_struct_read_write(segments::tr_t);
 
 template<>
 inline segments::tr_t read() {
-    segments::tr_t selector{};
+    segments::tr_t selector;
     asm volatile("str %0" : "=rm"(selector.value));
     return selector;
 }
