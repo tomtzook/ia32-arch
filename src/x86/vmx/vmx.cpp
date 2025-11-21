@@ -20,7 +20,7 @@ uintn_t get_cr0_fixed0_bits(const bool for_unrestricted_guest) {
     if (for_unrestricted_guest) {
         // when in unrestricted guest mode, we don't need to account
         // for PG or PE bits
-        cr0_t cr_0 = {fixed0};
+        cr0_t cr_0(fixed0);
         cr_0.bits.protection_enable = false;
         cr_0.bits.paging_enable = false;
         fixed0 = cr_0.raw;
