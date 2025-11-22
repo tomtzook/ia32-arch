@@ -1,7 +1,7 @@
 #pragma once
 
+// ReSharper disable once CppUnusedIncludeDirective
 #include "macros.h"
-
 
 typedef signed char int8_t;
 typedef signed short int16_t;

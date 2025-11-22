@@ -50,7 +50,7 @@ struct vmcs_segment_defs {
 static constexpr auto vmcs_segment_no_host_selector = static_cast<field_t>(-1);
 
 using vmcs_cs_segment = vmcs_segment_defs<
-        x86::segments::cs_t,
+        segments::cs_t,
         field_t::guest_cs_selector,
         field_t::guest_cs_base,
         field_t::guest_cs_limit,
@@ -58,7 +58,7 @@ using vmcs_cs_segment = vmcs_segment_defs<
         field_t::host_cs_selector>;
 
 using vmcs_ds_segment = vmcs_segment_defs<
-        x86::segments::ds_t,
+        segments::ds_t,
         field_t::guest_ds_selector,
         field_t::guest_ds_base,
         field_t::guest_ds_limit,
@@ -66,7 +66,7 @@ using vmcs_ds_segment = vmcs_segment_defs<
         field_t::host_ds_selector>;
 
 using vmcs_gs_segment = vmcs_segment_defs<
-        x86::segments::gs_t,
+        segments::gs_t,
         field_t::guest_gs_selector,
         field_t::guest_gs_base,
         field_t::guest_gs_limit,
@@ -74,7 +74,7 @@ using vmcs_gs_segment = vmcs_segment_defs<
         field_t::host_gs_selector>;
 
 using vmcs_ss_segment = vmcs_segment_defs<
-        x86::segments::ss_t,
+        segments::ss_t,
         field_t::guest_ss_selector,
         field_t::guest_ss_base,
         field_t::guest_ss_limit,
@@ -82,7 +82,7 @@ using vmcs_ss_segment = vmcs_segment_defs<
         field_t::host_ss_selector>;
 
 using vmcs_es_segment = vmcs_segment_defs<
-        x86::segments::es_t,
+        segments::es_t,
         field_t::guest_es_selector,
         field_t::guest_es_base,
         field_t::guest_es_limit,
@@ -90,7 +90,7 @@ using vmcs_es_segment = vmcs_segment_defs<
         field_t::host_es_selector>;
 
 using vmcs_fs_segment = vmcs_segment_defs<
-        x86::segments::fs_t,
+        segments::fs_t,
         field_t::guest_fs_selector,
         field_t::guest_fs_base,
         field_t::guest_fs_limit,
@@ -98,7 +98,7 @@ using vmcs_fs_segment = vmcs_segment_defs<
         field_t::host_fs_selector>;
 
 using vmcs_tr_segment = vmcs_segment_defs<
-        x86::segments::tr_t,
+        segments::tr_t,
         field_t::guest_tr_selector,
         field_t::guest_tr_base,
         field_t::guest_tr_limit,
@@ -106,7 +106,7 @@ using vmcs_tr_segment = vmcs_segment_defs<
         field_t::host_tr_selector>;
 
 using vmcs_ldtr_segment = vmcs_segment_defs<
-        x86::segments::ldtr_t,
+        segments::ldtr_t,
         field_t::guest_ldtr_selector,
         field_t::guest_ldtr_base,
         field_t::guest_ldtr_limit,
@@ -115,7 +115,7 @@ using vmcs_ldtr_segment = vmcs_segment_defs<
 
 #pragma pack(pop)
 
-inline x86::vmx::segment_access_rights_t segment_access_rights(const segments::descriptor_t& descriptor) {
+inline segment_access_rights_t segment_access_rights(const segments::descriptor_t& descriptor) {
     segment_access_rights_t ar{};
     ar.bits.type = static_cast<uint32_t>(descriptor.bits.type);
     ar.bits.s = static_cast<uint32_t>(descriptor.bits.s);

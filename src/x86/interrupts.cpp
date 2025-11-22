@@ -25,7 +25,7 @@ void descriptor64_t::address(const uint64_t address) {
     high.bits.offset_upper = (address >> 32) & 0xffff;
 }
 
-table64_t::table64_t(idtr_t idtr)
+table64_t::table64_t(const idtr_t idtr)
     : m_idtr(idtr)
 {}
 
@@ -45,11 +45,11 @@ size_t table64_t::count() const {
     return (limit() + 1) / sizeof(descriptor64_t);
 }
 
-const descriptor64_t& table64_t::operator[](size_t index) const {
+const descriptor64_t& table64_t::operator[](const size_t index) const {
     return static_cast<const descriptor64_t*>(base_address())[index];
 }
 
-descriptor64_t& table64_t::operator[](size_t index) {
+descriptor64_t& table64_t::operator[](const size_t index) {
     return static_cast<descriptor64_t*>(base_address())[index];
 }
 

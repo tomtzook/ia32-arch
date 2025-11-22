@@ -1,7 +1,6 @@
 #pragma once
 
 #include "x86/common.h"
-#include "x86/paging/paging.h"
 #include "x86/cr.h"
 
 
@@ -167,6 +166,6 @@ bool are_4m_page_tables_supported();
 bool are_4m_page_tables_enabled();
 bool is_pse36_supported();
 
-bool to_physical(x86::cr3_t& cr3, linear_address_t address, physical_address_t& out);
+bool to_physical(const cr3_t& cr3, linear_address_t address, physical_address_t& out);
 
 }

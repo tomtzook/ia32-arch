@@ -1,25 +1,24 @@
 #pragma once
 
-#include "types.h"
-
 namespace meta {
 
-template<typename _t, _t _v>
+template<typename t_, t_ v_>
 struct integral_constant {
-    static constexpr _t value = _v;
-    using value_type = _t;
+    static constexpr t_ value = v_;
+    using value_type = t_;
 };
 
 using true_type = integral_constant<bool, true>;
 using false_type = integral_constant<bool, false>;
 
-template<bool, typename _t = void>
+// ReSharper disable once CppTemplateParameterNeverUsed
+template<bool, typename t_ = void>
 struct enable_if {
 };
 
-template<typename _t>
-struct enable_if<true, _t> {
-    using type = _t;
+template<typename t_>
+struct enable_if<true, t_> {
+    using type = t_;
 };
 
 }

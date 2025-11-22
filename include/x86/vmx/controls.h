@@ -26,9 +26,9 @@ struct _vmx_controls {
 
 // [SDM 3 24.6.1 P1061 "Table 24-5"]
 struct pin_based_exec_controls_t :
-        public _vmx_controls<
-                x86::msr::ia32_vmx_pinbased_ctls_t,
-                x86::msr::ia32_vmx_true_pinbased_ctls_t,
+        _vmx_controls<
+                msr::ia32_vmx_pinbased_ctls_t,
+                msr::ia32_vmx_true_pinbased_ctls_t,
                 field_t::ctrl_pin_based_vm_execution_controls> {
     union {
         struct {
@@ -48,9 +48,9 @@ static_assert(sizeof(pin_based_exec_controls_t) == 4, "sizeof(pin_based_exec_con
 
 // [SDM 3 24.6.2 P1061 "Table 24-6"]
 struct processor_based_exec_controls_t  :
-        public _vmx_controls<
-                x86::msr::ia32_vmx_procbased_ctls_t,
-                x86::msr::ia32_vmx_true_procbased_ctls_t,
+        _vmx_controls<
+                msr::ia32_vmx_procbased_ctls_t,
+                msr::ia32_vmx_true_procbased_ctls_t,
                 field_t::ctrl_processor_based_vm_execution_controls> {
     union {
         struct {
@@ -89,9 +89,9 @@ static_assert(sizeof(processor_based_exec_controls_t) == 4, "sizeof(processor_ba
 
 // [SDM 3 24.6.2 P1063 "Table 24-7"]
 struct secondary_processor_based_exec_controls_t :
-        public _vmx_controls<
-                x86::msr::ia32_vmx_procbased_ctls2_t,
-                x86::msr::ia32_vmx_procbased_ctls2_t,
+        _vmx_controls<
+                msr::ia32_vmx_procbased_ctls2_t,
+                msr::ia32_vmx_procbased_ctls2_t,
                 field_t::ctrl_secondary_processor_based_vm_execution_controls> {
     union {
         struct {
@@ -127,9 +127,9 @@ static_assert(sizeof(secondary_processor_based_exec_controls_t) == 4, "sizeof(se
 
 // [SDM 3 24.7.1 P1069 "Table 24-10"]
 struct vmexit_controls_t :
-        public _vmx_controls<
-                x86::msr::ia32_vmx_exit_ctls_t,
-                x86::msr::ia32_vmx_true_exit_ctls_t,
+        _vmx_controls<
+                msr::ia32_vmx_exit_ctls_t,
+                msr::ia32_vmx_true_exit_ctls_t,
                 field_t::ctrl_vmexit_controls> {
     union {
         struct {
@@ -158,9 +158,9 @@ static_assert(sizeof(vmexit_controls_t) == 4, "sizeof(vmexit_controls_t)");
 
 // [SDM 3 24.8.1 P1071 "Table 24-12"]
 struct vmentery_controls_t :
-        public _vmx_controls<
-                x86::msr::ia32_vmx_entry_ctls_t,
-                x86::msr::ia32_vmx_true_entry_ctls_t,
+        _vmx_controls<
+                msr::ia32_vmx_entry_ctls_t,
+                msr::ia32_vmx_true_entry_ctls_t,
                 field_t::ctrl_vmentry_controls> {
     union {
         struct {

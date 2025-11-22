@@ -28,20 +28,20 @@ using id_t = uint32_t;
 using value_t = uint64_t;
 static constexpr size_t msr_def_size = sizeof(value_t);
 
-template<id_t _id>
+template<id_t id_>
 struct _msr_base_t {
-    static constexpr id_t id = _id;
+    static constexpr id_t id = id_;
 };
 
-template<id_t _id>
-struct msr_def_t : public _msr_base_t<_id> {
+template<id_t id_>
+struct msr_def_t : _msr_base_t<id_> {
     value_t raw;
 };
 
-template<typename _t>
-struct is_msr_def : public meta::false_type {};
-template<id_t _id>
-struct is_msr_def<msr_def_t<_id>> : public meta::true_type {};
+template<typename t_>
+struct is_msr_def : meta::false_type {};
+template<id_t id_>
+struct is_msr_def<msr_def_t<id_>> : meta::true_type {};
 
 inline value_t read(id_t id) {
     uint32_t low;

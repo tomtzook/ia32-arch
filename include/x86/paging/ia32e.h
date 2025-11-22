@@ -1,7 +1,6 @@
 #pragma once
 
 #include "x86/common.h"
-#include "x86/paging/paging.h"
 #include "x86/cr.h"
 
 namespace x86::paging::ia32e {
@@ -216,6 +215,6 @@ static_assert(sizeof(pte_t) == 8, "sizeof(pte_t)");
 bool are_huge_tables_supported();
 
 bool to_physical(const pml4e_t* pml4, linear_address_t address, physical_address_t& out);
-bool to_physical(const x86::cr3_t& cr3, linear_address_t address, physical_address_t& out);
+bool to_physical(const cr3_t& cr3, linear_address_t address, physical_address_t& out);
 
 }

@@ -28,8 +28,9 @@ struct selector_t {
 };
 static_assert(sizeof(selector_t) == 2, "sizeof(segment_selector_t)");
 
-template<typename _t>
-struct is_selector_t : public meta::false_type {};
+// ReSharper disable once CppTemplateParameterNeverUsed
+template<typename t_>
+struct is_selector_t : meta::false_type {};
 #define define_selector(name) \
     struct name : public selector_t {}; \
     template<> struct is_selector_t<name> : public meta::true_type {};

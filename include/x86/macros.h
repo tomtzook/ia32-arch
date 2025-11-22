@@ -14,6 +14,6 @@
 // the rest are placed on the stack per normal conventions
 #define fastcall __attribute__((fastcall))
 
-#define array_size(array) sizeof(array) / sizeof(array[0])
+#define array_size(_array) sizeof((_array)) / sizeof((_array)[0])
 
 #define bit(b) (1ULL << (b))

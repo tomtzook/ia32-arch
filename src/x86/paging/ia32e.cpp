@@ -1,5 +1,6 @@
 
 #include "x86/cpuid.h"
+#include "x86/paging/paging.h"
 #include "x86/paging/ia32e.h"
 
 
@@ -9,9 +10,9 @@ physical_address_t pml4e_t::address() const {
     return static_cast<physical_address_t>(bits.pfn) << page_bits_4k;
 }
 
-void pml4e_t::address(physical_address_t address) {
-    auto maxphysaddr = max_physical_address_width();
-    physical_address_t mask = (1ull << maxphysaddr) - 1;
+void pml4e_t::address(const physical_address_t address) {
+    const auto max_physical_address = max_physical_address_width();
+    const physical_address_t mask = (1ull << max_physical_address) - 1;
 
     bits.pfn = (address >> page_bits_4k) & mask;
 }
@@ -23,20 +24,20 @@ bool pdpte_t::is_huge() const {
 physical_address_t pdpte_t::address() const {
     if (is_huge()) {
         return static_cast<physical_address_t>(huge.pfn) << page_bits_1g;
-    } else {
-        return static_cast<physical_address_t>(small.pfn) << page_bits_4k;
     }
+
+    return static_cast<physical_address_t>(small.pfn) << page_bits_4k;
 }
 
-void pdpte_t::address(physical_address_t address) {
+void pdpte_t::address(const physical_address_t address) {
     if (is_huge()) {
-        auto maxphysaddr = max_physical_address_width();
-        physical_address_t mask = (1ull << maxphysaddr) - 1;
+        const auto max_physical_address = max_physical_address_width();
+        const physical_address_t mask = (1ull << max_physical_address) - 1;
 
         huge.pfn = (address >> page_bits_1g) & mask;
     } else {
-        auto maxphysaddr = max_physical_address_width();
-        physical_address_t mask = (1ull << maxphysaddr) - 1;
+        const auto max_physical_address = max_physical_address_width();
+        const physical_address_t mask = (1ull << max_physical_address) - 1;
 
         small.pfn = (address >> page_bits_4k) & mask;
     }
@@ -49,20 +50,20 @@ bool pde_t::is_large() const {
 physical_address_t pde_t::address() const {
     if (is_large()) {
         return static_cast<physical_address_t>(large.pfn) << page_bits_2m;
-    } else {
-        return static_cast<physical_address_t>(small.pfn) << page_bits_4k;
     }
+
+    return static_cast<physical_address_t>(small.pfn) << page_bits_4k;
 }
 
-void pde_t::address(physical_address_t address) {
+void pde_t::address(const physical_address_t address) {
     if (is_large()) {
-        auto maxphysaddr = max_physical_address_width();
-        physical_address_t mask = (1ull << maxphysaddr) - 1;
+        const auto max_physical_address = max_physical_address_width();
+        const physical_address_t mask = (1ull << max_physical_address) - 1;
 
         large.pfn = (address >> page_bits_2m) & mask;
     } else {
-        auto maxphysaddr = max_physical_address_width();
-        physical_address_t mask = (1ull << maxphysaddr) - 1;
+        const auto max_physical_address = max_physical_address_width();
+        const physical_address_t mask = (1ull << max_physical_address) - 1;
 
         small.pfn = (address >> page_bits_4k) & mask;
     }
@@ -72,20 +73,20 @@ physical_address_t pte_t::address() const {
     return static_cast<physical_address_t>(bits.pfn) << page_bits_4k;
 }
 
-void pte_t::address(physical_address_t address) {
-    auto maxphysaddr = max_physical_address_width();
-    physical_address_t mask = (1ull << maxphysaddr) - 1;
+void pte_t::address(const physical_address_t address) {
+    const auto max_physical_address = max_physical_address_width();
+    const physical_address_t mask = (1ull << max_physical_address) - 1;
 
     bits.pfn = (address >> page_bits_4k) & mask;
 }
 
 bool are_huge_tables_supported() {
     // CPUID[0x80000001].EDX[26] = 1 -> 1gb pages supported [SDM 3 4.1.4 P109]
-    const auto regs = x86::cpuid<x86::cpuid_extended_processor_info_t>();
+    const auto regs = x86::cpuid<cpuid_extended_processor_info_t>();
     return regs.edx.bits.page1gb != 0;
 }
 
-bool to_physical(const pml4e_t* pml4, linear_address_t address, physical_address_t& out) {
+bool to_physical(const pml4e_t* pml4, const linear_address_t address, physical_address_t& out) {
     const auto& pml4e = pml4[address.huge.pml4e];
     if (!pml4e.bits.present) {
         return false;
@@ -123,7 +124,7 @@ bool to_physical(const pml4e_t* pml4, linear_address_t address, physical_address
     return true;
 }
 
-bool to_physical(const x86::cr3_t& cr3, const linear_address_t address, physical_address_t& out) {
+bool to_physical(const cr3_t& cr3, const linear_address_t address, physical_address_t& out) {
     const auto pml4_address = static_cast<physical_address_t>(cr3.ia32e.address) << page_bits_4k;
     const auto pml4 = reinterpret_cast<const pml4e_t*>(pml4_address);
     return to_physical(pml4, address, out);

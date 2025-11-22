@@ -9,13 +9,13 @@ namespace x86::vmx {
 
 bool is_supported() {
     // CPUID.1:ECX.VMX[bit 5] = 1 [SDM 3 23.6 P1050]
-    auto cpu_features = x86::cpuid<x86::cpuid_eax01_t>();
+    const auto cpu_features = x86::cpuid<cpuid_eax01_t>();
     return cpu_features.ecx.bits.vmx;
 }
 
 // [SDM 3 A.7 P1960]
 uintn_t get_cr0_fixed0_bits(const bool for_unrestricted_guest) {
-    auto fixed0 = x86::read<x86::msr::ia32_vmx_cr0_fixed0_t>().raw;
+    auto fixed0 = x86::read<msr::ia32_vmx_cr0_fixed0_t>().raw;
 
     if (for_unrestricted_guest) {
         // when in unrestricted guest mode, we don't need to account
@@ -29,25 +29,25 @@ uintn_t get_cr0_fixed0_bits(const bool for_unrestricted_guest) {
     return fixed0;
 }
 
-uintn_t get_cr0_fixed1_bits(const bool for_unrestricted_guest) {
-    return x86::read<x86::msr::ia32_vmx_cr0_fixed1_t>().raw;
+uintn_t get_cr0_fixed1_bits(const bool) {
+    return x86::read<msr::ia32_vmx_cr0_fixed1_t>().raw;
 }
 
 // [SDM 3 A.8 P1960]
 uintn_t get_cr4_fixed0_bits() {
-    return x86::read<x86::msr::ia32_vmx_cr4_fixed0_t>().raw;
+    return x86::read<msr::ia32_vmx_cr4_fixed0_t>().raw;
 }
 
 uintn_t get_cr4_fixed1_bits() {
-    return x86::read<x86::msr::ia32_vmx_cr4_fixed1_t>().raw;
+    return x86::read<msr::ia32_vmx_cr4_fixed1_t>().raw;
 }
 
-void adjust_cr0_fixed_bits(x86::cr0_t& cr, const bool for_unrestricted_guest) {
+void adjust_cr0_fixed_bits(cr0_t& cr, const bool for_unrestricted_guest) {
     cr.raw &= get_cr0_fixed1_bits(for_unrestricted_guest);
     cr.raw |= get_cr0_fixed0_bits(for_unrestricted_guest);
 }
 
-void adjust_cr4_fixed_bits(x86::cr4_t& cr) {
+void adjust_cr4_fixed_bits(cr4_t& cr) {
     cr.raw &= get_cr4_fixed1_bits();
     cr.raw |= get_cr4_fixed0_bits();
 }
@@ -60,8 +60,8 @@ bool prepare_for_vmxon(const bool for_unrestricted_guest) {
     // SMX support CPUID.1:ECX[6] = 1 [SDM 2 6.2.1]
     //      SMX enabled CR4.SMXE[14] = 1
 
-    auto feature_ctrl = x86::read<x86::msr::ia32_feature_ctrl_t>();
-    auto cr4 = x86::read<x86::cr4_t>();
+    auto feature_ctrl = x86::read<msr::ia32_feature_ctrl_t>();
+    auto cr4 = x86::read<cr4_t>();
 
     if (!feature_ctrl.bits.lock_bit) {
         // lock bit is off, so we set what we need and lock
@@ -80,19 +80,19 @@ bool prepare_for_vmxon(const bool for_unrestricted_guest) {
 
     // Restrictions placed on CR0 and CR4 [SDM 3 23.8 P1051]
     auto cr0 = x86::read<cr0_t>();
-    x86::vmx::adjust_cr0_fixed_bits(cr0, for_unrestricted_guest);
-    x86::write(cr0);
+    adjust_cr0_fixed_bits(cr0, for_unrestricted_guest);
+    write(cr0);
 
-    x86::vmx::adjust_cr4_fixed_bits(cr4);
+    adjust_cr4_fixed_bits(cr4);
     // enable vmx CR4.VMXE[13] = 1 [SDM 3 23.7 P1051]
     cr4.bits.vmx_enable = 1;
-    x86::write(cr4);
+    write(cr4);
 
     return true;
 }
 
 bool initialize_vmstruct(vmstruct_t& vm_struct) {
-    auto vmx_basic = x86::read<x86::msr::ia32_vmx_basic_t>();
+    const auto vmx_basic = x86::read<msr::ia32_vmx_basic_t>();
     if (sizeof(vm_struct) > vmx_basic.bits.vm_struct_size) {
         return false;
     }

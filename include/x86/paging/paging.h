@@ -39,9 +39,9 @@ constexpr linear_address_t sign_extended(const linear_address_t address) {
     const auto last_bit = address & max_address_bit;
     if (last_bit) {
         return address | ~(max_address_bit - 1);
-    } else {
-        return address & (max_address_bit - 1);
     }
+
+    return address & (max_address_bit - 1);
 }
 
 constexpr bool is_canonical(const linear_address_t address) {
@@ -49,15 +49,15 @@ constexpr bool is_canonical(const linear_address_t address) {
 }
 
 inline bool is_in_physical_address_width(const physical_address_t address) {
-    const auto maxphysaddr = max_physical_address_width();
-    const physical_address_t mask = ~((1ull << maxphysaddr) - 1);
+    const auto max_physical_address = max_physical_address_width();
+    const physical_address_t mask = ~((1ull << max_physical_address) - 1);
 
     return (address & mask) == 0;
 }
 
 inline physical_address_t align_in_max_physical_address_width(const physical_address_t address) {
-    const auto maxphysaddr = max_physical_address_width();
-    const physical_address_t mask = (1ull << maxphysaddr) - 1;
+    const auto max_physical_address = max_physical_address_width();
+    const physical_address_t mask = (1ull << max_physical_address) - 1;
 
     return address & mask;
 }

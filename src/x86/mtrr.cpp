@@ -1,17 +1,18 @@
 
 #include "x86/msr.h"
 #include "x86/paging/paging.h"
+#include "x86/intrinsics.h"
 #include "x86/mtrr.h"
 
-namespace x86 {
-namespace mtrr {
+
+namespace x86::mtrr {
 
 template<typename _fixed_type>
-static void load_fixed_mtrr(mtrr_cache_t& cache, size_t index) {
+static void load_fixed_mtrr(mtrr_cache_t& cache, const size_t index) {
     auto msr_value = x86::read<_fixed_type>();
 
     auto& mtrr = cache.fixed_mtrrs[index];
-    memcpy(mtrr.type, msr_value.type, sizeof(mtrr.type));
+    __builtin_memcpy(mtrr.type, msr_value.type, sizeof(mtrr.type));
     mtrr.base = _fixed_type::base;
     mtrr.size = _fixed_type::size;
 }
@@ -32,25 +33,25 @@ static void load_fixed_mtrrs(mtrr_cache_t& cache) {
     cache.fixed_mtrr_count = 11;
 }
 
-static void load_variable_mtrrs(x86::msr::ia32_mtrr_cap_t& mtrr_cap, mtrr_cache_t& cache) {
+static void load_variable_mtrrs(const msr::ia32_mtrr_cap_t& mtrr_cap, mtrr_cache_t& cache) {
     cache.variable_mtrr_count = mtrr_cap.bits.variable_range_count;
     for (int i = 0; i < cache.variable_mtrr_count; i++) {
         auto base = read_variable_base(i);
-        auto mask = read_variable_mask(i);
+        const auto mask = read_variable_mask(i);
 
         auto& mtrr = cache.variable_mtrrs[i];
         mtrr.enabled = mask.bits.v;
         mtrr.type = static_cast<memory_type_t>(base.bits.type);
         mtrr.base = base.bits.physbase;
         mtrr.mask = mask.bits.physmask;
-        mtrr.min = mtrr.base * x86::paging::page_bits_4k;
+        mtrr.min = mtrr.base * paging::page_bits_4k;
 
-        auto bit = bit_scan_forward(mtrr.mask * x86::paging::page_bits_4k);
+        const auto bit = bit_scan_forward(mtrr.mask * paging::page_bits_4k);
         mtrr.max = mtrr.min + (1ull << bit) - 1;
     }
 }
 
-memory_type_t mtrr_cache_t::type_for_range(physical_address_t start, size_t size) const {
+memory_type_t mtrr_cache_t::type_for_range(physical_address_t start, const size_t size) const {
     // [SDM 3 11.11.4.1]
     // [SDM 3 11.11.7.1 "Example 11-4"]
     if (!enabled) {
@@ -58,14 +59,14 @@ memory_type_t mtrr_cache_t::type_for_range(physical_address_t start, size_t size
     }
 
     // align address to 4k
-    start = start & ~(1 << x86::paging::page_bits_4k);
-    auto end = (start + size) & ~(1 << x86::paging::page_bits_4k);
+    start = start & ~(1 << paging::page_bits_4k);
+    const auto end = (start + size) & ~(1 << paging::page_bits_4k);
 
     auto last_type = type_for_4k(start);
     auto type = last_type;
-    for (auto address = start + x86::paging::page_size_4k;
+    for (auto address = start + paging::page_size_4k;
         address < end;
-        address += x86::paging::page_size_4k
+        address += paging::page_size_4k
     ) {
         type = type_for_4k(address);
         type = type_with_precedence(type, last_type);
@@ -86,8 +87,8 @@ memory_type_t mtrr_cache_t::type_for_2m(physical_address_t start) const {
     }
 
     // align address to 2m
-    start = start & ~(1 << x86::paging::page_bits_2m);
-    auto end = start + x86::paging::page_size_2m - 1;
+    start = start & ~(1 << paging::page_bits_2m);
+    const auto end = start + paging::page_size_2m - 1;
 
     // fixed mtrr is only up to 1m, so only if start is 0 then fixed
     // are relevant.
@@ -145,17 +146,17 @@ memory_type_t mtrr_cache_t::type_for_4k(physical_address_t start) const {
     }
 
     // align address to 4k
-    start = start & ~(1 << x86::paging::page_bits_4k);
-    auto end = start + x86::paging::page_size_4k - 1;
+    start = start & ~(1 << paging::page_bits_4k);
+    const auto end = start + paging::page_size_4k - 1;
 
-    if (fixed_mtrr_enabled && start < x86::paging::page_size_1m) {
+    if (fixed_mtrr_enabled && start < paging::page_size_1m) {
         for (int i = 0; i < fixed_mtrr_count; ++i) {
             auto& mtrr = fixed_mtrrs[i];
 
 
             for (int j = 0; j < 8; ++j) {
-                auto mtrr_start = mtrr.base + (mtrr.size * j);
-                auto mtrr_end = mtrr_start + mtrr.size;
+                const auto mtrr_start = mtrr.base + (mtrr.size * j);
+                const auto mtrr_end = mtrr_start + mtrr.size;
 
                 if (start >= mtrr_start && end <= mtrr_end) {
                     return mtrr.type[j];
@@ -178,7 +179,7 @@ memory_type_t mtrr_cache_t::type_for_4k(physical_address_t start) const {
     return default_type;
 }
 
-memory_type_t mtrr_cache_t::type_with_precedence(memory_type_t first, memory_type_t second) {
+memory_type_t mtrr_cache_t::type_with_precedence(const memory_type_t first, const memory_type_t second) {
     // [SDM 3 11.11.4.1]
     if (first == second) {
         return first;
@@ -201,8 +202,8 @@ memory_type_t mtrr_cache_t::type_with_precedence(memory_type_t first, memory_typ
 mtrr_cache_t initialize_cache() {
     mtrr_cache_t cache{};
 
-    auto mtrr_cap = x86::read<x86::msr::ia32_mtrr_cap_t>();
-    auto mtrr_def = x86::read<x86::msr::ia32_mtrr_def_type_t>();
+    const auto mtrr_cap = x86::read<msr::ia32_mtrr_cap_t>();
+    auto mtrr_def = x86::read<msr::ia32_mtrr_def_type_t>();
 
     if (mtrr_def.bits.enable) {
         cache.enabled = true;
@@ -224,4 +225,4 @@ mtrr_cache_t initialize_cache() {
 }
 
 }
-}
+

@@ -58,17 +58,18 @@ struct cpuid_raw_t {
 };
 
 template<cpuid_t _leaf, cpuid_t _subleaf = 0>
-struct cpuid_def_t : public _cpuid_base_t<_leaf, _subleaf> {
+struct cpuid_def_t : _cpuid_base_t<_leaf, _subleaf> {
     uint32_t eax;
     uint32_t ebx;
     uint32_t ecx;
     uint32_t edx;
 };
 
-template<typename T>
-struct is_cpuid_def : public meta::false_type {};
+// ReSharper disable once CppTemplateParameterNeverUsed
+template<typename t_>
+struct is_cpuid_def : meta::false_type {};
 template<cpuid_t _leaf, cpuid_t _subleaf>
-struct is_cpuid_def<cpuid_def_t<_leaf, _subleaf>> : public meta::true_type {};
+struct is_cpuid_def<cpuid_def_t<_leaf, _subleaf>> : meta::true_type {};
 
 define_cpuid(0x1, 0x0, cpuid_eax01,
 uint32_t stepping_id : 4;

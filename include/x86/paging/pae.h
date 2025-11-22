@@ -1,9 +1,6 @@
 #pragma once
 
-#include "x86/common.h"
-#include "x86/paging/paging.h"
 #include "x86/cr.h"
-
 
 namespace x86::paging::pae {
 
@@ -187,6 +184,6 @@ static_assert(sizeof(pte_t) == 8, "sizeof(pte_t)");
 
 #pragma pack(pop)
 
-bool to_physical(x86::cr3_t& cr3, linear_address_t address, physical_address_t& out);
+bool to_physical(const cr3_t& cr3, linear_address_t address, physical_address_t& out);
 
 }

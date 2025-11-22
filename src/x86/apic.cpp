@@ -8,9 +8,9 @@ namespace x86::apic {
 
 mode_t current_mode() {
     // [SDM 3 10.12.1 P398]
-    auto apic_base = read<msr::ia32_apic_base_t>();
+    const auto apic_base = read<msr::ia32_apic_base_t>();
     if (apic_base.bits.global_enable) {
-        auto cpu_features = x86::cpuid<x86::cpuid_eax01_t>();
+        const auto cpu_features = x86::cpuid<cpuid_eax01_t>();
         if (apic_base.bits.extd && cpu_features.ecx.bits.x2apic) {
             return mode_t::x2apic;
         }
@@ -22,7 +22,7 @@ mode_t current_mode() {
 }
 
 bool is_bsp() {
-    auto apic_base = read<msr::ia32_apic_base_t>();
+    const auto apic_base = read<msr::ia32_apic_base_t>();
     return apic_base.bits.bsp;
 }
 

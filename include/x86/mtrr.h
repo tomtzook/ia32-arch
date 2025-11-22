@@ -42,10 +42,11 @@ struct fixed_t {
     // todo: iterator variable mtrr
 };
 
-template<typename _t>
-struct is_fixed_mtrr_def : public meta::false_type {};
+// ReSharper disable once CppTemplateParameterNeverUsed
+template<typename t_>
+struct is_fixed_mtrr_def : meta::false_type {};
 template<msr::id_t _msr_id, uint64_t _base, uint64_t _size>
-struct is_fixed_mtrr_def<fixed_t<_msr_id, _base, _size>> : public meta::true_type {};
+struct is_fixed_mtrr_def<fixed_t<_msr_id, _base, _size>> : meta::true_type {};
 
 // [SDM 3 11.11.2.3]
 struct variable_base_t {
