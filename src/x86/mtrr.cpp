@@ -12,7 +12,7 @@ static void load_fixed_mtrr(mtrr_cache_t& cache, const size_t index) {
     auto msr_value = x86::read<_fixed_type>();
 
     auto& mtrr = cache.fixed_mtrrs[index];
-    __builtin_memcpy(mtrr.type, msr_value.type, sizeof(mtrr.type));
+    _arch_builtin_memcpy(mtrr.type, msr_value.type, sizeof(mtrr.type));
     mtrr.base = _fixed_type::base;
     mtrr.size = _fixed_type::size;
 }
