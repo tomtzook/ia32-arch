@@ -99,6 +99,24 @@ struct idtr_t {
 };
 static_assert(sizeof(idtr_t) == 10, "sizeof(idtr_t)");
 
+enum class selector_error_code_table_t : uint32_t {
+    gdt = 0b00,
+    idt1 = 0b01,
+    ldt = 0b10,
+    idt2 = 0b11,
+};
+
+struct selector_error_code_t {
+    union {
+        struct {
+            uint32_t e : 1;
+            selector_error_code_table_t tbl : 2;
+            uint32_t index : 13;
+        } bits;
+        uint32_t raw;
+    };
+};
+
 #pragma pack(pop)
 
 class table64_t {
@@ -122,6 +140,7 @@ private:
 };
 
 }
+
 
 allow_struct_read_write(interrupts::idtr_t);
 
