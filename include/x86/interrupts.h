@@ -117,6 +117,24 @@ struct selector_error_code_t {
     };
 };
 
+struct page_fault_error_code_t {
+    union {
+        struct {
+            uint32_t p : 1;
+            uint32_t w : 1;
+            uint32_t u : 1;
+            uint32_t r : 1;
+            uint32_t i : 1;
+            uint32_t pk : 1;
+            uint32_t ss : 1;
+            uint32_t reserved0 : 8;
+            uint32_t sgx : 1;
+            uint32_t reserved1 : 14;
+        } bits;
+        uint32_t raw;
+    };
+};
+
 #pragma pack(pop)
 
 class table64_t {

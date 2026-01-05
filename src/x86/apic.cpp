@@ -6,7 +6,13 @@
 
 namespace x86::apic {
 
+bool is_x2apic_supported() {
+    const auto cpu_features = x86::cpuid<cpuid_eax01_t>();
+    return cpu_features.ecx.bits.x2apic;
+}
+
 mode_t current_mode() {
+    // todo: cache mode!
     // [SDM 3 10.12.1 P398]
     const auto apic_base = read<msr::ia32_apic_base_t>();
     if (apic_base.bits.global_enable) {
@@ -19,6 +25,64 @@ mode_t current_mode() {
     }
 
     return mode_t::disabled;
+}
+
+bool set_mode(const mode_t mode) {
+    switch (mode) {
+        case mode_t::disabled: {
+            auto apic_base = read<msr::ia32_apic_base_t>();
+            apic_base.bits.global_enable = false;
+            apic_base.bits.extd = false;
+            write(apic_base);
+
+            return true;
+        }
+        case mode_t::xapic: {
+            auto apic_base = read<msr::ia32_apic_base_t>();
+            if (apic_base.bits.global_enable && apic_base.bits.extd) {
+                // we are in x2apic, we need turn of and then enter it
+                apic_base.bits.global_enable = false;
+                apic_base.bits.extd = false;
+                write(apic_base);
+
+                apic_base.bits.global_enable = true;
+                apic_base.bits.extd = false;
+                write(apic_base);
+            } else {
+                apic_base.bits.global_enable = true;
+                apic_base.bits.extd = false;
+                write(apic_base);
+            }
+
+            return true;
+        }
+        case mode_t::x2apic: {
+            if (!is_x2apic_supported()) {
+                return false;
+            }
+
+            auto apic_base = read<msr::ia32_apic_base_t>();
+            apic_base.bits.global_enable = true;
+            apic_base.bits.extd = true;
+            write(apic_base);
+
+            return true;
+        }
+        default:
+            return false;
+    }
+}
+
+uint32_t get_local_apic_id() {
+    switch (current_mode()) {
+        case mode_t::xapic:
+            return xapic_read<local_apic_id_t>().xapic.id;
+        case mode_t::x2apic:
+            return x2apic_read<local_apic_id_t>().x2apic.id;
+        case mode_t::disabled:
+        default:
+            return 0;
+    }
 }
 
 bool is_bsp() {
