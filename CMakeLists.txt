@@ -12,6 +12,7 @@ add_library(arch STATIC
         src/x86/vmx/vmx.cpp
         src/x86/vmx/ept.cpp
         src/x86/mtrr.cpp
+        src/x86/id.cpp
 
         # adding headers just for IDE to work with them better
         include/x86/meta.h
@@ -34,7 +35,9 @@ add_library(arch STATIC
         include/x86/mtrr.h
         include/x86/atomic.h
         include/x86/rflags.h
-        include/x86/vmx/vmexit.h)
+        include/x86/vmx/vmexit.h
+        include/x86/regs.h
+        include/x86/id.h)
 
 target_compile_options(arch PRIVATE -ffreestanding -std=gnu++20 -mstack-alignment=16 -nostdinc++ -fno-exceptions)
 target_link_options(arch PRIVATE -nostdlib -nolibc -nodefaultlibs)
