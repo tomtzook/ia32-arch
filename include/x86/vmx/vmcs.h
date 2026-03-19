@@ -202,6 +202,28 @@ struct vmentry_interruption_info_t {
 };
 static_assert(sizeof(vmentry_interruption_info_t) == 4, "sizeof(vmentry_interruption_info_t)");
 
+struct ept_violation_exit_qualification_t {
+    union {
+        struct {
+            uint64_t read_access : 1;
+            uint64_t write_access : 1;
+            uint64_t instruction_fetch : 1;
+            uint64_t ept_readable : 1;
+            uint64_t ept_writeable : 1;
+            uint64_t ept_executable : 1;
+            uint64_t ept_executable_for_user : 1;
+            uint64_t user_mode_linear_address : 1;
+            uint64_t guest_page_walk_access : 1;
+            uint64_t guest_page_table : 1;
+            uint64_t user_mode_instruction : 1;
+            uint64_t nmi_unblocking : 1;
+            uint64_t reserved0 : 52;
+        } bits;
+        uint64_t raw;
+    };
+};
+static_assert(sizeof(ept_violation_exit_qualification_t) == 8, "sizeof(ept_violation_exit_qualification_t)");
+
 #pragma pack(pop)
 
 // for improvement of instructions later: https://github.com/opnsense/src/blob/cdc5c1db54c5183add40a0a48a7692d7d4ac4a31/sys/amd64/vmm/intel/vmx_cpufunc.h#L118

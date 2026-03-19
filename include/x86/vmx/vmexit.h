@@ -69,4 +69,6 @@ enum class exit_reason_t : uint16_t {
     xrstors = 64,
 };
 
+const char* exit_reason_str(exit_reason_t reason);
+
 }

@@ -37,7 +37,8 @@ add_library(arch STATIC
         include/x86/rflags.h
         include/x86/vmx/vmexit.h
         include/x86/regs.h
-        include/x86/id.h)
+        include/x86/id.h
+        src/x86/vmx/vmexit.cpp)
 
 target_compile_options(arch PRIVATE -ffreestanding -std=gnu++20 -mstack-alignment=16 -nostdinc++ -fno-exceptions)
 target_link_options(arch PRIVATE -nostdlib -nolibc -nodefaultlibs)
