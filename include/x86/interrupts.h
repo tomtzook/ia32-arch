@@ -10,6 +10,13 @@ namespace interrupts {
 
 // [SDM 3 6.3.1 P188 "Table 6-1"]
 
+enum class interrupt_type_t {
+    fault,
+    trap,
+    interrupt,
+    abort
+};
+
 enum class interrupt_t {
     divide_error = 0,
     debug_exception = 1,
@@ -31,6 +38,10 @@ enum class interrupt_t {
     machine_check = 18,
     simd_floating_point_exception = 19,
     virtualization_exception = 20,
+    control_protection = 21,
+    hypervisor_injection = 28,
+    vmm_communication = 29,
+    security_exception = 30
 };
 
 // IDT Descriptors [SDM 3 6.11 P196]
@@ -157,6 +168,9 @@ private:
     idtr_t m_idtr;
 };
 
+interrupt_type_t vector_type(interrupt_t vector);
+const char* vector_to_str(interrupt_t vector);
+
 }
 
 
@@ -172,6 +186,10 @@ inline interrupts::idtr_t read() {
 template<>
 inline void write(const interrupts::idtr_t& t) {
     asm volatile("lidt %0" : : "m"(t));
+}
+
+inline __attribute__((always_inline)) void debugbreak() {
+    asm volatile("int3");
 }
 
 }

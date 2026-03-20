@@ -202,6 +202,20 @@ struct vmentry_interruption_info_t {
 };
 static_assert(sizeof(vmentry_interruption_info_t) == 4, "sizeof(vmentry_interruption_info_t)");
 
+struct vmexit_interruption_info_t {
+    union {
+        struct {
+            uint32_t vector : 8;
+            vmentry_interrupt_type_t type : 2;
+            uint32_t error_code_valid : 1;
+            uint32_t reserved : 19;
+            uint32_t valid : 1;
+        } bits;
+        uint32_t raw;
+    };
+};
+static_assert(sizeof(vmexit_interruption_info_t) == 4, "sizeof(vmexit_interruption_info_t)");
+
 struct ept_violation_exit_qualification_t {
     union {
         struct {

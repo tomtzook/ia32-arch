@@ -7,13 +7,13 @@ namespace x86 {
 static const char* vendor_string_intel = "GenuineIntel";
 static const char* vendor_string_amd = "AuthenticAMD";
 
-enum class cpu_processor_type {
+enum class cpu_processor_type_t {
     original_oem = 0,
     intel_overdrive = 1,
     dual_processor = 2,
 };
 
-enum class cpu_family {
+enum class cpu_family_t {
     intel486 = 0x4,
     pentium = 0x5,
     modern_intel = 0x6,
@@ -22,7 +22,7 @@ enum class cpu_family {
     itanium2 = 0x1f,
 };
 
-enum class cpu_series {
+enum class cpu_series_t {
     unknown = 0,
     core_i_1 = 1, // Intel Core I 1st Generation
     core_i_2, // Intel Core I 2nd Generation
@@ -45,7 +45,7 @@ enum class cpu_series {
     core_ultra_4, // Intel Core Ultra Series 4
 };
 
-enum class cpu_microarchitecture {
+enum class cpu_microarchitecture_t {
     unknown = 0,
     nehalem = 1,
     westmere,
@@ -74,21 +74,21 @@ enum class cpu_microarchitecture {
     nova_lake
 };
 
-struct cpu_model {
-    cpu_processor_type type;
-    cpu_family family_id;
+struct cpu_model_t {
+    cpu_processor_type_t type;
+    cpu_family_t family_id;
     uint16_t model;
     uint16_t stepping;
 };
 
-const char* cpu_series_str(cpu_series series);
-const char* cpu_microarchitecture_str(cpu_microarchitecture microarchitecture);
-cpu_series microarchitecture_to_series(cpu_microarchitecture microarchitecture);
+const char* cpu_series_str(cpu_series_t series);
+const char* cpu_microarchitecture_str(cpu_microarchitecture_t microarchitecture);
+cpu_series_t microarchitecture_to_series(cpu_microarchitecture_t microarchitecture);
 
 void store_cpu_vendor_str(char buffer[13]);
 bool is_intel_cpu();
 
-cpu_model get_cpu_model();
-cpu_microarchitecture get_microarchitecture(cpu_model model);
+cpu_model_t get_cpu_model();
+cpu_microarchitecture_t get_microarchitecture(cpu_model_t model);
 
 }
