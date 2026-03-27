@@ -224,7 +224,7 @@ cpu_microarchitecture_t get_microarchitecture(const cpu_model_t model) {
                 case 0x8d:
                     // stepping 0x1 at least
                     return cpu_microarchitecture_t::tiger_lake;
-                case 0x87:
+                case 0x97:
                 case 0x9a:
                     // stepping 0x0,0x1,0x2,0x3,0x4,0x5 at least
                     return cpu_microarchitecture_t::alder_lake;
