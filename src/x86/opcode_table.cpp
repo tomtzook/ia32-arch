@@ -583,4 +583,137 @@ const opcode_t table_extended_2byte[256] = {
     { "INVALID",   no_operand,                            no_operand,                             opcode_flag_t::none }
 };
 
+// Group 1: Immediate Extensions (Opcodes: 80, 81, 82, 83)
+// Note: Operand 2 size is dynamically resolved ('v' or 'b') depending on the primary opcode
+const opcode_t table_group_1[8] = {
+    { "ADD", { nullptr, opaddr_t::E, opsize_t::v }, { nullptr, opaddr_t::I, opsize_t::none }, opcode_flag_t::lockable },
+    { "OR",  { nullptr, opaddr_t::E, opsize_t::v }, { nullptr, opaddr_t::I, opsize_t::none }, opcode_flag_t::lockable },
+    { "ADC", { nullptr, opaddr_t::E, opsize_t::v }, { nullptr, opaddr_t::I, opsize_t::none }, opcode_flag_t::lockable },
+    { "SBB", { nullptr, opaddr_t::E, opsize_t::v }, { nullptr, opaddr_t::I, opsize_t::none }, opcode_flag_t::lockable },
+    { "AND", { nullptr, opaddr_t::E, opsize_t::v }, { nullptr, opaddr_t::I, opsize_t::none }, opcode_flag_t::lockable },
+    { "SUB", { nullptr, opaddr_t::E, opsize_t::v }, { nullptr, opaddr_t::I, opsize_t::none }, opcode_flag_t::lockable },
+    { "XOR", { nullptr, opaddr_t::E, opsize_t::v }, { nullptr, opaddr_t::I, opsize_t::none }, opcode_flag_t::lockable },
+    { "TXT", { nullptr, opaddr_t::E, opsize_t::v }, { nullptr, opaddr_t::I, opsize_t::none }, opcode_flag_t::none } // CMP semantics
+};
+
+// Group 2: Shift & Rotate Extensions (Opcodes: C0, C1, D0, D1, D2, D3)
+const opcode_t table_group_2[8] = {
+    { "ROL", { nullptr, opaddr_t::E, opsize_t::v }, no_operand, opcode_flag_t::none },
+    { "ROR", { nullptr, opaddr_t::E, opsize_t::v }, no_operand, opcode_flag_t::none },
+    { "RCL", { nullptr, opaddr_t::E, opsize_t::v }, no_operand, opcode_flag_t::none },
+    { "RCR", { nullptr, opaddr_t::E, opsize_t::v }, no_operand, opcode_flag_t::none },
+    { "SHL", { nullptr, opaddr_t::E, opsize_t::v }, no_operand, opcode_flag_t::none },
+    { "SHR", { nullptr, opaddr_t::E, opsize_t::v }, no_operand, opcode_flag_t::none },
+    { "SAL", { nullptr, opaddr_t::E, opsize_t::v }, no_operand, opcode_flag_t::none },
+    { "SAR", { nullptr, opaddr_t::E, opsize_t::v }, no_operand, opcode_flag_t::none }
+};
+
+// Group 3: Unary Operations / Multiply / Divide (Opcodes: F6, F7)
+const opcode_t table_group_3[8] = {
+    { "TEST",    { nullptr, opaddr_t::E, opsize_t::v }, { nullptr, opaddr_t::I, opsize_t::v },    opcode_flag_t::none },
+    { "INVALID", no_operand,                            no_operand,                            opcode_flag_t::none },
+    { "NOT",     { nullptr, opaddr_t::E, opsize_t::v }, no_operand,                            opcode_flag_t::lockable },
+    { "NEG",     { nullptr, opaddr_t::E, opsize_t::v }, no_operand,                            opcode_flag_t::lockable },
+    { "MUL",     { nullptr, opaddr_t::E, opsize_t::v }, no_operand,                            opcode_flag_t::none },
+    { "IMUL",    { nullptr, opaddr_t::E, opsize_t::v }, no_operand,                            opcode_flag_t::none },
+    { "DIV",     { nullptr, opaddr_t::E, opsize_t::v }, no_operand,                            opcode_flag_t::none },
+    { "IDIV",    { nullptr, opaddr_t::E, opsize_t::v }, no_operand,                            opcode_flag_t::none }
+};
+
+// Group 4: Increment / Decrement 8-bit (Opcode: FE)
+const opcode_t table_group_4[8] = {
+    { "INC",     { nullptr, opaddr_t::E, opsize_t::b }, no_operand, opcode_flag_t::lockable },
+    { "DEC",     { nullptr, opaddr_t::E, opsize_t::b }, no_operand, opcode_flag_t::lockable },
+    { "INVALID", no_operand,                            no_operand, opcode_flag_t::none },
+    { "INVALID", no_operand,                            no_operand, opcode_flag_t::none },
+    { "INVALID", no_operand,                            no_operand, opcode_flag_t::none },
+    { "INVALID", no_operand,                            no_operand, opcode_flag_t::none },
+    { "INVALID", no_operand,                            no_operand, opcode_flag_t::none },
+    { "INVALID", no_operand,                            no_operand, opcode_flag_t::none }
+};
+
+// Group 5: Near & Far Indirect Jumps / Calls / Pushes (Opcode: FF)
+const opcode_t table_group_5[8] = {
+    { "INC",     { nullptr, opaddr_t::E, opsize_t::v }, no_operand, opcode_flag_t::lockable },
+    { "DEC",     { nullptr, opaddr_t::E, opsize_t::v }, no_operand, opcode_flag_t::lockable },
+    { "CALL",    { nullptr, opaddr_t::E, opsize_t::v }, no_operand, opcode_flag_t::none }, // Near
+    { "CALL",    { nullptr, opaddr_t::E, opsize_t::p }, no_operand, opcode_flag_t::none }, // Far
+    { "JMP",     { nullptr, opaddr_t::E, opsize_t::v }, no_operand, opcode_flag_t::none }, // Near
+    { "JMP",     { nullptr, opaddr_t::E, opsize_t::p }, no_operand, opcode_flag_t::none }, // Far
+    { "PUSH",    { nullptr, opaddr_t::E, opsize_t::v }, no_operand, opcode_flag_t::none },
+    { "INVALID", no_operand,                            no_operand, opcode_flag_t::none }
+};
+
+// Group 6: System Tables Architecture (Opcode: 0F 00)
+const opcode_t table_group_6[8] = {
+    { "SLDT",    { nullptr, opaddr_t::E, opsize_t::w }, no_operand, opcode_flag_t::none },
+    { "STR",     { nullptr, opaddr_t::E, opsize_t::w }, no_operand, opcode_flag_t::none },
+    { "LLDT",    { nullptr, opaddr_t::E, opsize_t::w }, no_operand, opcode_flag_t::none },
+    { "LTR",     { nullptr, opaddr_t::E, opsize_t::w }, no_operand, opcode_flag_t::none },
+    { "VERR",    { nullptr, opaddr_t::E, opsize_t::w }, no_operand, opcode_flag_t::none },
+    { "VERW",    { nullptr, opaddr_t::E, opsize_t::w }, no_operand, opcode_flag_t::none },
+    { "INVALID", no_operand,                            no_operand, opcode_flag_t::none },
+    { "INVALID", no_operand,                            no_operand, opcode_flag_t::none }
+};
+
+// Group 7: Descriptor Tables & System States (Opcode: 0F 01)
+const opcode_t table_group_7[8] = {
+    { "SGDT",    { nullptr, opaddr_t::M, opsize_t::p }, no_operand, opcode_flag_t::none },
+    { "SIDT",    { nullptr, opaddr_t::M, opsize_t::p }, no_operand, opcode_flag_t::none },
+    { "LGDT",    { nullptr, opaddr_t::M, opsize_t::p }, no_operand, opcode_flag_t::none },
+    { "LIDT",    { nullptr, opaddr_t::M, opsize_t::p }, no_operand, opcode_flag_t::none },
+    { "SMSW",    { nullptr, opaddr_t::E, opsize_t::w }, no_operand, opcode_flag_t::none }, // Maps inside MSW slot
+    { "INVALID", no_operand,                            no_operand, opcode_flag_t::none },
+    { "INVLPG",  { nullptr, opaddr_t::M, opsize_t::b }, no_operand, opcode_flag_t::none },
+    { "GRP7_EXT",no_operand,                            no_operand, opcode_flag_t::none } // Escapes to direct register matchers (SWAPGS, etc)
+};
+
+// Group 8: Bit Tests with Immediates (Opcode: 0F BA)
+const opcode_t table_group_8[8] = {
+    { "INVALID", no_operand,                            no_operand,                            opcode_flag_t::none },
+    { "INVALID", no_operand,                            no_operand,                            opcode_flag_t::none },
+    { "INVALID", no_operand,                            no_operand,                            opcode_flag_t::none },
+    { "INVALID", no_operand,                            no_operand,                            opcode_flag_t::none },
+    { "BT",      { nullptr, opaddr_t::E, opsize_t::v }, { nullptr, opaddr_t::I, opsize_t::b }, opcode_flag_t::none },
+    { "BTC",     { nullptr, opaddr_t::E, opsize_t::v }, { nullptr, opaddr_t::I, opsize_t::b }, opcode_flag_t::lockable },
+    { "BTR",     { nullptr, opaddr_t::E, opsize_t::v }, { nullptr, opaddr_t::I, opsize_t::b }, opcode_flag_t::lockable },
+    { "BTS",     { nullptr, opaddr_t::E, opsize_t::v }, { nullptr, opaddr_t::I, opsize_t::b }, opcode_flag_t::lockable }
+};
+
+// Group 9: Compare and Exchange (Opcode: 0F C7)
+const opcode_t table_group_9[8] = {
+    { "INVALID",   no_operand,                            no_operand, opcode_flag_t::none },
+    { "CMPXCHG8B", { nullptr, opaddr_t::M, opsize_t::q }, no_operand, opcode_flag_t::lockable }, // Resolves to 16B if REX.W=1
+    { "INVALID",   no_operand,                            no_operand, opcode_flag_t::none },
+    { "INVALID",   no_operand,                            no_operand, opcode_flag_t::none },
+    { "INVALID",   no_operand,                            no_operand, opcode_flag_t::none },
+    { "INVALID",   no_operand,                            no_operand, opcode_flag_t::none },
+    { "VMPTRLD",   { nullptr, opaddr_t::M, opsize_t::q }, no_operand, opcode_flag_t::none },
+    { "VMPTRST",   { nullptr, opaddr_t::M, opsize_t::q }, no_operand, opcode_flag_t::none }
+};
+
+// Group 11: Immediate Move Block (Opcodes: C6, C7)
+const opcode_t table_group_11[8] = {
+    { "MOV",     { nullptr, opaddr_t::E, opsize_t::v }, { nullptr, opaddr_t::I, opsize_t::z }, opcode_flag_t::none },
+    { "INVALID", no_operand,                            no_operand,                            opcode_flag_t::none },
+    { "INVALID", no_operand,                            no_operand,                            opcode_flag_t::none },
+    { "INVALID", no_operand,                            no_operand,                            opcode_flag_t::none },
+    { "INVALID", no_operand,                            no_operand,                            opcode_flag_t::none },
+    { "INVALID", no_operand,                            no_operand,                            opcode_flag_t::none },
+    { "INVALID", no_operand,                            no_operand,                            opcode_flag_t::none },
+    { "INVALID", no_operand,                            no_operand,                            opcode_flag_t::none }
+};
+
+// Group 15: Memory Serialization / Tracking / Fences (Opcode: 0F AE)
+const opcode_t table_group_15[8] = {
+    { "FXSAVE",     { nullptr, opaddr_t::M, opsize_t::none }, no_operand, opcode_flag_t::none },
+    { "FXRSTOR",    { nullptr, opaddr_t::M, opsize_t::none }, no_operand, opcode_flag_t::none },
+    { "LDMXCSR",    { nullptr, opaddr_t::M, opsize_t::d    }, no_operand, opcode_flag_t::none },
+    { "STMXCSR",    { nullptr, opaddr_t::M, opsize_t::d    }, no_operand, opcode_flag_t::none },
+    { "XSAVE",      { nullptr, opaddr_t::M, opsize_t::none }, no_operand, opcode_flag_t::none }, // LFENCE space if Mod == 11
+    { "XRSTOR",     { nullptr, opaddr_t::M, opsize_t::none }, no_operand, opcode_flag_t::none }, // MFENCE space if Mod == 11
+    { "CLFLUSH",    { nullptr, opaddr_t::M, opsize_t::b    }, no_operand, opcode_flag_t::none }, // SFENCE space if Mod == 11
+    { "CLFLUSHOPT", { nullptr, opaddr_t::M, opsize_t::b    }, no_operand, opcode_flag_t::none }
+};
+
 }

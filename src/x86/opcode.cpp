@@ -44,7 +44,8 @@ static bool is_modrm_needed_by_operand(const def::operand_t& def) {
 }
 
 static bool is_modrm_expected(const def::opcode_t& opcode) {
-    return is_modrm_needed_by_operand(opcode.operand1) || is_modrm_needed_by_operand(opcode.operand2);
+    return ((opcode.flags & def::opcode_flag_t::group) == def::opcode_flag_t::group) ||
+        is_modrm_needed_by_operand(opcode.operand1) || is_modrm_needed_by_operand(opcode.operand2);
 }
 
 static size_t get_sib_scale_value(const sib_scale_t scale) {
@@ -63,6 +64,10 @@ static size_t get_sib_scale_value(const sib_scale_t scale) {
 }
 
 static const def::opcode_t* find_opcode_def(const opcode_family_t family, const uint8_t value) {
+    if (value >= def::table_size) {
+        return nullptr;
+    }
+
     const def::opcode_t* def;
     switch (family) {
         case opcode_family_t::primary:
@@ -79,6 +84,100 @@ static const def::opcode_t* find_opcode_def(const opcode_family_t family, const 
         case opcode_family_t::evex:
         default:
             return nullptr;
+    }
+
+    if (def == nullptr) {
+        return nullptr;
+    }
+
+    // todo: check it is not a placeholder
+    return def;
+}
+
+static opcode_group_t determine_group(const opcode_family_t family, const uint8_t opcode) {
+    switch (family) {
+        case opcode_family_t::primary:
+            switch (opcode) {
+            case 0x80 ... 0x83:
+                    return opcode_group_t::group1;
+            case 0xc0 ... 0xc1:
+            case 0xd0 ... 0xd3:
+                    return opcode_group_t::group2;
+            case 0xf6 ... 0xf7:
+                    return opcode_group_t::group3;
+            case 0xfe:
+                    return opcode_group_t::group4;
+            case 0xff:
+                    return opcode_group_t::group5;
+            case 0xc6 ... 0xc7:
+                    return opcode_group_t::group11;
+            default:
+                    break;
+            }
+            break;
+        case opcode_family_t::extended_2byte:
+            switch (opcode) {
+            case 0x00:
+                    return opcode_group_t::group6;
+            case 0x01:
+                    return opcode_group_t::group7;
+            case 0xba:
+                    return opcode_group_t::group8;
+            case 0xc7:
+                    return opcode_group_t::group9;
+            case 0xae:
+                    return opcode_group_t::group15;
+            default:
+                    break;
+            }
+            break;
+        default:
+            break;
+    }
+
+    return opcode_group_t::group1; // todo: return error
+}
+
+static const def::opcode_t* find_opcode_def_for_group(const opcode_group_t group, const uint8_t value) {
+    if (value >= def::group_table_size) {
+        return nullptr;
+    }
+
+    const def::opcode_t* def = nullptr;
+    switch (group) {
+        case opcode_group_t::group1:
+            def = &def::table_group_1[value];
+            break;
+        case opcode_group_t::group2:
+            def = &def::table_group_2[value];
+            break;
+        case opcode_group_t::group3:
+            def = &def::table_group_3[value];
+            break;
+        case opcode_group_t::group4:
+            def = &def::table_group_4[value];
+            break;
+        case opcode_group_t::group5:
+            def = &def::table_group_5[value];
+            break;
+        case opcode_group_t::group6:
+            def = &def::table_group_6[value];
+            break;
+        case opcode_group_t::group7:
+            def = &def::table_group_7[value];
+            break;
+        case opcode_group_t::group8:
+            def = &def::table_group_8[value];
+            break;
+        case opcode_group_t::group9:
+            def = &def::table_group_9[value];
+            break;
+        case opcode_group_t::group11:
+            def = &def::table_group_11[value];
+            break;
+        case opcode_group_t::group15:
+            def = &def::table_group_15[value];
+            break;
     }
 
     if (def == nullptr) {
@@ -228,9 +327,9 @@ static void handle_opcode(decoder_context_t& context) {
             break;
     }
 
-    context.decoded.opcode.family = family;
-    context.decoded.opcode.full = full_opcode;
-    context.decoded.opcode.value = opcode_value;
+    context.decoded.family = family;
+    context.decoded.full_opcode = full_opcode;
+    context.decoded.opcode = opcode_value;
 }
 
 static decode_error_t determine_addressing_size(decoder_context_t& context, const def::opsize_t opsize, addressing_size_t& size_out) {
@@ -667,7 +766,7 @@ static decode_error_t handle_operand(decoder_context_t& context, const def::oper
         }
         case def::opaddr_t::G: {
             // modrm reg
-            if ((context.decoded.opcode.definition.flags & def::opcode_flag_t::group) == def::opcode_flag_t::group) {
+            if ((context.decoded.definition.flags & def::opcode_flag_t::group) == def::opcode_flag_t::group) {
                 // reg_opcode bits indicate the instruction in the group
                 operand.type = decoded_operand_type_t::none;
             } else {
@@ -707,34 +806,46 @@ static decode_error_t decode(decoder_context_t& context) {
     // handle base opcode
     handle_opcode(context);
 
-    const auto def = find_opcode_def(context.decoded.opcode.family, context.decoded.opcode.value);
+    const auto def = find_opcode_def(context.decoded.family, context.decoded.opcode);
     if (def == nullptr) {
         return decode_error_t::opcode_definition_not_found;
     }
-    context.decoded.opcode.definition = *def;
 
-    // todo: handle group with opcode in modrm
-    if (is_modrm_expected(context.decoded.opcode.definition)) {
+    context.decoded.definition = *def;
+
+    if (is_modrm_expected(context.decoded.definition)) {
         const auto* modrm = reinterpret_cast<const mod_rm_t*>(context.ptr);
         context.ptr += sizeof(mod_rm_t);
         context.modrm.has = true;
         context.modrm.value = *modrm;
     }
 
-    if (context.decoded.opcode.definition.operand1.exists) {
-        decoded_operand_t operand;
-        DECODE_TRY(handle_operand(context, context.decoded.opcode.definition.operand1, operand));
-        context.decoded.first = operand;
-    } else {
-        context.decoded.first.type = decoded_operand_type_t::none;
+    if ((context.decoded.definition.flags & def::opcode_flag_t::group) == def::opcode_flag_t::group) {
+        const auto value = context.modrm.value.bits.reg_opcode;
+        const auto group = determine_group(context.decoded.family, context.decoded.opcode);
+
+        const auto def_group = find_opcode_def_for_group(group, value);
+        if (def_group == nullptr) {
+            return decode_error_t::opcode_definition_not_found;
+        }
+
+        context.decoded.definition = *def_group;
     }
 
-    if (context.decoded.opcode.definition.operand2.exists) {
+    if (context.decoded.definition.operand1.exists) {
         decoded_operand_t operand;
-        DECODE_TRY(handle_operand(context, context.decoded.opcode.definition.operand2, operand));
-        context.decoded.second = operand;
+        DECODE_TRY(handle_operand(context, context.decoded.definition.operand1, operand));
+        context.decoded.op1 = operand;
     } else {
-        context.decoded.second.type = decoded_operand_type_t::none;
+        context.decoded.op1.type = decoded_operand_type_t::none;
+    }
+
+    if (context.decoded.definition.operand2.exists) {
+        decoded_operand_t operand;
+        DECODE_TRY(handle_operand(context, context.decoded.definition.operand2, operand));
+        context.decoded.op2 = operand;
+    } else {
+        context.decoded.op2.type = decoded_operand_type_t::none;
     }
 
     return decode_error_t::success;

@@ -56,6 +56,7 @@ enum class opaddr_t {
 
 // see Intel SDM Vol 2 Appendix A Chapter A.2.2
 enum class opsize_t {
+    none,
     a, // a : Two one-word operands in memory or two double-word operands in memory, depending on operand-size attribute
     b, // b : Byte, regardless of operand-size attribute.
     c, // c : Byte or word, depending on operand-size attribute.
@@ -95,6 +96,19 @@ struct opcode_t {
 static constexpr auto table_size = 256;
 extern const opcode_t table_primary[table_size];
 extern const opcode_t table_extended_2byte[table_size];
+
+static constexpr auto group_table_size = 8;
+extern const opcode_t table_group_1[group_table_size];
+extern const opcode_t table_group_2[group_table_size];
+extern const opcode_t table_group_3[group_table_size];
+extern const opcode_t table_group_4[group_table_size];
+extern const opcode_t table_group_5[group_table_size];
+extern const opcode_t table_group_6[group_table_size];
+extern const opcode_t table_group_7[group_table_size];
+extern const opcode_t table_group_8[group_table_size];
+extern const opcode_t table_group_9[group_table_size];
+extern const opcode_t table_group_11[group_table_size];
+extern const opcode_t table_group_15[group_table_size];
 
 }
 
@@ -429,6 +443,20 @@ enum class opcode_family_t {
     evex,
 };
 
+enum class opcode_group_t {
+    group1,
+    group2,
+    group3,
+    group4,
+    group5,
+    group6,
+    group7,
+    group8,
+    group9,
+    group11,
+    group15
+};
+
 static constexpr uint8_t rex_prefix_range_min = 0x40; // rex is for x64 only
 static constexpr uint8_t rex_prefix_range_max = 0x4f;
 
@@ -566,15 +594,13 @@ struct decoded_opcode_t {
             bool width;
         } rex;
     } prefix;
-    struct {
-        opcode_family_t family;
-        uint8_t value;
-        uint32_t full;
-        def::opcode_t definition;
-    } opcode;
 
-    decoded_operand_t first;
-    decoded_operand_t second;
+    def::opcode_t definition;
+    opcode_family_t family;
+    uint8_t opcode;
+    uint32_t full_opcode;
+    decoded_operand_t op1;
+    decoded_operand_t op2;
 };
 
 enum class decode_error_t {
