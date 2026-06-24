@@ -8,10 +8,10 @@ static register_t register_encoding[][4] = {
     { register_t::cl, register_t::cx, register_t::ecx, register_t::rcx },
     { register_t::dl, register_t::dx, register_t::edx, register_t::rdx },
     { register_t::bl, register_t::bx, register_t::eax, register_t::rax },
-    { register_t::spl, register_t::sp, register_t::esp, register_t::rsp },
-    { register_t::bpl, register_t::bp, register_t::ebp, register_t::rbp },
-    { register_t::sil, register_t::si, register_t::esi, register_t::rsi },
-    { register_t::dil, register_t::di, register_t::edi, register_t::rdi },
+    { register_t::ah, register_t::sp, register_t::esp, register_t::rsp },
+    { register_t::ch, register_t::bp, register_t::ebp, register_t::rbp },
+    { register_t::dh, register_t::si, register_t::esi, register_t::rsi },
+    { register_t::bh, register_t::di, register_t::edi, register_t::rdi },
 };
 
 static register_t register_extended_encoding[][4] = {
@@ -43,27 +43,58 @@ static const char* register_names[] = {
     "r13b", "r13w", "r13d", "r13",
     "r14b", "r14w", "r14d", "r14",
     "r15b", "r15w", "r15d", "r15",
+    "cs", "ds", "es", "fs", "gs", "ss"
 };
 
+constexpr auto last_register = register_t::ss;
+constexpr auto last_register_encoding = register_encoding_t::edi;
+constexpr auto last_ext_register_encoding = extended_register_encoding_t::r15;
+constexpr auto last_addressing_size = addressing_size_t::qword;
 
 register_t translate_register(const register_encoding_t encoding, const addressing_size_t size) {
-    // todo: safety checks
-    // todo: high low in byte
+    static_assert(static_cast<size_t>(last_register_encoding) == array_size(register_encoding) - 1, "register_encoding table missing rows");
+    static_assert(static_cast<size_t>(last_addressing_size) == array_size(register_encoding[0]) - 1, "register_encoding table missing columns");
     return register_encoding[static_cast<size_t>(encoding)][static_cast<size_t>(size)];
 }
 
 register_t translate_register(const extended_register_encoding_t encoding, const addressing_size_t size) {
     if (encoding < extended_register_encoding_t::r8) {
-        // todo: safety checks
-        // todo: high low in byte
-        return register_encoding[static_cast<size_t>(encoding)][static_cast<size_t>(size)];
+        return translate_register(static_cast<register_encoding_t>(encoding), size);
     }
 
-    return register_extended_encoding[static_cast<size_t>(encoding)][static_cast<size_t>(size)];
+    static_assert(static_cast<size_t>(last_ext_register_encoding) - static_cast<size_t>(extended_register_encoding_t::r8) == array_size(register_extended_encoding) - 1, "register_extended_encoding table missing rows");
+    static_assert(static_cast<size_t>(last_addressing_size) == array_size(register_extended_encoding[0]) - 1, "register_extended_encoding table missing columns");
+    return register_extended_encoding[static_cast<size_t>(encoding) - static_cast<size_t>(extended_register_encoding_t::r8)][static_cast<size_t>(size)];
+}
+
+register_t translate_byte_rex_modified_register(const register_encoding_t encoding) {
+    switch (encoding) {
+        case register_encoding_t::eax:
+            return register_t::al;
+        case register_encoding_t::ecx:
+            return register_t::cl;
+        case register_encoding_t::edx:
+            return register_t::dl;
+        case register_encoding_t::ebx:
+            return register_t::bl;
+        case register_encoding_t::esp:
+            return register_t::spl;
+        case register_encoding_t::ebp:
+            return register_t::bpl;
+        case register_encoding_t::esi:
+            return register_t::sil;
+        case register_encoding_t::edi:
+            return register_t::dil;
+        default:
+            __builtin_unreachable();
+    }
 }
 
 const char* get_register_name(const register_t register_) {
-    // todo: safety checks
+    static_assert(static_cast<size_t>(last_register) == array_size(register_names) - 1, "register_names table missing entries");
+    if (static_cast<size_t>(register_) >= array_size(register_names)) {
+        return "";
+    }
     return register_names[static_cast<size_t>(register_)];
 }
 

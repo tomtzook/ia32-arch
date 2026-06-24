@@ -619,6 +619,7 @@ struct decoded_opcode_t {
         bool operand_size;
         bool address_size;
         struct {
+            bool present;
             bool base;
             bool index;
             bool reg;
@@ -702,6 +703,7 @@ struct sib_t {
 
 register_t translate_register(register_encoding_t encoding, addressing_size_t size);
 register_t translate_register(extended_register_encoding_t encoding, addressing_size_t size);
+register_t translate_byte_rex_modified_register(register_encoding_t encoding);
 const char* get_register_name(register_t register_);
 
 decode_result_t decode(mode_t mode, const void* ptr);

@@ -252,6 +252,9 @@ static bool handle_prefixes(decoder_context_t& context, const uint8_t value) {
             if (rex.bits.width) {
                 context.decoded.prefix.rex.width = true;
             }
+            if ((rex.raw & (~static_cast<size_t>(legacy_prefix_t::rex_prefix_range_min))) > 0) {
+                context.decoded.prefix.rex.present = true;
+            }
             break;
         }
         default:
@@ -453,6 +456,14 @@ static decode_error_t read_operand_immediate(decoder_context_t& context, const a
     return decode_error_t::success;
 }
 
+static register_t translate_register_from_modrm(const decoder_context_t& context, const register_encoding_t encoding, const addressing_size_t size) {
+    if (context.decoded.prefix.rex.present && size == addressing_size_t::byte) {
+        return translate_byte_rex_modified_register(encoding);
+    } else {
+        return translate_register(encoding, size);
+    }
+}
+
 static decode_error_t get_base_register_from_modrm(const decoder_context_t& context, const addressing_size_t size, const mod_rm_t& modrm, register_t& register_out) {
     register_t result;
     if (context.decoded.prefix.rex.base) {
@@ -461,7 +472,7 @@ static decode_error_t get_base_register_from_modrm(const decoder_context_t& cont
         result = translate_register(reg, size);
     } else {
         const auto reg = static_cast<register_encoding_t>(modrm.bits.rm);
-        result = translate_register(reg, size);
+        result = translate_register_from_modrm(context, reg, size);
     }
 
     register_out = result;
@@ -476,7 +487,7 @@ static decode_error_t get_index_register_from_modrm(const decoder_context_t& con
         result = translate_register(reg, size);
     } else {
         const auto reg = static_cast<register_encoding_t>(modrm.bits.rm);
-        result = translate_register(reg, size);
+        result = translate_register_from_modrm(context, reg, size);
     }
 
     register_out = result;
@@ -491,7 +502,7 @@ static decode_error_t get_extra_register_from_modrm(const decoder_context_t& con
         result = translate_register(reg, size);
     } else {
         const auto reg = static_cast<register_encoding_t>(modrm.bits.reg_opcode);
-        result = translate_register(reg, size);
+        result = translate_register_from_modrm(context, reg, size);
     }
 
     register_out = result;
