@@ -4,114 +4,6 @@
 
 namespace x86::opcode {
 
-namespace def {
-
-enum class opcode_flag_t {
-    none = 0,
-    lockable,
-    group,
-};
-
-constexpr opcode_flag_t operator|(const opcode_flag_t lhs, const opcode_flag_t rhs) {
-    return static_cast<opcode_flag_t>(static_cast<uint8_t>(lhs) | static_cast<uint8_t>(rhs));
-}
-
-constexpr opcode_flag_t operator&(const opcode_flag_t lhs, const opcode_flag_t rhs) {
-    return static_cast<opcode_flag_t>(static_cast<uint8_t>(lhs) & static_cast<uint8_t>(rhs));
-}
-
-// see Intel SDM Vol 2 Appendix A Chapter A.2.1
-enum class opaddr_t {
-    A,  // A : he instruction has no ModR/M byte; the address of the operand is encoded in the instruction.
-        // No base register, index register, or scaling factor can be applied (for example, far JMP (EA)).
-    B,  // B : The VEX.vvvv field of the VEX prefix selects a general purpose register
-    C,  // C : The reg field of the ModR/M byte selects a control register
-    D,  // D : The reg field of the ModR/M byte selects a debug register
-    E,  // E : A ModR/M byte follows the opcode and specifies the operand. The operand is either a general-purpose
-        // register or a memory address. If it is a memory address, the address is computed from a segment register
-        // and any of the following values: a base register, an index register, a scaling factor, a displacement.
-    F,  // F : EFLAGS/RFLAGS Register
-
-    G,  // G : The reg field of the ModR/M byte selects a general register
-    H,  // H : The VEX.vvvv field of the VEX prefix selects a 128-bit XMM register or a 256-bit YMM register, determined
-        // by operand type. For legacy SSE encodings this operand does not exist, changing the instruction to
-        // destructive form
-    I,  // I : Immediate data: the operand value is encoded in subsequent bytes of the instruction.
-    J,  // J : The instruction contains a relative offset to be added to the instruction pointer register
-    L,  // L : The upper 4 bits of the 8-bit immediate selects a 128-bit XMM register or a 256-bit YMM register, determined by operand type.
-    M,  // M : The ModR/M byte may refer only to memory
-    N,  // N: The R/M field of the ModR/M byte selects a packed-quadword, MMX technology register.
-    P,  // P : The reg field of the ModR/M byte selects a packed quadword MMX technology register
-    Q,  // Q : A ModR/M byte follows the opcode and specifies the operand. The operand is either an MMX technology register or a memory address. If it is a memory address, the address is computed from a segment register
-        // and any of the following values: a base register, an index register, a scaling factor, and a displacement
-    R,  // R : The R/M field of the ModR/M byte may refer only to a general register
-    S,  // S : The reg field of the ModR/M byte selects a segment register
-    U,  // U : The R/M field of the ModR/M byte selects a 128-bit XMM register or a 256-bit YMM register, determined by operand type.
-    V,  // V : The reg field of the ModR/M byte selects a 128-bit XMM register or a 256-bit YMM register, determined by operand type.
-    W,  // W : A ModR/M byte follows the opcode and specifies the operand. The operand is either a 128-bit XMM register, a 256-bit YMM register (determined by operand type), or a memory address. If it is a memory address, the
-        // address is computed from a segment register and any of the following values: a base register, an index register, a scaling factor, and a displacement.
-    X,  // X : Memory addressed by the DS:rSI register pair
-    Y,  // Y : Memory addressed by the ES:rDI register pair
-};
-
-// see Intel SDM Vol 2 Appendix A Chapter A.2.2
-enum class opsize_t {
-    none,
-    a, // a : Two one-word operands in memory or two double-word operands in memory, depending on operand-size attribute
-    b, // b : Byte, regardless of operand-size attribute.
-    c, // c : Byte or word, depending on operand-size attribute.
-    d, // d : Doubleword, regardless of operand-size attribute.
-    dq,// dq : Double-quadword, regardless of operand-size attribute.
-    p, // p : 32-bit, 48-bit, or 80-bit pointer, depending on operand-size attribute
-    pd,// pd : 128-bit or 256-bit packed double precision floating-point data.
-    pl,// pl : Quadword MMX technology register
-    ps,// ps : 128-bit or 256-bit packed single-precision floating-point data.
-    q, // q : Quadword, regardless of operand-size attribute
-    qq,// qq : Quad-Quadword (256-bits), regardless of operand-size attribute.
-    s, // s : 6-byte or 10-byte pseudo-descriptor
-    sd,// sd : Scalar element of a 128-bit double precision floating data
-    ss,// ss : Scalar element of a 128-bit single-precision floating data
-    si,// si : Doubleword integer register
-    v, // v : Word, doubleword or quadword (in 64-bit mode), depending on operand-size attribute.
-    w, // w : Word, regardless of operand-size attribute
-    x, // x : dq or qq based on the operand-size attribute
-    y, // y : Doubleword or quadword (in 64-bit mode), depending on operand-size attribute
-    z, // z : Word for 16-bit operand-size or doubleword for 32 or 64-bit operand-size.
-};
-
-struct operand_t {
-    const char* mnemonic;
-    opaddr_t addressing;
-    opsize_t size;
-    bool exists = true;
-};
-
-struct opcode_t {
-    const char* mnemonic;
-    operand_t operand1;
-    operand_t operand2;
-    opcode_flag_t flags;
-};
-
-static constexpr auto table_size = 256;
-extern const opcode_t table_primary[table_size];
-extern const opcode_t table_extended_2byte[table_size];
-
-static constexpr auto group_table_size = 8;
-extern const opcode_t table_group_1[group_table_size];
-extern const opcode_t table_group_2[group_table_size];
-extern const opcode_t table_group_3[group_table_size];
-extern const opcode_t table_group_4[group_table_size];
-extern const opcode_t table_group_5[group_table_size];
-extern const opcode_t table_group_6[group_table_size];
-extern const opcode_t table_group_7[group_table_size];
-extern const opcode_t table_group_8[group_table_size];
-extern const opcode_t table_group_9[group_table_size];
-extern const opcode_t table_group_11[group_table_size];
-extern const opcode_t table_group_15[group_table_size];
-
-}
-
 enum class mode_t {
     real_mode,
     protected_mode,
@@ -512,23 +404,24 @@ enum class decoded_operand_type_t : uint8_t {
 };
 
 enum class register_t {
-    rax,
-    rbx,
-    rcx,
-    rdx,
-    rsp,
-    rbp,
-    rsi,
-    rdi,
-    r8,
-    r9,
-    r10,
-    r11,
-    r12,
-    r13,
-    r14,
-    r15,
-    rip,
+    al, ah, ax, eax, rax,
+    bl, bh, bx, ebx, rbx,
+    cl, ch, cx, ecx, rcx,
+    dl, dh, dx, edx, rdx,
+    spl, sp, esp, rsp,
+    bpl, bp, ebp, rbp,
+    sil, si, esi, rsi,
+    dil, di, edi, rdi,
+    ip, eip, rip,
+    r8b, r8w, r8d, r8,
+    r9b, r9w, r9d, r9,
+    r10b, r10w, r10d, r10,
+    r11b, r11w, r11d, r11,
+    r12b, r12w, r12d, r12,
+    r13b, r13w, r13d, r13,
+    r14b, r14w, r14d, r14,
+    r15b, r15w, r15d, r15,
+    cs, ds, es, fs, gs, ss
 };
 
 enum class addressing_size_t {
@@ -538,6 +431,151 @@ enum class addressing_size_t {
     qword
 };
 
+namespace def {
+
+enum class opcode_flag_t {
+    none = 0,
+    lockable,
+    group,
+};
+
+constexpr opcode_flag_t operator|(const opcode_flag_t lhs, const opcode_flag_t rhs) {
+    return static_cast<opcode_flag_t>(static_cast<uint8_t>(lhs) | static_cast<uint8_t>(rhs));
+}
+
+constexpr opcode_flag_t operator&(const opcode_flag_t lhs, const opcode_flag_t rhs) {
+    return static_cast<opcode_flag_t>(static_cast<uint8_t>(lhs) & static_cast<uint8_t>(rhs));
+}
+
+// see Intel SDM Vol 2 Appendix A Chapter A.2.1
+enum class opaddr_t {
+    A,  // A : he instruction has no ModR/M byte; the address of the operand is encoded in the instruction.
+        // No base register, index register, or scaling factor can be applied (for example, far JMP (EA)).
+    B,  // B : The VEX.vvvv field of the VEX prefix selects a general purpose register
+    C,  // C : The reg field of the ModR/M byte selects a control register
+    D,  // D : The reg field of the ModR/M byte selects a debug register
+    E,  // E : A ModR/M byte follows the opcode and specifies the operand. The operand is either a general-purpose
+        // register or a memory address. If it is a memory address, the address is computed from a segment register
+        // and any of the following values: a base register, an index register, a scaling factor, a displacement.
+    F,  // F : EFLAGS/RFLAGS Register
+
+    G,  // G : The reg field of the ModR/M byte selects a general register
+    H,  // H : The VEX.vvvv field of the VEX prefix selects a 128-bit XMM register or a 256-bit YMM register, determined
+        // by operand type. For legacy SSE encodings this operand does not exist, changing the instruction to
+        // destructive form
+    I,  // I : Immediate data: the operand value is encoded in subsequent bytes of the instruction.
+    J,  // J : The instruction contains a relative offset to be added to the instruction pointer register
+    L,  // L : The upper 4 bits of the 8-bit immediate selects a 128-bit XMM register or a 256-bit YMM register, determined by operand type.
+    M,  // M : The ModR/M byte may refer only to memory
+    N,  // N: The R/M field of the ModR/M byte selects a packed-quadword, MMX technology register.
+    O,  // O: The instruction has no ModR/M byte. The offset of the operand is coded as a word or double word
+        // (depending on address size attribute) in the instruction. No base register, index register, or scaling factor
+        // can be applied
+    P,  // P : The reg field of the ModR/M byte selects a packed quadword MMX technology register
+    Q,  // Q : A ModR/M byte follows the opcode and specifies the operand. The operand is either an MMX technology register or a memory address. If it is a memory address, the address is computed from a segment register
+        // and any of the following values: a base register, an index register, a scaling factor, and a displacement
+    R,  // R : The R/M field of the ModR/M byte may refer only to a general register
+    S,  // S : The reg field of the ModR/M byte selects a segment register
+    U,  // U : The R/M field of the ModR/M byte selects a 128-bit XMM register or a 256-bit YMM register, determined by operand type.
+    V,  // V : The reg field of the ModR/M byte selects a 128-bit XMM register or a 256-bit YMM register, determined by operand type.
+    W,  // W : A ModR/M byte follows the opcode and specifies the operand. The operand is either a 128-bit XMM register, a 256-bit YMM register (determined by operand type), or a memory address. If it is a memory address, the
+        // address is computed from a segment register and any of the following values: a base register, an index register, a scaling factor, and a displacement.
+    X,  // X : Memory addressed by the DS:rSI register pair
+    Y,  // Y : Memory addressed by the ES:rDI register pair
+};
+
+// see Intel SDM Vol 2 Appendix A Chapter A.2.2
+enum class opsize_t {
+    none,
+    a, // a : Two one-word operands in memory or two double-word operands in memory, depending on operand-size attribute
+    b, // b : Byte, regardless of operand-size attribute.
+    c, // c : Byte or word, depending on operand-size attribute.
+    d, // d : Doubleword, regardless of operand-size attribute.
+    dq,// dq : Double-quadword, regardless of operand-size attribute.
+    p, // p : 32-bit, 48-bit, or 80-bit pointer, depending on operand-size attribute
+    pd,// pd : 128-bit or 256-bit packed double precision floating-point data.
+    pl,// pl : Quadword MMX technology register
+    ps,// ps : 128-bit or 256-bit packed single-precision floating-point data.
+    q, // q : Quadword, regardless of operand-size attribute
+    qq,// qq : Quad-Quadword (256-bits), regardless of operand-size attribute.
+    s, // s : 6-byte or 10-byte pseudo-descriptor
+    sd,// sd : Scalar element of a 128-bit double precision floating data
+    ss,// ss : Scalar element of a 128-bit single-precision floating data
+    si,// si : Doubleword integer register
+    v, // v : Word, doubleword or quadword (in 64-bit mode), depending on operand-size attribute.
+    w, // w : Word, regardless of operand-size attribute
+    x, // x : dq or qq based on the operand-size attribute
+    y, // y : Doubleword or quadword (in 64-bit mode), depending on operand-size attribute
+    z, // z : Word for 16-bit operand-size or doubleword for 32 or 64-bit operand-size.
+};
+
+enum class mem_addr_size_t {
+    byte = 0,
+    variable
+};
+
+enum class embedded_info_type_t {
+    none,
+    reg,
+    reg_enc,
+    memory,
+    const_int,
+};
+
+struct opcode_embedded_info_t {
+    embedded_info_type_t type = embedded_info_type_t::none;
+    union {
+        register_t reg;
+        extended_register_encoding_t reg_enc;
+        mem_addr_size_t mem_size;
+        int i;
+    } data{};
+
+    opcode_embedded_info_t() = default;
+    // ReSharper disable once CppNonExplicitConvertingConstructor
+    opcode_embedded_info_t(register_t reg);
+    // ReSharper disable once CppNonExplicitConvertingConstructor
+    opcode_embedded_info_t(extended_register_encoding_t reg_enc);
+    // ReSharper disable once CppNonExplicitConvertingConstructor
+    opcode_embedded_info_t(mem_addr_size_t mem_size);
+    // ReSharper disable once CppNonExplicitConvertingConstructor
+    opcode_embedded_info_t(int i);
+};
+
+struct operand_t {
+    opaddr_t addressing;
+    opsize_t size;
+    opcode_embedded_info_t embedded;
+    bool exists = true;
+};
+
+struct opcode_t {
+    const char* mnemonic;
+    operand_t operand1;
+    operand_t operand2;
+    opcode_flag_t flags;
+    bool exists = true;
+};
+
+static constexpr auto table_size = 256;
+extern const opcode_t table_primary[table_size];
+extern const opcode_t table_extended_2byte[table_size];
+
+static constexpr auto group_table_size = 8;
+extern const opcode_t table_group_1[group_table_size];
+extern const opcode_t table_group_2[group_table_size];
+extern const opcode_t table_group_3[group_table_size];
+extern const opcode_t table_group_4[group_table_size];
+extern const opcode_t table_group_5[group_table_size];
+extern const opcode_t table_group_6[group_table_size];
+extern const opcode_t table_group_7[group_table_size];
+extern const opcode_t table_group_8[group_table_size];
+extern const opcode_t table_group_9[group_table_size];
+extern const opcode_t table_group_11[group_table_size];
+extern const opcode_t table_group_15[group_table_size];
+
+}
+
 struct decoded_operand_t {
     decoded_operand_type_t type;
     union {
@@ -545,13 +583,9 @@ struct decoded_operand_t {
         uint8_t i_word;
         uint8_t i_dword;
         uint8_t i_qword;
-        struct {
-            register_t type;
-            addressing_size_t size;
-        } reg;
+        register_t reg;
         struct {
             register_t base;
-            addressing_size_t size;
             size_t displacement;
         } mem;
         struct {
@@ -560,20 +594,17 @@ struct decoded_operand_t {
         struct {
             register_t base;
             register_t index;
-            addressing_size_t size;
             size_t scale;
             size_t displacement;
         } mem_scaled;
         struct {
             register_t index;
-            addressing_size_t size;
             size_t scale;
             size_t displacement;
         } mem_scaled2;
         struct {
             register_t reg1;
             register_t reg2;
-            addressing_size_t size;
             size_t displacement;
         } mem_sum;
     } value;
@@ -612,7 +643,9 @@ enum class decode_error_t {
     unknown_operand_addressing_size,
     unknown_modrm_mod,
     unknown_operand_addressing_mode,
-    opcode_definition_not_found
+    opcode_definition_not_found,
+    opcode_group_is_unknown,
+    opcode_missing_embedded_data
 };
 
 struct decode_result_t {
@@ -666,6 +699,10 @@ struct sib_t {
 };
 
 #pragma pack(pop)
+
+register_t translate_register(register_encoding_t encoding, addressing_size_t size);
+register_t translate_register(extended_register_encoding_t encoding, addressing_size_t size);
+const char* get_register_name(register_t register_);
 
 decode_result_t decode(mode_t mode, const void* ptr);
 
