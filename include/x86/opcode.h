@@ -10,6 +10,691 @@ enum class mode_t {
     long_mode
 };
 
+enum class instruction_t {
+    aaa,
+    aad,
+    aam,
+    aas,
+    adc,
+    adcx,
+    add,
+    addpd,
+    addps,
+    addsd,
+    addss,
+    addsubpd,
+    addsubps,
+    adox,
+    aesdec,
+    aesdeclast,
+    aesenc,
+    aesenclast,
+    aesimc,
+    aeskeygenassist,
+    and_,
+    andn,
+    andnhm,
+    andpd,
+    andps,
+    andnpd,
+    andnps,
+    arpl,
+    blendpd,
+    blendps,
+    blendvpd,
+    blendvps,
+    bound,
+    bsf,
+    bsr,
+    bswap,
+    bt,
+    btc,
+    btr,
+    bts,
+    bzhi,
+    call,
+    callf,
+    cbw,
+    cdq,
+    cdqe,
+    clac,
+    clc,
+    cld,
+    cldemote,
+    clflush,
+    clflushopt,
+    clgi,
+    cli,
+    clts,
+    clwb,
+    clzero,
+    cmc,
+    cmovo,
+    cmovno,
+    cmovb,
+    cmovnb,
+    cmovz,
+    cmovnz,
+    cmovbe,
+    cmovnbe,
+    cmovs,
+    cmovns,
+    cmovp,
+    cmovnp,
+    cmovl,
+    cmovnl,
+    cmovle,
+    cmovnle,
+    cmp,
+    cmppd,
+    cmpps,
+    cmps,
+    cmpsb,
+    cmpsw,
+    cmpsd,
+    cmpsq,
+    cmpss,
+    cmpxchg,
+    cmpxchg8b,
+    cmpxchg16b,
+    comisd,
+    comiss,
+    cpuid,
+    cqo,
+    crc32,
+    cvtdq2pd,
+    cvtdq2ps,
+    cvtpd2dq,
+    cvtpd2pi,
+    cvtpd2ps,
+    cvtpi2pd,
+    cvtpi2ps,
+    cvtps2dq,
+    cvtps2pd,
+    cvtps2pi,
+    cvtsd2si,
+    cvtsd2ss,
+    cvtsi2sd,
+    cvtsi2ss,
+    cvtss2sd,
+    cvtss2si,
+    cvttpd2dq,
+    cvttpd2pi,
+    cvttps2dq,
+    cvttps2pi,
+    cvttsd2si,
+    cvttss2si,
+    cwd,
+    cwde,
+    daa,
+    das,
+    dec,
+    div,
+    divpd,
+    divps,
+    divsd,
+    divss,
+    dppd,
+    dpps,
+    emms,
+    enter,
+    encls,
+    enclu,
+    enclv,
+    extractps,
+    f2xm1,
+    fabs,
+    fadd,
+    faddp,
+    fiadd,
+    fbld,
+    fbstp,
+    fchs,
+    fclex,
+    fnclex,
+    fcmovcc,
+    fcom,
+    fcomp,
+    fcompp,
+    fcomi,
+    fcomip,
+    fcos,
+    fdecstp,
+    fdiv,
+    fdivp,
+    fidiv,
+    fdivr,
+    fdivrp,
+    fidivr,
+    femms,
+    ffree,
+    ficom,
+    ficomp,
+    fild,
+    fincstp,
+    finit,
+    fninit,
+    fist,
+    fistp,
+    fisttp,
+    fld,
+    fld1,
+    fldl2t,
+    fldl2e,
+    fldpi,
+    fldlg2,
+    fldln2,
+    fldz,
+    fldcw,
+    fldenv,
+    fmul,
+    fmulp,
+    fimul,
+    fnop,
+    fpatan,
+    fprem,
+    fprem1,
+    fptan,
+    frndint,
+    frstor,
+    fsave,
+    fnsave,
+    fscale,
+    fsin,
+    fsincos,
+    fsqrt,
+    fst,
+    fstp,
+    fstcw,
+    fnstcw,
+    fstenv,
+    fnstenv,
+    fstsw,
+    fnstsw,
+    fsub,
+    fsubp,
+    fisub,
+    fsubr,
+    fsubrp,
+    fisubr,
+    ftst,
+    fucom,
+    fucomp,
+    fucompp,
+    fucomi,
+    fucomip,
+    fwait,
+    fxam,
+    fxch,
+    fxrstor,
+    fxrstor64,
+    fxsave,
+    fxsave64,
+    fxtract,
+    fyl2x,
+    fyl2xp1,
+    getsec,
+    haddpd,
+    haddps,
+    hlt,
+    hsubpd,
+    hsubps,
+    icebp,
+    idiv,
+    imul,
+    in,
+    inc,
+    ins,
+    insb,
+    insw,
+    insd,
+    insertps,
+    int_,
+    int3,
+    into,
+    invd,
+    invlpg,
+    invpcid,
+    invvpid,
+    iret,
+    iretd,
+    iretq,
+    jo,
+    jno,
+    jb,
+    jnb,
+    jz,
+    jnz,
+    jbe,
+    jnbe,
+    js,
+    jns,
+    jnp,
+    jp,
+    jl,
+    jnl,
+    jle,
+    jnle,
+    jcxz,
+    jecxz,
+    jrcxz,
+    jmp,
+    jmpf,
+    lahf,
+    lar,
+    lddqu,
+    ldmxcsr,
+    lds,
+    les,
+    lfs,
+    lgs,
+    lss,
+    lea,
+    leave,
+    lfence,
+    lgdt,
+    lidt,
+    lldt,
+    lmsw,
+    lock,
+    lods,
+    lodsb,
+    lodsw,
+    lodsd,
+    lodsq,
+    loop,
+    loope,
+    loopne,
+    lsl,
+    ltr,
+    lzcnt,
+    maskmovdqu,
+    maskmovq,
+    maxpd,
+    maxps,
+    maxsd,
+    maxss,
+    mfence,
+    minpd,
+    minps,
+    minsd,
+    minss,
+    monitor,
+    mov,
+    movapd,
+    movaps,
+    movbe,
+    movd,
+    movq,
+    movddup,
+    movdq2q,
+    movdqa,
+    movdqu,
+    movhlps,
+    movhpd,
+    movhps,
+    movlhps,
+    movlpd,
+    movlps,
+    movmskpd,
+    movmskps,
+    movntdqa,
+    movntdq,
+    movnti,
+    movntpd,
+    movntps,
+    movntq,
+    movq2dq,
+    movs,
+    movsb,
+    movsw,
+    movsd,
+    movsq,
+    movshdup,
+    movsldup,
+    movss,
+    movsx,
+    movsxd,
+    movupd,
+    movups,
+    movzx,
+    movsbl,
+    movswl,
+    movzbl,
+    movzwl,
+    mpsadbw,
+    mul,
+    mulpd,
+    mulps,
+    mulsd,
+    mulss,
+    mulx,
+    mwait,
+    neg,
+    nop,
+    not_,
+    or_,
+    orpd,
+    orps,
+    out,
+    outs,
+    outsb,
+    outsw,
+    outsd,
+    pabsb,
+    pabsw,
+    pabsd,
+    packsswb,
+    packssdw,
+    packuswb,
+    packusdw,
+    paddb,
+    paddw,
+    paddd,
+    paddq,
+    paddsb,
+    paddsw,
+    paddusb,
+    paddusw,
+    palignr,
+    pand,
+    pandn,
+    pavgb,
+    pavgw,
+    pblendvb,
+    pblendw,
+    pclmulqdq,
+    pcmpeqb,
+    pcmpeqw,
+    pcmpeqd,
+    pcmpeqq,
+    pcmpestri,
+    pcmpestrm,
+    pcmpgtb,
+    pcmpgtw,
+    pcmpgtd,
+    pcmpgtq,
+    pcmpistri,
+    pcmpistrm,
+    pdep,
+    pext,
+    pextrb,
+    pextrd,
+    pextrq,
+    pextrw,
+    phaddw,
+    phaddd,
+    phaddsw,
+    phsubw,
+    phsubd,
+    phsubsw,
+    pinsrb,
+    pinsrd,
+    pinsrq,
+    pinsrw,
+    pmaddubw,
+    pmaddubsw,
+    pmaddwd,
+    pmaxsb,
+    pmaxsw,
+    pmaxsd,
+    pmaxub,
+    pmaxuw,
+    pmaxud,
+    pminsb,
+    pminsw,
+    pminsd,
+    pminub,
+    pminuw,
+    pminud,
+    pmovmskb,
+    pmovsx,
+    pmovzx,
+    pmuldq,
+    pmulhrsw,
+    pmulhuw,
+    pmulhw,
+    pmulildq,
+    pmulld,
+    pmullw,
+    pmuludq,
+    pop,
+    popa,
+    popad,
+    popcnt,
+    popf,
+    popfd,
+    popfq,
+    por,
+    prefetchw,
+    prefetchwt1,
+    psadbw,
+    pshufb,
+    pshufd,
+    pshufhw,
+    pshuflw,
+    pshufw,
+    psignb,
+    psignw,
+    psignd,
+    psllw,
+    pslld,
+    psllq,
+    pslldq,
+    psraw,
+    psrad,
+    psrlw,
+    psrld,
+    psrlq,
+    psrldq,
+    psubb,
+    psubw,
+    psubd,
+    psubq,
+    psubsb,
+    psubsw,
+    psubusb,
+    psubusw,
+    ptest,
+    punpckhbw,
+    punpckhwd,
+    punpckhdq,
+    punpckhqdq,
+    punpcklbw,
+    punpcklwd,
+    punpckldq,
+    punpcklqdq,
+    punpchbw,
+    punpchwd,
+    punpchdq,
+    punpchqdq,
+    punpclbw,
+    punpclwd,
+    punpcldq,
+    punpclqdq,
+    push,
+    pusha,
+    pushad,
+    pushf,
+    pushfd,
+    pushfq,
+    pxor,
+    rcl,
+    rcr,
+    rcpps,
+    rcpss,
+    rdfsbase,
+    rdgsbase,
+    rdmsr,
+    rdpmc,
+    rdrand,
+    rdseed,
+    rdtsc,
+    rdtscp,
+    rep,
+    repe,
+    repne,
+    ret,
+    retf,
+    rol,
+    ror,
+    rorx,
+    roundpd,
+    roundps,
+    roundsd,
+    roundss,
+    rsm,
+    rsqrtps,
+    rsqrtss,
+    sahf,
+    sal,
+    salc,
+    sar,
+    sarx,
+    sbb,
+    scas,
+    scasb,
+    scasw,
+    scasd,
+    scasq,
+    seto,
+    setno,
+    setb,
+    setnb,
+    setz,
+    setnz,
+    setbe,
+    setnbe,
+    sets,
+    setns,
+    setp,
+    setnp,
+    setl,
+    setnl,
+    setle,
+    setnle,
+    sfence,
+    sgdt,
+    shl,
+    shld,
+    shlx,
+    shr,
+    shrd,
+    shrx,
+    shufpd,
+    shufps,
+    sidt,
+    sldt,
+    smsw,
+    sqrtpd,
+    sqrtps,
+    sqrtsd,
+    sqrtss,
+    stac,
+    stc,
+    std,
+    sti,
+    stmxcsr,
+    stos,
+    stosb,
+    stosw,
+    stosd,
+    stosq,
+    str,
+    sub,
+    subpd,
+    subps,
+    subsd,
+    subss,
+    swapgs,
+    syscall,
+    sysenter,
+    sysexit,
+    sysret,
+    t1mskc,
+    test,
+    txt,
+    tzcnt,
+    ucomisd,
+    ucomiss,
+    ud1,
+    ud2,
+    unpckhpd,
+    unpckhps,
+    unpcklpd,
+    unpcklps,
+    verr,
+    verw,
+    vmptrld,
+    vmptrst,
+    vmread,
+    vmwrite,
+    wbinvd,
+    wbnoinvd,
+    wrfsbase,
+    wrgsbase,
+    wrmsr,
+    xadd,
+    xchg,
+    xgetbv,
+    xlat,
+    xlatb,
+    xor_,
+    xorpd,
+    xorps,
+    xrstor,
+    xrstors,
+    xsave,
+    xsavec,
+    xsaveopt,
+    xsaves,
+    xsetbv
+};
+
+enum class instruction_pair_t {
+    movmskps_or_movmskpd,
+    sqrtps_or_sqrtpd,
+    rsqrtps_or_rsqrtss,
+    rcpps_or_rcpss,
+    andps_or_andpd,
+    andnps_or_andnpd,
+    orps_or_orpd,
+    xorps_or_xorpd,
+    addps_or_addpd,
+    mulps_or_mulpd,
+    cvtps2pd_or_cvtpd2ps,
+    cvtdq2ps_or_cvtps2dq,
+    subps_or_subpd,
+    minps_or_minpd,
+    divps_or_divpd,
+    maxps_or_maxpd,
+    haddpd_or_haddps,
+    hsubpd_or_hsubps,
+    movd_or_movq,
+    movdqa_or_movdqu,
+    pshufw_or_pshufdb,
+    cvtpi2ps_or_cvttps2pi,
+    movntps_or_movntpd,
+    cvtps2pi_or_cvtpi2pd,
+    cvttps2pi_or_cvttpd2pi,
+    ucomiss_or_ucomisd,
+    comiss_or_comisd,
+    movups_or_movupd,
+    movlps_or_movlpd,
+    unpcklps_or_unpcklpd,
+    unpckhps_or_unpckhpd,
+    movhps_or_movhpd,
+    loadall_or_syscall,
+    cmpps_or_cmppd,
+    shufps_or_shufpd,
+    addsubpd_or_addsubps,
+    cvttpd2dq_or_cvtpi2pd,
+    pinsrd_or_pinsrq,
+    pextrd_or_pextrq,
+    maskmovq_or_maskmovdqu,
+    wait_or_fwait
+};
+
 enum class legacy_prefix_t : uint8_t {
     // 1 byte
     // group 1
@@ -102,228 +787,6 @@ enum class sib_scale_t : uint8_t {
     mult_8 = 0b11,
 };
 
-enum class opcode_1byte_t : uint8_t {
-    add_reg_to_8bit = 0x0,
-    add_reg_to = 0x1,
-    add_to_reg_8bit = 0x2,
-    add_to_reg = 0x3,
-    and_8bit = 0x20,
-    and_ = 0x21,
-    sub_8bit = 0x28,
-    sub = 0x29,
-    xor_8bit = 0x30,
-    xor_ = 0x31,
-    cmp_8bit = 0x38,
-    cmp = 0x39,
-    push_eax = 0x50,
-    push_ecx = 0x51,
-    push_edx = 0x52,
-    push_ebx = 0x53,
-    push_esp = 0x54,
-    push_ebp = 0x55,
-    push_esi = 0x56,
-    push_edi = 0x57,
-    pop_eax = 0x58,
-    pop_ecx = 0x59,
-    pop_edx = 0x5a,
-    pop_ebx = 0x5b,
-    pop_esp = 0x5c,
-    pop_ebp = 0x5d,
-    pop_esi = 0x5e,
-    pop_edi = 0x5f,
-    push_immediate_32bit = 0x68,
-    push_immediate_8bit = 0x6a,
-    jmp_short_if_of = 0x70,
-    jmp_short_if_cf = 0x72,
-    jmp_short_if_zf = 0x74,
-    jmp_short_if_not_zf = 0x75,
-    jmp_short_if_less = 0x7c,
-    jmp_short_if_less_or_equal = 0x7e,
-    mov_reg_to_8bit = 0x88,
-    mov_reg_to = 0x89,
-    mov_to_reg_8bit = 0x8a,
-    mov_to_reg = 0x8b,
-    mov_seg_to = 0x8c,
-    mov_to_seg = 0x8e,
-    nop = 0x90,
-    mov_byte_to_al = 0xa0,
-    mov_word_to_eax = 0xa1,
-    mov_immediate_byte_to_al = 0xb0,
-    mov_immediate_byte_to_cl = 0xb1,
-    mov_immediate_byte_to_dl = 0xb2,
-    mov_immediate_byte_to_bl = 0xb3,
-    mov_immediate_byte_to_ah = 0xb4,
-    mov_immediate_byte_to_ch = 0xb5,
-    mov_immediate_byte_to_dh = 0xb6,
-    mov_immediate_byte_to_bh = 0xb7,
-    mov_immediate_to_eax = 0xb8,
-    mov_immediate_to_ecx = 0xb9,
-    mov_immediate_to_edx = 0xba,
-    mov_immediate_to_ebx = 0xbb,
-    mov_immediate_to_esp = 0xbc,
-    mov_immediate_to_ebp = 0xbd,
-    mov_immediate_to_esi = 0xbe,
-    mov_immediate_to_edi = 0xbf,
-    ret = 0xc3,
-    mov_immediate_byte_to = 0xc6,
-    mov_immediate_to = 0xc7,
-    int3 = 0xcc,
-    int_soft = 0xcd,
-    iret = 0xcf,
-    call_relative = 0xe8,
-    jmp_near_relative = 0xe9,
-    jmp_short = 0xeb,
-    hlt = 0xf4
-};
-
-// groups = specific instruction defined by reg/opcode field of mod r/m
-enum class opcode_2byte_t : uint8_t {
-    // with escape 0F
-    group6 = 0x0,
-    group7 = 0x1,
-    syscall = 0x5,
-    clts = 0x6,
-    sysret = 0x7,
-    invd = 0x8,
-    wbinvd = 0x9,
-    ud2 = 0xb,
-    mov_from_cr = 0x20,
-    mov_from_dr = 0x21,
-    mov_to_cr = 0x22,
-    mov_to_dr = 0x23,
-    wrmsr = 0x30,
-    rdtsc = 0x31,
-    rdmsr = 0x32,
-    rdpmc = 0x33,
-    cmovo = 0x40,
-    cmovno = 0x41,
-    cmovb = 0x42, // cmovnae
-    cmovae = 0x43, // cmovnb
-    cmove = 0x44, // cmovz
-    cmovne = 0x45, //cmovnz
-    cmovbe = 0x46, // cmovna
-    cmova = 0x47, // cmovnbe
-    cmovs = 0x48,
-    cmovns = 0x49,
-    cmovp = 0x4a, // cmovpe
-    cmovnp = 0x4b, // cmovpo
-    cmovl = 0x4c, // cmovnge
-    cmovge = 0x4d, // cmovnl
-    cmovle = 0x4e, // cmovng
-    cmovg = 0x4f, // cmovnle
-    vmread = 0x78,
-    vmwrite = 0x79,
-    jo = 0x80,
-    jno = 0x81,
-    jb = 0x82, // jnae / jc
-    jnb = 0x83, // jae / jnc
-    je = 0x84, // jz
-    jne = 0x85, // jnz
-    jbe = 0x86, // jna
-    jnbe = 0x87, // ja
-    js = 0x88,
-    jns = 0x89,
-    jp = 0x8a, // jpe
-    jpo = 0x8b, // jnp
-    jl = 0x8c, // jnge
-    jnl = 0x8d, // jge
-    jle = 0x8e, // jng
-    jnle = 0x8f, // jg
-    seto = 0x90,
-    setno = 0x91,
-    setb = 0x92, // setnae
-    setnb = 0x93, // setae
-    sete = 0x94, // setz
-    setne = 0x95, // setnz
-    setbe = 0x96, // setna
-    setnbe = 0x97, // seta
-    sets = 0x98,
-    setns = 0x99,
-    setp = 0x9a, // setpe
-    setnp = 0x9b, // setpo
-    setl = 0x9c, // setnge
-    setnl = 0x9d, // setge
-    setle = 0x9e, // setng
-    setnle = 0x9f, // setg
-    cpuid = 0xa2,
-    group15 = 0xae,
-    imul = 0xaf,
-    bts = 0xab,
-    cmpxchg_small = 0xb0,
-    cmpxchg = 0xb1,
-    movzx_small = 0xb6, // byte/word
-    movzx = 0xb7, // dword/qword
-    movsx_small = 0xbe, // byte/word
-    movsx = 0xbf, // dword/qword
-    xadd_8bit = 0xc0,
-    xadd = 0xc1,
-    group9 = 0xcf,
-    bswap_eax = 0xc8,
-    bswap_ecx = 0xc9,
-    bswap_edx = 0xca,
-    bswap_ebx = 0xcb,
-    bswap_esp = 0xcc,
-    bswap_ebp = 0xcd,
-    bswap_esi = 0xce,
-    bswap_edi = 0xcf
-};
-
-enum class group6_register_encoding_t : uint8_t {
-    // 3 bits
-    sldt = 0,
-    str = 1,
-    lldt = 2,
-    ltr = 3,
-    verr = 4,
-    verw = 5
-};
-
-enum class group7_register_encoding_t : uint8_t {
-    // 3 bits
-    sgdt = 0,
-    sidt = 1,
-    lgdt = 2,
-    lidt = 3,
-    msync = 4,
-    reserved = 5,
-    lmsw = 6,
-    invlpg = 7
-};
-
-enum class group7_extended_register_encoding_t : uint8_t {
-    // when mod=11
-    // full ModR/M byte
-    vmcall = 0xc1,
-    vmlaunch = 0xc2,
-    vmresume = 0xc3,
-    monitor = 0xc8,
-    mwait = 0xc9,
-    xgetbv = 0xd0,
-    xsetbv = 0xd1
-};
-
-enum class group15_register_encoding_t : uint8_t {
-    // 3 bits
-    fxsave = 0,
-    fxstor = 1,
-    ldmxcsr = 2,
-    stmxcsr = 3,
-    lfence = 5,
-    mfence = 6,
-    sfence = 7
-};
-
-enum class group9_register_encoding_t : uint8_t {
-    // 3 bits
-    chmpxchg8b = 0,
-    chmpxchg16b = 1,
-    vmptrld = 3,
-    vmptrst = 4,
-    vmclear = 5,
-    vmxon = 6,
-    rdrand = 7
-};
-
 enum class opcode_family_t {
     primary = 0,
     extended_2byte,
@@ -346,7 +809,12 @@ enum class opcode_group_t {
     group8,
     group9,
     group11,
-    group15
+    group12,
+    group13,
+    group14,
+    group15,
+    group16,
+    group_nop
 };
 
 static constexpr uint8_t rex_prefix_range_min = 0x40; // rex is for x64 only
@@ -389,20 +857,6 @@ enum class branch_hint_t : uint8_t {
     not_taken,
 };
 
-enum class decoded_operand_type_t : uint8_t {
-    none,
-    immediate_byte,
-    immediate_word,
-    immediate_dword,
-    immediate_qword,
-    reg,
-    memory,
-    memory_offset,
-    memory_scaled,
-    memory_scaled2,
-    memory_sum,
-};
-
 enum class register_t {
     al, ah, ax, eax, rax,
     bl, bh, bx, ebx, rbx,
@@ -429,231 +883,6 @@ enum class addressing_size_t {
     word,
     dword,
     qword
-};
-
-namespace def {
-
-enum class opcode_flag_t {
-    none = 0,
-    lockable,
-    group,
-};
-
-constexpr opcode_flag_t operator|(const opcode_flag_t lhs, const opcode_flag_t rhs) {
-    return static_cast<opcode_flag_t>(static_cast<uint8_t>(lhs) | static_cast<uint8_t>(rhs));
-}
-
-constexpr opcode_flag_t operator&(const opcode_flag_t lhs, const opcode_flag_t rhs) {
-    return static_cast<opcode_flag_t>(static_cast<uint8_t>(lhs) & static_cast<uint8_t>(rhs));
-}
-
-// see Intel SDM Vol 2 Appendix A Chapter A.2.1
-enum class opaddr_t {
-    A,  // A : he instruction has no ModR/M byte; the address of the operand is encoded in the instruction.
-        // No base register, index register, or scaling factor can be applied (for example, far JMP (EA)).
-    B,  // B : The VEX.vvvv field of the VEX prefix selects a general purpose register
-    C,  // C : The reg field of the ModR/M byte selects a control register
-    D,  // D : The reg field of the ModR/M byte selects a debug register
-    E,  // E : A ModR/M byte follows the opcode and specifies the operand. The operand is either a general-purpose
-        // register or a memory address. If it is a memory address, the address is computed from a segment register
-        // and any of the following values: a base register, an index register, a scaling factor, a displacement.
-    F,  // F : EFLAGS/RFLAGS Register
-
-    G,  // G : The reg field of the ModR/M byte selects a general register
-    H,  // H : The VEX.vvvv field of the VEX prefix selects a 128-bit XMM register or a 256-bit YMM register, determined
-        // by operand type. For legacy SSE encodings this operand does not exist, changing the instruction to
-        // destructive form
-    I,  // I : Immediate data: the operand value is encoded in subsequent bytes of the instruction.
-    J,  // J : The instruction contains a relative offset to be added to the instruction pointer register
-    L,  // L : The upper 4 bits of the 8-bit immediate selects a 128-bit XMM register or a 256-bit YMM register, determined by operand type.
-    M,  // M : The ModR/M byte may refer only to memory
-    N,  // N: The R/M field of the ModR/M byte selects a packed-quadword, MMX technology register.
-    O,  // O: The instruction has no ModR/M byte. The offset of the operand is coded as a word or double word
-        // (depending on address size attribute) in the instruction. No base register, index register, or scaling factor
-        // can be applied
-    P,  // P : The reg field of the ModR/M byte selects a packed quadword MMX technology register
-    Q,  // Q : A ModR/M byte follows the opcode and specifies the operand. The operand is either an MMX technology register or a memory address. If it is a memory address, the address is computed from a segment register
-        // and any of the following values: a base register, an index register, a scaling factor, and a displacement
-    R,  // R : The R/M field of the ModR/M byte may refer only to a general register
-    S,  // S : The reg field of the ModR/M byte selects a segment register
-    U,  // U : The R/M field of the ModR/M byte selects a 128-bit XMM register or a 256-bit YMM register, determined by operand type.
-    V,  // V : The reg field of the ModR/M byte selects a 128-bit XMM register or a 256-bit YMM register, determined by operand type.
-    W,  // W : A ModR/M byte follows the opcode and specifies the operand. The operand is either a 128-bit XMM register, a 256-bit YMM register (determined by operand type), or a memory address. If it is a memory address, the
-        // address is computed from a segment register and any of the following values: a base register, an index register, a scaling factor, and a displacement.
-    X,  // X : Memory addressed by the DS:rSI register pair
-    Y,  // Y : Memory addressed by the ES:rDI register pair
-};
-
-// see Intel SDM Vol 2 Appendix A Chapter A.2.2
-enum class opsize_t {
-    none,
-    a, // a : Two one-word operands in memory or two double-word operands in memory, depending on operand-size attribute
-    b, // b : Byte, regardless of operand-size attribute.
-    c, // c : Byte or word, depending on operand-size attribute.
-    d, // d : Doubleword, regardless of operand-size attribute.
-    dq,// dq : Double-quadword, regardless of operand-size attribute.
-    p, // p : 32-bit, 48-bit, or 80-bit pointer, depending on operand-size attribute
-    pd,// pd : 128-bit or 256-bit packed double precision floating-point data.
-    pl,// pl : Quadword MMX technology register
-    ps,// ps : 128-bit or 256-bit packed single-precision floating-point data.
-    q, // q : Quadword, regardless of operand-size attribute
-    qq,// qq : Quad-Quadword (256-bits), regardless of operand-size attribute.
-    s, // s : 6-byte or 10-byte pseudo-descriptor
-    sd,// sd : Scalar element of a 128-bit double precision floating data
-    ss,// ss : Scalar element of a 128-bit single-precision floating data
-    si,// si : Doubleword integer register
-    v, // v : Word, doubleword or quadword (in 64-bit mode), depending on operand-size attribute.
-    w, // w : Word, regardless of operand-size attribute
-    x, // x : dq or qq based on the operand-size attribute
-    y, // y : Doubleword or quadword (in 64-bit mode), depending on operand-size attribute
-    z, // z : Word for 16-bit operand-size or doubleword for 32 or 64-bit operand-size.
-};
-
-enum class mem_addr_size_t {
-    byte = 0,
-    variable
-};
-
-enum class embedded_info_type_t {
-    none,
-    reg,
-    reg_enc,
-    memory,
-    const_int,
-};
-
-struct opcode_embedded_info_t {
-    embedded_info_type_t type = embedded_info_type_t::none;
-    union {
-        register_t reg;
-        extended_register_encoding_t reg_enc;
-        mem_addr_size_t mem_size;
-        int i;
-    } data{};
-
-    opcode_embedded_info_t() = default;
-    // ReSharper disable once CppNonExplicitConvertingConstructor
-    opcode_embedded_info_t(register_t reg);
-    // ReSharper disable once CppNonExplicitConvertingConstructor
-    opcode_embedded_info_t(extended_register_encoding_t reg_enc);
-    // ReSharper disable once CppNonExplicitConvertingConstructor
-    opcode_embedded_info_t(mem_addr_size_t mem_size);
-    // ReSharper disable once CppNonExplicitConvertingConstructor
-    opcode_embedded_info_t(int i);
-};
-
-struct operand_t {
-    opaddr_t addressing;
-    opsize_t size;
-    opcode_embedded_info_t embedded;
-    bool exists = true;
-};
-
-struct opcode_t {
-    const char* mnemonic;
-    operand_t operand1;
-    operand_t operand2;
-    opcode_flag_t flags;
-    bool exists = true;
-};
-
-static constexpr auto table_size = 256;
-extern const opcode_t table_primary[table_size];
-extern const opcode_t table_extended_2byte[table_size];
-
-static constexpr auto group_table_size = 8;
-extern const opcode_t table_group_1[group_table_size];
-extern const opcode_t table_group_2[group_table_size];
-extern const opcode_t table_group_3[group_table_size];
-extern const opcode_t table_group_4[group_table_size];
-extern const opcode_t table_group_5[group_table_size];
-extern const opcode_t table_group_6[group_table_size];
-extern const opcode_t table_group_7[group_table_size];
-extern const opcode_t table_group_8[group_table_size];
-extern const opcode_t table_group_9[group_table_size];
-extern const opcode_t table_group_11[group_table_size];
-extern const opcode_t table_group_15[group_table_size];
-
-}
-
-struct decoded_operand_t {
-    decoded_operand_type_t type;
-    union {
-        uint8_t i_byte;
-        uint8_t i_word;
-        uint8_t i_dword;
-        uint8_t i_qword;
-        register_t reg;
-        struct {
-            register_t base;
-            size_t displacement;
-        } mem;
-        struct {
-            size_t displacement;
-        } mem_offset;
-        struct {
-            register_t base;
-            register_t index;
-            size_t scale;
-            size_t displacement;
-        } mem_scaled;
-        struct {
-            register_t index;
-            size_t scale;
-            size_t displacement;
-        } mem_scaled2;
-        struct {
-            register_t reg1;
-            register_t reg2;
-            size_t displacement;
-        } mem_sum;
-    } value;
-};
-
-struct decoded_opcode_t {
-    struct {
-        bool lock;
-        repeat_type_t repeat;
-        segment_override_t segment_override;
-        branch_hint_t branch_hint;
-        bool operand_size;
-        bool address_size;
-        struct {
-            bool present;
-            bool base;
-            bool index;
-            bool reg;
-            bool width;
-        } rex;
-    } prefix;
-
-    def::opcode_t definition;
-    opcode_family_t family;
-    uint8_t opcode;
-    uint32_t full_opcode;
-    decoded_operand_t op1;
-    decoded_operand_t op2;
-};
-
-enum class decode_error_t {
-    success = 0,
-    unsupported_hardware_mode,
-    unsupported_operand_size,
-    unknown_register_encoding,
-    unknown_extended_register_encoding,
-    unknown_operand_addressing_size,
-    unknown_modrm_mod,
-    unknown_operand_addressing_mode,
-    opcode_definition_not_found,
-    opcode_group_is_unknown,
-    opcode_missing_embedded_data
-};
-
-struct decode_result_t {
-    bool success;
-    decode_error_t error_code;
-    const void* ptr;
-    decoded_opcode_t opcode;
 };
 
 #pragma pack(push, 1)
@@ -701,11 +930,12 @@ struct sib_t {
 
 #pragma pack(pop)
 
+const char* get_instruction_mnemonic(instruction_t instruction);
+instruction_t translate_instruction_pair(instruction_pair_t pair);
+
 register_t translate_register(register_encoding_t encoding, addressing_size_t size);
 register_t translate_register(extended_register_encoding_t encoding, addressing_size_t size);
 register_t translate_byte_rex_modified_register(register_encoding_t encoding);
 const char* get_register_name(register_t register_);
-
-decode_result_t decode(mode_t mode, const void* ptr);
 
 }
