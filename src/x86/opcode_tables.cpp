@@ -111,15 +111,15 @@ const opcode_t table_primary[256] = {
     { instruction_t::add,  { opaddr_t::G, opsize_t::v }, { opaddr_t::E, opsize_t::v }, opcode_flag_t::lockable },
     { instruction_t::add,  { opaddr_t::A, opsize_t::b, { extended_register_encoding_t::rax } }, { opaddr_t::I, opsize_t::b }, opcode_flag_t::none },
     { instruction_t::add,  { opaddr_t::A, opsize_t::v, { extended_register_encoding_t::rax } }, { opaddr_t::I, opsize_t::z }, opcode_flag_t::none },
-    { instruction_t::push, { opaddr_t::O, opsize_t::w, { register_t::es } }, no_operand,                             opcode_flag_t::none },
-    { instruction_t::pop,  { opaddr_t::O, opsize_t::w, { register_t::es } }, no_operand,                             opcode_flag_t::none },
+    { instruction_t::push, { opaddr_t::O, opsize_t::w, { register_t::es } }, no_operand,                             opcode_flag_t::stack_op },
+    { instruction_t::pop,  { opaddr_t::O, opsize_t::w, { register_t::es } }, no_operand,                             opcode_flag_t::stack_op },
     { instruction_t::or_,   { opaddr_t::E, opsize_t::b }, { opaddr_t::G, opsize_t::b }, opcode_flag_t::lockable },
     { instruction_t::or_,   { opaddr_t::E, opsize_t::v }, { opaddr_t::G, opsize_t::v }, opcode_flag_t::lockable },
     { instruction_t::or_,   { opaddr_t::G, opsize_t::b }, { opaddr_t::E, opsize_t::b }, opcode_flag_t::lockable },
     { instruction_t::or_,   { opaddr_t::G, opsize_t::v }, { opaddr_t::E, opsize_t::v }, opcode_flag_t::lockable },
     { instruction_t::or_,   { opaddr_t::A, opsize_t::b, { extended_register_encoding_t::rax } }, { opaddr_t::I, opsize_t::b }, opcode_flag_t::none },
     { instruction_t::or_,   { opaddr_t::A, opsize_t::v, { extended_register_encoding_t::rax } }, { opaddr_t::I, opsize_t::z }, opcode_flag_t::none },
-    { instruction_t::push, { opaddr_t::O, opsize_t::w,  { register_t::cs } }, no_operand,                             opcode_flag_t::none },
+    { instruction_t::push, { opaddr_t::O, opsize_t::w,  { register_t::cs } }, no_operand,                             opcode_flag_t::stack_op },
     no_opcode, // 2byte escape
 
     // 0x10 - 0x1F
@@ -129,7 +129,7 @@ const opcode_t table_primary[256] = {
     { instruction_t::adc,  { opaddr_t::G, opsize_t::v }, { opaddr_t::E, opsize_t::v }, opcode_flag_t::lockable },
     { instruction_t::adc,  { opaddr_t::A, opsize_t::b, { extended_register_encoding_t::rax } }, { opaddr_t::I, opsize_t::b }, opcode_flag_t::none },
     { instruction_t::adc,  { opaddr_t::A, opsize_t::v, { extended_register_encoding_t::rax } }, { opaddr_t::I, opsize_t::z }, opcode_flag_t::none },
-    { instruction_t::push, { opaddr_t::O, opsize_t::w, { register_t::ss } }, no_operand,                             opcode_flag_t::none },
+    { instruction_t::push, { opaddr_t::O, opsize_t::w, { register_t::ss } }, no_operand,                             opcode_flag_t::stack_op },
     { instruction_t::pop,  { opaddr_t::O, opsize_t::w, { register_t::ss } }, no_operand,                             opcode_flag_t::none },
     { instruction_t::sbb,  { opaddr_t::E, opsize_t::b }, { opaddr_t::G, opsize_t::b }, opcode_flag_t::lockable },
     { instruction_t::sbb,  { opaddr_t::E, opsize_t::v }, { opaddr_t::G, opsize_t::v }, opcode_flag_t::lockable },
@@ -137,7 +137,7 @@ const opcode_t table_primary[256] = {
     { instruction_t::sbb,  { opaddr_t::G, opsize_t::v }, { opaddr_t::E, opsize_t::v }, opcode_flag_t::lockable },
     { instruction_t::sbb,  { opaddr_t::A, opsize_t::b, { extended_register_encoding_t::rax } }, { opaddr_t::I, opsize_t::b }, opcode_flag_t::none },
     { instruction_t::sbb,  { opaddr_t::A, opsize_t::v, { extended_register_encoding_t::rax } }, { opaddr_t::I, opsize_t::z }, opcode_flag_t::none },
-    { instruction_t::push, { opaddr_t::O, opsize_t::w, { register_t::ds } }, no_operand,                             opcode_flag_t::none },
+    { instruction_t::push, { opaddr_t::O, opsize_t::w, { register_t::ds } }, no_operand,                             opcode_flag_t::stack_op },
     { instruction_t::pop,  { opaddr_t::O, opsize_t::w, { register_t::ds } }, no_operand,                             opcode_flag_t::none },
 
     // 0x20 - 0x2F
@@ -195,25 +195,25 @@ const opcode_t table_primary[256] = {
     no_opcode,
 
     // 0x50 - 0x5F
-    { instruction_t::push, { opaddr_t::O, opsize_t::v, { extended_register_encoding_t::rax } }, no_operand, opcode_flag_t::none },
-    { instruction_t::push, { opaddr_t::O, opsize_t::v, { extended_register_encoding_t::rcx } }, no_operand, opcode_flag_t::none },
-    { instruction_t::push, { opaddr_t::O, opsize_t::v, { extended_register_encoding_t::rdx } }, no_operand, opcode_flag_t::none },
-    { instruction_t::push, { opaddr_t::O, opsize_t::v, { extended_register_encoding_t::rbx } }, no_operand, opcode_flag_t::none },
-    { instruction_t::push, { opaddr_t::O, opsize_t::v, { extended_register_encoding_t::rsp } }, no_operand, opcode_flag_t::none },
-    { instruction_t::push, { opaddr_t::O, opsize_t::v, { extended_register_encoding_t::rbp } }, no_operand, opcode_flag_t::none },
-    { instruction_t::push, { opaddr_t::O, opsize_t::v, { extended_register_encoding_t::rsi } }, no_operand, opcode_flag_t::none },
-    { instruction_t::push, { opaddr_t::O, opsize_t::v, { extended_register_encoding_t::rdi } }, no_operand, opcode_flag_t::none },
-    { instruction_t::pop,  { opaddr_t::O, opsize_t::v, { extended_register_encoding_t::rax } }, no_operand, opcode_flag_t::none },
-    { instruction_t::pop,  { opaddr_t::O, opsize_t::v, { extended_register_encoding_t::rcx } }, no_operand, opcode_flag_t::none },
-    { instruction_t::pop,  { opaddr_t::O, opsize_t::v, { extended_register_encoding_t::rdx } }, no_operand, opcode_flag_t::none },
-    { instruction_t::pop,  { opaddr_t::O, opsize_t::v, { extended_register_encoding_t::rbx } }, no_operand, opcode_flag_t::none },
-    { instruction_t::pop,  { opaddr_t::O, opsize_t::v, { extended_register_encoding_t::rsp } }, no_operand, opcode_flag_t::none },
-    { instruction_t::pop,  { opaddr_t::O, opsize_t::v, { extended_register_encoding_t::rbp } }, no_operand, opcode_flag_t::none },
-    { instruction_t::pop,  { opaddr_t::O, opsize_t::v, { extended_register_encoding_t::rsi } }, no_operand, opcode_flag_t::none },
-    { instruction_t::pop,  { opaddr_t::O, opsize_t::v, { extended_register_encoding_t::rdi } }, no_operand, opcode_flag_t::none },
+    { instruction_t::push, { opaddr_t::O, opsize_t::v, { extended_register_encoding_t::rax } }, no_operand, opcode_flag_t::stack_op },
+    { instruction_t::push, { opaddr_t::O, opsize_t::v, { extended_register_encoding_t::rcx } }, no_operand, opcode_flag_t::stack_op },
+    { instruction_t::push, { opaddr_t::O, opsize_t::v, { extended_register_encoding_t::rdx } }, no_operand, opcode_flag_t::stack_op },
+    { instruction_t::push, { opaddr_t::O, opsize_t::v, { extended_register_encoding_t::rbx } }, no_operand, opcode_flag_t::stack_op },
+    { instruction_t::push, { opaddr_t::O, opsize_t::v, { extended_register_encoding_t::rsp } }, no_operand, opcode_flag_t::stack_op },
+    { instruction_t::push, { opaddr_t::O, opsize_t::v, { extended_register_encoding_t::rbp } }, no_operand, opcode_flag_t::stack_op },
+    { instruction_t::push, { opaddr_t::O, opsize_t::v, { extended_register_encoding_t::rsi } }, no_operand, opcode_flag_t::stack_op },
+    { instruction_t::push, { opaddr_t::O, opsize_t::v, { extended_register_encoding_t::rdi } }, no_operand, opcode_flag_t::stack_op },
+    { instruction_t::pop,  { opaddr_t::O, opsize_t::v, { extended_register_encoding_t::rax } }, no_operand, opcode_flag_t::stack_op },
+    { instruction_t::pop,  { opaddr_t::O, opsize_t::v, { extended_register_encoding_t::rcx } }, no_operand, opcode_flag_t::stack_op },
+    { instruction_t::pop,  { opaddr_t::O, opsize_t::v, { extended_register_encoding_t::rdx } }, no_operand, opcode_flag_t::stack_op },
+    { instruction_t::pop,  { opaddr_t::O, opsize_t::v, { extended_register_encoding_t::rbx } }, no_operand, opcode_flag_t::stack_op },
+    { instruction_t::pop,  { opaddr_t::O, opsize_t::v, { extended_register_encoding_t::rsp } }, no_operand, opcode_flag_t::stack_op },
+    { instruction_t::pop,  { opaddr_t::O, opsize_t::v, { extended_register_encoding_t::rbp } }, no_operand, opcode_flag_t::stack_op },
+    { instruction_t::pop,  { opaddr_t::O, opsize_t::v, { extended_register_encoding_t::rsi } }, no_operand, opcode_flag_t::stack_op },
+    { instruction_t::pop,  { opaddr_t::O, opsize_t::v, { extended_register_encoding_t::rdi } }, no_operand, opcode_flag_t::stack_op },
 
     // 0x60 - 0x6F
-    { instruction_t::pusha, no_operand,                           no_operand,                             opcode_flag_t::none },
+    { instruction_t::pusha, no_operand,                           no_operand,                             opcode_flag_t::stack_op },
     { instruction_t::popa,  no_operand,                           no_operand,                             opcode_flag_t::none },
     { instruction_t::bound, no_operand,                   no_operand,                             opcode_flag_t::none },
     { instruction_t::movsxd,{ opaddr_t::G, opsize_t::v }, { opaddr_t::E, opsize_t::d }, opcode_flag_t::none },
@@ -221,9 +221,9 @@ const opcode_t table_primary[256] = {
     no_opcode, // seg gs prefix
     no_opcode, // opsize prefix
     no_opcode, // addrsize prefix
-    { instruction_t::push, { opaddr_t::I, opsize_t::z }, no_operand,                             opcode_flag_t::none },
+    { instruction_t::push, { opaddr_t::I, opsize_t::z }, no_operand,                             opcode_flag_t::stack_op },
     { instruction_t::imul, { opaddr_t::G, opsize_t::v }, { opaddr_t::E, opsize_t::v }, opcode_flag_t::none },
-    { instruction_t::push, { opaddr_t::I, opsize_t::b }, no_operand,                             opcode_flag_t::none },
+    { instruction_t::push, { opaddr_t::I, opsize_t::b }, no_operand,                             opcode_flag_t::stack_op },
     { instruction_t::imul, { opaddr_t::G, opsize_t::v }, { opaddr_t::E, opsize_t::v }, opcode_flag_t::none },
     { instruction_t::insb, { opaddr_t::Y, opsize_t::b }, { opaddr_t::A, opsize_t::w, { extended_register_encoding_t::rdx } }, opcode_flag_t::none },
     { instruction_t::insw, { opaddr_t::Y, opsize_t::v }, { opaddr_t::A, opsize_t::w, { extended_register_encoding_t::rdx } }, opcode_flag_t::none },
@@ -279,8 +279,8 @@ const opcode_t table_primary[256] = {
     { instruction_t::cwd,  no_operand,                            no_operand,                             opcode_flag_t::none },
     { instruction_t::callf, no_operand,                            no_operand,                             opcode_flag_t::none },
     { instruction_pair_t::wait_or_fwait, no_operand,                            no_operand,                             opcode_flag_t::pair },
-    { instruction_t::pushf,{ opaddr_t::F, opsize_t::v }, no_operand,                             opcode_flag_t::none },
-    { instruction_t::popf, { opaddr_t::F, opsize_t::v }, no_operand,                             opcode_flag_t::none },
+    { instruction_t::pushf,{ opaddr_t::F, opsize_t::v }, no_operand,                             opcode_flag_t::stack_op },
+    { instruction_t::popf, { opaddr_t::F, opsize_t::v }, no_operand,                             opcode_flag_t::stack_op },
     { instruction_t::sahf, no_operand,                            no_operand,                             opcode_flag_t::none },
     { instruction_t::lahf, no_operand,                            no_operand,                             opcode_flag_t::none },
 
@@ -578,7 +578,7 @@ const opcode_t table_extended_2byte[256] = {
     { instruction_t::setnle,    { opaddr_t::E, opsize_t::b }, no_operand,                             opcode_flag_t::none },
 
     // 0xA0 - 0xAF (Segment pointer pushes/pops, CPUID, bit scanning operations)
-    { instruction_t::push,      { opaddr_t::O, opsize_t::w, { register_t::fs } }, no_operand,                             opcode_flag_t::none },
+    { instruction_t::push,      { opaddr_t::O, opsize_t::w, { register_t::fs } }, no_operand,                             opcode_flag_t::stack_op },
     { instruction_t::pop,       { opaddr_t::O, opsize_t::w, { register_t::fs } }, no_operand,                             opcode_flag_t::none },
     { instruction_t::cpuid,     no_operand,                            no_operand,                             opcode_flag_t::none },
     { instruction_t::bt,        { opaddr_t::E, opsize_t::v }, { opaddr_t::G, opsize_t::v }, opcode_flag_t::none },
@@ -586,7 +586,7 @@ const opcode_t table_extended_2byte[256] = {
     { instruction_t::shld,      { opaddr_t::E, opsize_t::v }, { opaddr_t::G, opsize_t::v }, opcode_flag_t::none }, // 3rd operand implicit CL
     no_opcode,
     no_opcode,
-    { instruction_t::push,      { opaddr_t::O, opsize_t::w, { register_t::gs } }, no_operand,                             opcode_flag_t::none }, // 0xA8
+    { instruction_t::push,      { opaddr_t::O, opsize_t::w, { register_t::gs } }, no_operand,                             opcode_flag_t::stack_op }, // 0xA8
     { instruction_t::pop,       { opaddr_t::O, opsize_t::w, { register_t::gs } }, no_operand,                             opcode_flag_t::none },
     { instruction_t::rsm,       no_operand,                            no_operand,                             opcode_flag_t::none },
     { instruction_t::bts,       { opaddr_t::E, opsize_t::v }, { opaddr_t::G, opsize_t::v }, opcode_flag_t::lockable },
@@ -603,7 +603,7 @@ const opcode_t table_extended_2byte[256] = {
     { instruction_t::lfs,       { opaddr_t::G, opsize_t::v }, { opaddr_t::M, opsize_t::p }, opcode_flag_t::none },
     { instruction_t::lgs,       { opaddr_t::G, opsize_t::v }, { opaddr_t::M, opsize_t::p }, opcode_flag_t::none },
     { instruction_t::movzbl,    { opaddr_t::G, opsize_t::v }, { opaddr_t::E, opsize_t::b }, opcode_flag_t::none },
-    { instruction_t::movzwl,    { opaddr_t::G, opsize_t::v }, { opaddr_t::E, opsize_t::w }, opcode_flag_t::none },
+    { instruction_t::movzx,    { opaddr_t::G, opsize_t::v }, { opaddr_t::E, opsize_t::w }, opcode_flag_t::none },
     no_opcode,
     { instruction_t::ud1,       no_operand,                            no_operand,                             opcode_flag_t::none },
     { opcode_group_t::group8,      no_operand,                            no_operand,                           opcode_flag_t::lockable | opcode_flag_t::group }, // Bit group extensions
@@ -742,7 +742,7 @@ const opcode_t table_group_5[8] = {
     { instruction_t::call,    { opaddr_t::E, opsize_t::p }, no_operand, opcode_flag_t::none }, // Far
     { instruction_t::jmp,     { opaddr_t::E, opsize_t::v }, no_operand, opcode_flag_t::none }, // Near
     { instruction_t::jmp,     { opaddr_t::E, opsize_t::p }, no_operand, opcode_flag_t::none }, // Far
-    { instruction_t::push,    { opaddr_t::E, opsize_t::v }, no_operand, opcode_flag_t::none },
+    { instruction_t::push,    { opaddr_t::E, opsize_t::v }, no_operand, opcode_flag_t::stack_op },
     no_opcode,
 };
 

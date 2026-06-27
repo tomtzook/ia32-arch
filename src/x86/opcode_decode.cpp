@@ -64,6 +64,26 @@ static size_t get_sib_scale_value(const sib_scale_t scale) {
     }
 }
 
+static bool is_stack_op(const decoder_context_t& context) {
+    /*switch (context.decoded.instruction) {
+        case instruction_t::push:
+        case instruction_t::pusha:
+        case instruction_t::pushad:
+        case instruction_t::pushfq:
+        case instruction_t::pushfd:
+        case instruction_t::pop:
+        case instruction_t::popa:
+        case instruction_t::popad:
+        case instruction_t::popfq:
+        case instruction_t::popfd:
+        case instruction_t::popcnt:
+            return true;
+        default:
+            return false;
+    }*/
+    return context.decoded.definition.is_stack_op();
+}
+
 static bool determine_group(const opcode_family_t family, const uint8_t opcode, opcode_group_t& group_out) {
     opcode_group_t group;
     switch (family) {
@@ -268,25 +288,6 @@ static void handle_opcode(decoder_context_t& context) {
     context.decoded.opcode = opcode_value;
 }
 
-static bool is_stack_op(const decoder_context_t& context) {
-    switch (context.decoded.instruction) {
-        case instruction_t::push:
-        case instruction_t::pusha:
-        case instruction_t::pushad:
-        case instruction_t::pushfq:
-        case instruction_t::pushfd:
-        case instruction_t::pop:
-        case instruction_t::popa:
-        case instruction_t::popad:
-        case instruction_t::popfq:
-        case instruction_t::popfd:
-        case instruction_t::popcnt:
-            return true;
-        default:
-            return false;
-    }
-}
-
 static decode_error_t determine_addressing_size(const decoder_context_t& context, const tables::opsize_t opsize, addressing_size_t& size_out) {
     auto size = addressing_size_t::byte;
     switch (opsize) {
@@ -449,14 +450,14 @@ static decode_error_t get_extra_register_from_modrm(const decoder_context_t& con
     return decode_error_t::success;
 }
 
-static size_t read_modrm_displacement(decoder_context_t& context, const mod_rm_t& modrm) {
+static ssize_t read_modrm_displacement(decoder_context_t& context, const mod_rm_t& modrm) {
     switch (modrm.bits.mod) {
         case mod_type_t::memory_no_disp:
             return 0;
         case mod_type_t::memory_short_disp:
-            return read<uint8_t>(context);
+            return read<int8_t>(context);
         case mod_type_t::memory_long_disp:
-            return context.mode == mode_t::real_mode ? read<uint16_t>(context) : read<uint32_t>(context);
+            return context.mode == mode_t::real_mode ? read<int16_t>(context) : read<int32_t>(context);
         default:
             return 0;
     }
@@ -539,7 +540,7 @@ static decode_error_t handle_modrm_mem(decoder_context_t& context, const address
                 bool has_index;
                 register_t index_reg;
                 if (sib.index != sib_no_index_reg) {
-                    DECODE_TRY(get_extra_register_from_modrm(context, addressing_size, modrm, index_reg));
+                    DECODE_TRY(get_index_register_from_modrm(context, addressing_size, modrm, index_reg));
                     has_index = true;
                 } else {
                     has_index = false;
@@ -549,7 +550,7 @@ static decode_error_t handle_modrm_mem(decoder_context_t& context, const address
                     if (!has_index) {
                         if (!has_base || base_reg == register_t::r13) {
                             operand.type = decoded_operand_type_t::memory_offset;
-                            operand.value.mem_offset.displacement = read<uint32_t>(context);
+                            operand.value.mem_offset.displacement = read<int32_t>(context);
                         } else {
                             operand.type = decoded_operand_type_t::memory;
                             operand.value.mem.base = base_reg;
@@ -559,7 +560,7 @@ static decode_error_t handle_modrm_mem(decoder_context_t& context, const address
                         if (!has_base || base_reg == register_t::r13) {
                             operand.type = decoded_operand_type_t::memory_scaled2;
                             operand.value.mem_scaled2.index = index_reg;
-                            operand.value.mem_scaled2.displacement = read<uint32_t>(context);
+                            operand.value.mem_scaled2.displacement = read<int32_t>(context);
                         } else {
                             operand.type = decoded_operand_type_t::memory_scaled;
                             operand.value.mem_scaled.base = base_reg;
@@ -583,7 +584,7 @@ static decode_error_t handle_modrm_mem(decoder_context_t& context, const address
                     }
                 }
             } else if (modrm.bits.mod == mod_type_t::memory_no_disp && modrm.bits.rm == modrm_use_rip_relative) {
-                const auto displacement = read<uint32_t>(context);
+                const auto displacement = read<int32_t>(context);
 
                 if (context.mode == mode_t::long_mode) {
                     operand.type = decoded_operand_type_t::memory;
@@ -612,6 +613,34 @@ static decode_error_t handle_modrm_mem(decoder_context_t& context, const address
     return decode_error_t::success;
 }
 
+static decode_error_t handle_addressing_A(decoder_context_t& context, const tables::operand_t& def, const addressing_size_t addressing_size, decoded_operand_t& operand_out) {
+    // operand info should be embedded in the opcode
+    decoded_operand_t operand{};
+    switch (def.embedded.type) {
+        case tables::embedded_info_type_t::reg:
+            operand.type = decoded_operand_type_t::reg;
+            operand.value.reg = def.embedded.data.reg;
+            break;
+        case tables::embedded_info_type_t::reg_enc:
+            operand.type = decoded_operand_type_t::reg;
+            operand.value.reg = translate_register(def.embedded.data.reg_enc, addressing_size);
+            break;
+        case tables::embedded_info_type_t::memory:
+            DECODE_TRY(read_operand_immediate(context, addressing_size, operand));
+            break;
+        case tables::embedded_info_type_t::const_int:
+            operand.type = decoded_operand_type_t::immediate_dword;
+            operand.value.i_dword = def.embedded.data.i;
+            break;
+        case tables::embedded_info_type_t::none:
+        default:
+            return decode_error_t::opcode_missing_embedded_data;
+    }
+
+    operand_out = operand;
+    return decode_error_t::success;
+}
+
 static decode_error_t handle_addressing_E(decoder_context_t& context, const addressing_size_t addressing_size, decoded_operand_t& operand_out) {
     // mod + r/m
     decoded_operand_t operand{};
@@ -629,105 +658,117 @@ static decode_error_t handle_addressing_E(decoder_context_t& context, const addr
     return decode_error_t::success;
 }
 
+static decode_error_t handle_addressing_G(const decoder_context_t& context, const addressing_size_t addressing_size, decoded_operand_t& operand_out) {
+    // modrm's reg field should contain our register
+    decoded_operand_t operand{};
+    if (context.decoded.definition.is_group()) {
+        // reg_opcode bits indicate the instruction in the group
+        operand.type = decoded_operand_type_t::none;
+    } else {
+        const auto& modrm = context.modrm.value;
+        // reg_opcode bits indicate the source register
+        register_t register_;
+        DECODE_TRY(get_extra_register_from_modrm(context, addressing_size, modrm, register_));
+        operand.type = decoded_operand_type_t::reg;
+        operand.value.reg = register_;
+    }
+
+    operand_out = operand;
+    return decode_error_t::success;
+}
+
+static decode_error_t handle_addressing_I(decoder_context_t& context, const addressing_size_t addressing_size, decoded_operand_t& operand_out) {
+    // immediate value encoded in the byte stream
+    decoded_operand_t operand{};
+    DECODE_TRY(read_operand_immediate(context, addressing_size, operand));
+
+    operand_out = operand;
+    return decode_error_t::success;
+}
+
+static decode_error_t handle_addressing_J(decoder_context_t& context, const addressing_size_t addressing_size, decoded_operand_t& operand_out) {
+    // basically meant for instructions that "jump" (also includes call). We should have a relative displacement
+    // encoded here, so lets get it. The actually "jump" target is rip_after_this_instruction + displacement
+    decoded_operand_t operand{};
+    operand.type = decoded_operand_type_t::instruction_displacement;
+    switch (addressing_size) {
+        case addressing_size_t::byte:
+            operand.value.instruct_displacement = read<int8_t>(context);
+            break;
+        case addressing_size_t::word:
+            operand.value.instruct_displacement = read<int16_t>(context);
+            break;
+        case addressing_size_t::dword:
+            operand.value.instruct_displacement = read<int32_t>(context);
+            break;
+        case addressing_size_t::qword:
+            operand.value.instruct_displacement = read<int64_t>(context);
+            break;
+        default:
+            return decode_error_t::unknown_operand_addressing_size;
+    }
+
+    operand_out = operand;
+    return decode_error_t::success;
+}
+
+static decode_error_t handle_addressing_M(decoder_context_t& context, const addressing_size_t addressing_size, decoded_operand_t& operand_out) {
+    // we should have modrm and it must refer to memory
+    decoded_operand_t operand{};
+    DECODE_TRY(handle_modrm_mem(context, addressing_size, operand));
+
+    operand_out = operand;
+    return decode_error_t::success;
+}
+
+static decode_error_t handle_addressing_O(decoder_context_t& context, const tables::operand_t& def, const addressing_size_t addressing_size, decoded_operand_t& operand_out) {
+    // we should have an embedded register in the opcode definition.
+    decoded_operand_t operand{};
+    switch (def.embedded.type) {
+        case tables::embedded_info_type_t::reg:
+            operand.type = decoded_operand_type_t::reg;
+            operand.value.reg = def.embedded.data.reg;
+            break;
+        case tables::embedded_info_type_t::reg_enc:
+            operand.type = decoded_operand_type_t::reg;
+            operand.value.reg = translate_register(def.embedded.data.reg_enc, addressing_size);
+            break;
+        case tables::embedded_info_type_t::none:
+        default:
+            return decode_error_t::opcode_missing_embedded_data;
+    }
+
+    operand_out = operand;
+    return decode_error_t::success;
+}
+
 static decode_error_t handle_operand(decoder_context_t& context, const tables::operand_t& def, decoded_operand_t& operand_out) {
     addressing_size_t addressing_size;
     DECODE_TRY(determine_addressing_size(context, def.size, addressing_size));
 
     decoded_operand_t operand{};
     switch (def.addressing) {
-        case tables::opaddr_t::A: {
-            // operand info should be embedded in the opcode
-            switch (def.embedded.type) {
-                case tables::embedded_info_type_t::reg:
-                    operand.type = decoded_operand_type_t::reg;
-                    operand.value.reg = def.embedded.data.reg;
-                    break;
-                case tables::embedded_info_type_t::reg_enc:
-                    operand.type = decoded_operand_type_t::reg;
-                    operand.value.reg = translate_register(def.embedded.data.reg_enc, addressing_size);
-                    break;
-                case tables::embedded_info_type_t::memory:
-                    DECODE_TRY(read_operand_immediate(context, addressing_size, operand));
-                    break;
-                case tables::embedded_info_type_t::const_int:
-                    operand.type = decoded_operand_type_t::immediate_dword;
-                    operand.value.i_dword = def.embedded.data.i;
-                    break;
-                case tables::embedded_info_type_t::none:
-                default:
-                    return decode_error_t::opcode_missing_embedded_data;
-            }
+        case tables::opaddr_t::A:
+            DECODE_TRY(handle_addressing_A(context, def, addressing_size, operand));
             break;
-        }
-        case tables::opaddr_t::E: {
-            // full modrm capability
+        case tables::opaddr_t::E:
             DECODE_TRY(handle_addressing_E(context, addressing_size, operand));
             break;
-        }
-        case tables::opaddr_t::G: {
-            // modrm's reg field should contain our register
-            if ((context.decoded.definition.flags & tables::opcode_flag_t::group) == tables::opcode_flag_t::group) {
-                // reg_opcode bits indicate the instruction in the group
-                operand.type = decoded_operand_type_t::none;
-            } else {
-                const auto& modrm = context.modrm.value;
-                // reg_opcode bits indicate the source register
-                register_t register_;
-                DECODE_TRY(get_extra_register_from_modrm(context, addressing_size, modrm, register_));
-                operand.type = decoded_operand_type_t::reg;
-                operand.value.reg = register_;
-            }
+        case tables::opaddr_t::G:
+            DECODE_TRY(handle_addressing_G(context, addressing_size, operand));
             break;
-        }
-        case tables::opaddr_t::I: {
-            // immediate value encoded in the byte stream
-            DECODE_TRY(read_operand_immediate(context, addressing_size, operand));
+        case tables::opaddr_t::I:
+            DECODE_TRY(handle_addressing_I(context, addressing_size, operand));
             break;
-        }
-        case tables::opaddr_t::J: {
-            // basically meant for instructions that "jump" (also includes call). We should have a relative displacement
-            // encoded here, so lets get it. The actually "jump" target is rip_after_this_instruction + displacement
-            operand.type = decoded_operand_type_t::instruction_displacement;
-            switch (addressing_size) {
-                case addressing_size_t::byte:
-                    operand.value.instruct_displacement = read<int8_t>(context);
-                    break;
-                case addressing_size_t::word:
-                    operand.value.instruct_displacement = read<int16_t>(context);
-                    break;
-                case addressing_size_t::dword:
-                    operand.value.instruct_displacement = read<int32_t>(context);
-                    break;
-                case addressing_size_t::qword:
-                    operand.value.instruct_displacement = read<int64_t>(context);
-                    break;
-                default:
-                    return decode_error_t::unknown_operand_addressing_size;
-            }
+        case tables::opaddr_t::J:
+            DECODE_TRY(handle_addressing_J(context, addressing_size, operand));
             break;
-        }
-        case tables::opaddr_t::M: {
-            // we should have modrm and it must refer to memory
-            DECODE_TRY(handle_modrm_mem(context, addressing_size, operand));
+        case tables::opaddr_t::M:
+            DECODE_TRY(handle_addressing_M(context, addressing_size, operand));
             break;
-        }
-        case tables::opaddr_t::O: {
-            // we should have an embedded register in the opcode definition.
-            switch (def.embedded.type) {
-                case tables::embedded_info_type_t::reg:
-                    operand.type = decoded_operand_type_t::reg;
-                    operand.value.reg = def.embedded.data.reg;
-                    break;
-                case tables::embedded_info_type_t::reg_enc:
-                    operand.type = decoded_operand_type_t::reg;
-                    operand.value.reg = translate_register(def.embedded.data.reg_enc, addressing_size);
-                    break;
-                case tables::embedded_info_type_t::none:
-                default:
-                    return decode_error_t::opcode_missing_embedded_data;
-            }
+        case tables::opaddr_t::O:
+            DECODE_TRY(handle_addressing_O(context, def, addressing_size, operand));
             break;
-        }
         default:
             return decode_error_t::unknown_operand_addressing_mode;
     }

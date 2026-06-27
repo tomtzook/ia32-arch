@@ -10,6 +10,7 @@ enum class opcode_flag_t {
     lockable,
     group,
     pair,
+    stack_op
 };
 
 constexpr opcode_flag_t operator|(const opcode_flag_t lhs, const opcode_flag_t rhs) {
@@ -148,6 +149,7 @@ struct opcode_t {
     constexpr bool is_empty() const { return !exists; }
     constexpr bool is_group() const { return (flags & opcode_flag_t::group) != opcode_flag_t::none; }
     constexpr bool is_pair() const { return (flags & opcode_flag_t::pair) != opcode_flag_t::none; }
+    constexpr bool is_stack_op() const { return (flags & opcode_flag_t::stack_op) != opcode_flag_t::none; }
 };
 
 static constexpr auto table_size = 256;

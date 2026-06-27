@@ -31,26 +31,26 @@ struct decoded_operand_t {
         register_t reg;
         struct {
             register_t base;
-            size_t displacement;
+            ssize_t displacement;
         } mem;
         struct {
-            size_t displacement;
+            ssize_t displacement;
         } mem_offset;
         struct {
             register_t base;
             register_t index;
-            size_t scale;
-            size_t displacement;
+            ssize_t scale;
+            ssize_t displacement;
         } mem_scaled;
         struct {
             register_t index;
-            size_t scale;
-            size_t displacement;
+            ssize_t scale;
+            ssize_t displacement;
         } mem_scaled2;
         struct {
             register_t reg1;
             register_t reg2;
-            size_t displacement;
+            ssize_t displacement;
         } mem_sum;
     } value;
 };
