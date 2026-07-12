@@ -857,6 +857,7 @@ enum class branch_hint_t : uint8_t {
     not_taken,
 };
 
+// todo: separate into different enums: control, debug, segment, general?
 enum class register_t {
     al, ah, ax, eax, rax,
     bl, bh, bx, ebx, rbx,

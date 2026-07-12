@@ -43,7 +43,9 @@ add_library(arch STATIC
         src/x86/vmx/vmexit.cpp
         src/x86/opcode_decode.cpp
         include/x86/opcode_tables.h
-        include/x86/opcode_decode.h)
+        include/x86/opcode_decode.h
+        include/x86/dr.h
+        src/x86/dr.cpp)
 
 target_compile_options(arch PRIVATE -ffreestanding -std=gnu++20 -mstack-alignment=16 -nostdinc++ -fno-exceptions)
 target_link_options(arch PRIVATE -nostdlib -nolibc -nodefaultlibs)
