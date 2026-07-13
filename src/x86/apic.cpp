@@ -90,4 +90,34 @@ bool is_bsp() {
     return apic_base.bits.bsp;
 }
 
+void send_ipi(const uint8_t vector, const delivery_mode_t delivery_mode, const destination_mode_t destination_mode, const level_t level, const trigger_mode_t trigger_mode, const destination_shorthand_t destination) {
+    icr_low_t icr{};
+    icr.bits.vector = vector;
+    icr.bits.delivery_mode = delivery_mode;
+    icr.bits.destination_mode = destination_mode;
+    icr.bits.level = level;
+    icr.bits.trigger_mode = trigger_mode;
+    icr.bits.destination_shorthand = destination;
+
+    switch (current_mode()) {
+        case mode_t::xapic: {
+            icr_low_t low_read{};
+            do {
+                __asm__ __volatile__("pause");
+                low_read = xapic_read<icr_low_t>();
+            } while (low_read.bits.delivery_status != delivery_status_t::idle);
+
+            xapic_write(icr);
+            break;
+        }
+        case mode_t::x2apic: {
+            x2apic_write(icr);
+            break;
+        }
+        case mode_t::disabled:
+        default:
+            break;
+    }
+}
+
 }

@@ -130,6 +130,45 @@ bool set_mode(mode_t mode);
 uint32_t get_local_apic_id();
 bool is_bsp();
 
+enum class delivery_mode_t : value_t {
+    fixed = 0b000,
+    lowest_priority = 0b001,
+    smi = 0b010,
+    reserved = 0b011,
+    nmi = 0b100,
+    init = 0b101,
+    startup = 0b110,
+};
+
+enum class destination_mode_t : value_t {
+    physical = 0,
+    logical = 1
+};
+
+enum class delivery_status_t : value_t {
+    idle = 0,
+    pending = 1,
+};
+
+enum class level_t : value_t {
+    de_assert = 0,
+    assert = 1
+};
+
+enum class trigger_mode_t : value_t {
+    edge = 0,
+    level = 1
+};
+
+enum class destination_shorthand_t : value_t {
+    none = 0b00,
+    self = 0b01,
+    all_with_self = 0b10,
+    all_no_self = 0b11
+};
+
+void send_ipi(uint8_t vector, delivery_mode_t delivery_mode, destination_mode_t destination_mode, level_t level, trigger_mode_t trigger_mode, destination_shorthand_t destination);
+
 }
 
 template<
@@ -205,5 +244,27 @@ struct {
     value_t reserved0 : 2;
     value_t eoi_broadcast_disable : 1;
     value_t reserved1 : 19;
+} bits;
+)
+
+define_apic_register(0xffe00300, 0x830, icr_low, true, true,
+struct {
+    value_t vector : 8;
+    delivery_mode_t delivery_mode : 3;
+    destination_mode_t destination_mode : 1;
+    delivery_status_t delivery_status : 1;
+    value_t reserved0 : 1;
+    level_t level : 1;
+    trigger_mode_t trigger_mode : 1;
+    value_t reserved1 : 2;
+    destination_shorthand_t destination_shorthand : 2;
+    value_t reserved2 : 12;
+} bits;
+)
+
+define_apic_register(0xffe00310, 0x830, icr_high, true, true,
+struct {
+    value_t reserved3 : 24;
+    value_t destination : 8;
 } bits;
 )
