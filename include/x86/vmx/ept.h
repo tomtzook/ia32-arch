@@ -38,6 +38,9 @@ struct guest_physical_address_t {
         } huge;
         uint64_t raw;
     };
+
+    // ReSharper disable once CppNonExplicitConvertingConstructor
+    guest_physical_address_t(const physical_address_t address) : raw(address) {}
 };
 static_assert(sizeof(guest_physical_address_t) == 8, "sizeof(guest_physical_address_t)");
 
@@ -225,7 +228,8 @@ static_assert(sizeof(invvpid_descriptor_t) == 16, "sizeof(invvpid_descriptor_t)"
 
 #pragma pack(pop)
 
-bool to_physical(const ept_pointer_t& eptp, guest_physical_address_t address, physical_address_t& out);
+bool to_physical(const ept_pointer_t& eptp, guest_physical_address_t address, physical_address_t& out, paging::to_virtual to_virtual = nullptr);
+bool apply_permissions(const ept_pointer_t& eptp, guest_physical_address_t address, bool read, bool write, bool execute, paging::to_virtual to_virtual);
 
 // ReSharper disable once CppDFAConstantFunctionResult
 inline instruction_result_t invept(invept_type_t type, invept_descriptor_t descriptor = {}) {

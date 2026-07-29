@@ -106,7 +106,7 @@ void ept_pointer_t::address(const physical_address_t address) {
     bits.address = (address >> paging::page_bits_4k) & mask;
 }
 
-bool to_physical(const ept_pointer_t& eptp, const guest_physical_address_t address, physical_address_t& out) {
+bool to_physical(const ept_pointer_t& eptp, const guest_physical_address_t address, physical_address_t& out, paging::to_virtual to_virtual) {
     const auto pml4_address = static_cast<physical_address_t>(eptp.bits.address) << paging::page_bits_4k;
     const auto pml4 = reinterpret_cast<const pml4e_t*>(pml4_address);
     auto& pml4e = pml4[address.huge.pml4e];
@@ -114,35 +114,99 @@ bool to_physical(const ept_pointer_t& eptp, const guest_physical_address_t addre
         return false;
     }
 
-    const auto pdpte_address = pml4e.address() | (static_cast<physical_address_t>(address.huge.directory_pointer) << 3);
-    const auto pdpte = reinterpret_cast<const pdpte_t*>(pdpte_address);
-    if (!pdpte->present()) {
+    const auto pdpt_address = pml4e.address();
+    const auto* pdpt = static_cast<const pdpte_t*>(to_virtual != nullptr ? to_virtual(pdpt_address) : reinterpret_cast<void*>(pdpt_address));
+    const auto& pdpte = pdpt[address.huge.directory_pointer];
+    if (!pdpte.present()) {
         return false;
     }
 
-    if (pdpte->is_huge()) {
-        out = pdpte->address() | static_cast<physical_address_t>(address.huge.offset);
+    if (pdpte.is_huge()) {
+        out = pdpte.address() | static_cast<physical_address_t>(address.huge.offset);
         return true;
     }
 
-    const auto pde_address = pdpte->address() | (static_cast<physical_address_t>(address.large.directory) << 3);
-    const auto pde = reinterpret_cast<const pde_t*>(pde_address);
-    if (!pde->present()) {
+    const auto pd_address = pdpte.address();
+    const auto* pd = static_cast<const pde_t*>(to_virtual != nullptr ? to_virtual(pd_address) : reinterpret_cast<void*>(pd_address));
+    const auto& pde = pd[address.large.directory];
+    if (!pde.present()) {
         return false;
     }
 
-    if (pde->is_large()) {
-        out = pde->address() | static_cast<physical_address_t>(address.large.offset);
+    if (pde.is_large()) {
+        out = pde.address() | static_cast<physical_address_t>(address.large.offset);
         return true;
     }
 
-    const auto pte_address = pde->address() | (static_cast<physical_address_t>(address.small.table) << 3);
-    const auto pte = reinterpret_cast<const pte_t*>(pte_address);
-    if (!pte->present()) {
+    const auto pt_address = pde.address();
+    const auto* pt = static_cast<const pte_t*>(to_virtual != nullptr ? to_virtual(pt_address) : reinterpret_cast<void*>(pt_address));
+    const auto& pte = pt[address.small.table];
+    if (!pte.present()) {
         return false;
     }
 
-    out = pte->address() | static_cast<physical_address_t>(address.small.offset);
+    out = pte.address() | static_cast<physical_address_t>(address.small.offset);
+    return true;
+}
+
+bool apply_permissions(const ept_pointer_t& eptp, const guest_physical_address_t address, const bool read, const bool write, const bool execute, paging::to_virtual to_virtual) {
+    const auto pml4_address = static_cast<physical_address_t>(eptp.bits.address) << paging::page_bits_4k;
+    auto pml4 = reinterpret_cast<pml4e_t*>(pml4_address);
+    auto& pml4e = pml4[address.huge.pml4e];
+    if (!pml4e.present()) {
+        return false;
+    }
+
+    pml4e.bits.read |= read;
+    pml4e.bits.write |= write;
+    pml4e.bits.execute |= execute;
+
+    const auto pdpt_address = pml4e.address();
+    auto* pdpt = static_cast<pdpte_t*>(to_virtual != nullptr ? to_virtual(pdpt_address) : reinterpret_cast<void*>(pdpt_address));
+    auto& pdpte = pdpt[address.huge.directory_pointer];
+    if (!pdpte.present()) {
+        return false;
+    }
+
+    if (pdpte.is_huge()) {
+        pdpte.huge.read = read;
+        pdpte.huge.write = write;
+        pdpte.huge.execute = execute;
+        return true;
+    }
+
+    pdpte.small.read |= read;
+    pdpte.small.write |= write;
+    pdpte.small.execute |= execute;
+
+    const auto pd_address = pdpte.address();
+    auto* pd = static_cast<pde_t*>(to_virtual != nullptr ? to_virtual(pd_address) : reinterpret_cast<void*>(pd_address));
+    auto& pde = pd[address.large.directory];
+    if (!pde.present()) {
+        return false;
+    }
+
+    if (pde.is_large()) {
+        pde.large.read = read;
+        pde.large.write = write;
+        pde.large.execute = execute;
+        return true;
+    }
+
+    pde.small.read |= read;
+    pde.small.write |= write;
+    pde.small.execute |= execute;
+
+    const auto pt_address = pde.address();
+    auto* pt = static_cast<pte_t*>(to_virtual != nullptr ? to_virtual(pt_address) : reinterpret_cast<void*>(pt_address));
+    auto& pte = pt[address.small.table];
+    if (!pte.present()) {
+        return false;
+    }
+
+    pte.bits.read = read;
+    pte.bits.write = write;
+    pte.bits.execute = execute;
     return true;
 }
 

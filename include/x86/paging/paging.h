@@ -17,6 +17,8 @@ constexpr size_t page_size_1g = 1ull << page_bits_1g;
 
 constexpr size_t page_size = page_size_4k;
 
+using to_virtual = void*(*)(physical_address_t address);
+
 enum class mode_t {
     disabled,
     bit32,
@@ -60,6 +62,10 @@ inline physical_address_t align_in_max_physical_address_width(const physical_add
     const physical_address_t mask = (1ull << max_physical_address) - 1;
 
     return address & mask;
+}
+
+inline void invlpg(const linear_address_t address) {
+    __asm__ __volatile__("invlpg (%0)" :: "r"(address) : "memory");
 }
 
 }

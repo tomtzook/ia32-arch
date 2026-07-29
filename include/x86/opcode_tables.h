@@ -165,6 +165,7 @@ extern const opcode_t table_group_4[group_table_size];
 extern const opcode_t table_group_5[group_table_size];
 extern const opcode_t table_group_6[group_table_size];
 extern const opcode_t table_group_7[group_table_size];
+extern const opcode_t table_group_7_complete[64];
 extern const opcode_t table_group_8[group_table_size];
 extern const opcode_t table_group_9[group_table_size];
 extern const opcode_t table_group_11[group_table_size];

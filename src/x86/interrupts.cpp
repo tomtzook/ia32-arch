@@ -61,6 +61,35 @@ descriptor64_t& table64_t::operator[](interrupt_t interrupt) {
     return static_cast<descriptor64_t*>(base_address())[static_cast<uint16_t>(interrupt)];
 }
 
+bool has_error_code(const interrupt_t vector) {
+    switch (vector) {
+        case interrupt_t::divide_error:
+        case interrupt_t::debug_exception:
+        case interrupt_t::nmi:
+        case interrupt_t::breakpoint:
+        case interrupt_t::overflow:
+        case interrupt_t::bound_range_exceeded:
+        case interrupt_t::invalid_opcode:
+        case interrupt_t::device_not_available:
+        case interrupt_t::coprocessor_segment_overrun:
+        case interrupt_t::fpu_floating_point_error:
+        case interrupt_t::alignment_check:
+        case interrupt_t::machine_check:
+        case interrupt_t::simd_floating_point_exception:
+        case interrupt_t::virtualization_exception:
+            return false;
+        case interrupt_t::double_fault:
+        case interrupt_t::invalid_tss:
+        case interrupt_t::segment_not_present:
+        case interrupt_t::stack_segment_fault:
+        case interrupt_t::general_protection:
+        case interrupt_t::page_fault:
+            return true;
+        default:
+            return false;
+    }
+}
+
 interrupt_type_t vector_type(const interrupt_t vector) {
     switch (vector) {
         case interrupt_t::divide_error:

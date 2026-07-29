@@ -641,7 +641,13 @@ static const char* instruction_names[] = {
     "xsavec",
     "xsaveopt",
     "xsaves",
-    "xsetbv"
+    "xsetbv",
+    "vmcall",
+    "vmlaunch",
+    "vmresume",
+    "vmxoff",
+    "xend",
+    "vmfunc",
 };
 
 
@@ -688,7 +694,7 @@ static const char* register_names[] = {
     "cs", "ds", "es", "fs", "gs", "ss"
 };
 
-constexpr auto last_instruction = instruction_t::xsetbv;
+constexpr auto last_instruction = instruction_t::vmfunc;
 constexpr auto last_register = register_t::ss;
 constexpr auto last_register_encoding = register_encoding_t::edi;
 constexpr auto last_ext_register_encoding = extended_register_encoding_t::r15;

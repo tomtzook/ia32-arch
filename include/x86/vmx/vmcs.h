@@ -1,8 +1,8 @@
 #pragma once
 
 #include "x86/common.h"
+#include "x86/interrupts.h"
 #include "x86/vmx/error.h"
-
 
 namespace x86::vmx {
 
@@ -177,7 +177,7 @@ struct vmfunc_control_t {
 };
 static_assert(sizeof(vmfunc_control_t) == 8, "sizeof(vmfunc_control_t)");
 
-enum class vmentry_interrupt_type_t : uint32_t {
+enum class vmx_interrupt_type_t : uint32_t {
     external_interrupt = 0,
     reserved = 1,
     nmi = 2,
@@ -192,7 +192,7 @@ struct vmentry_interruption_info_t {
     union {
         struct {
             uint32_t vector : 8;
-            vmentry_interrupt_type_t type : 2;
+            vmx_interrupt_type_t type : 2;
             uint32_t deliver_error_code : 1;
             uint32_t reserved : 19;
             uint32_t valid : 1;
@@ -206,7 +206,7 @@ struct vmexit_interruption_info_t {
     union {
         struct {
             uint32_t vector : 8;
-            vmentry_interrupt_type_t type : 2;
+            vmx_interrupt_type_t type : 2;
             uint32_t error_code_valid : 1;
             uint32_t reserved : 19;
             uint32_t valid : 1;
@@ -241,6 +241,18 @@ static_assert(sizeof(ept_violation_exit_qualification_t) == 8, "sizeof(ept_viola
 #pragma pack(pop)
 
 // for improvement of instructions later: https://github.com/opnsense/src/blob/cdc5c1db54c5183add40a0a48a7692d7d4ac4a31/sys/amd64/vmm/intel/vmx_cpufunc.h#L118
+
+inline vmx_interrupt_type_t interrupt_type(const interrupts::interrupt_t vector) {
+    switch (vector) {
+        case interrupts::interrupt_t::breakpoint:
+        case interrupts::interrupt_t::overflow:
+            return vmx_interrupt_type_t::software_exception;
+        case interrupts::interrupt_t::nmi:
+            return vmx_interrupt_type_t::nmi;
+        default:
+            return vmx_interrupt_type_t::hardware_exception;
+    }
+}
 
 // ReSharper disable once CppDFAConstantFunctionResult
 inline instruction_result_t vmclear(physical_address_t vmcs_address) {

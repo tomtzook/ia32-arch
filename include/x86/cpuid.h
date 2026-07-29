@@ -113,7 +113,7 @@ uint32_t osx : 1;
 uint32_t avx : 1;
 uint32_t half_precision_conversion : 1;
 uint32_t rdrand : 1;
-uint32_t reserved1 : 1;
+uint32_t hypervisor : 1;
 ,
 uint32_t fpu : 1;
 uint32_t vme : 1;

@@ -770,6 +770,74 @@ const opcode_t table_group_7[8] = {
     { no_instruction,no_operand,                            no_operand, opcode_flag_t::none } // Escapes to direct register matchers (SWAPGS, etc) // todo:
 };
 
+const opcode_t table_group_7_complete[64] = {
+    // 0xc0 -> 0xff
+    no_opcode, // c0
+    { instruction_t::vmcall,no_operand, no_operand, opcode_flag_t::none }, // c1
+    { instruction_t::vmlaunch, no_operand, no_operand, opcode_flag_t::none }, // c2
+    { instruction_t::vmresume, no_operand, no_operand, opcode_flag_t::none }, // c3
+    { instruction_t::vmxoff, no_operand, no_operand, opcode_flag_t::none }, // c4
+    no_opcode, // c5
+    no_opcode, // c6
+    no_opcode, // c7
+    { instruction_t::monitor, no_operand, no_operand, opcode_flag_t::none }, // c8
+    { instruction_t::mwait, no_operand, no_operand, opcode_flag_t::none }, // c9
+    { instruction_t::clac, no_operand, no_operand, opcode_flag_t::none }, // ca
+    { instruction_t::stac, no_operand, no_operand, opcode_flag_t::none }, // cb
+    no_opcode, // cc
+    no_opcode, // cd
+    no_opcode, // ce
+    no_opcode, // cf
+    { instruction_t::xgetbv, no_operand, no_operand, opcode_flag_t::none }, // d0
+    { instruction_t::xsetbv, no_operand, no_operand, opcode_flag_t::none }, // d1
+    no_opcode, // d2
+    no_opcode, // d3
+    { instruction_t::vmfunc, no_operand, no_operand, opcode_flag_t::none }, // d4
+    { instruction_t::xend, no_operand, no_operand, opcode_flag_t::none }, // d5
+    no_opcode, // d6
+    no_opcode, // d7
+    no_opcode, // d8
+    no_opcode, // d9
+    no_opcode, // da
+    no_opcode, // db
+    no_opcode, // dc
+    no_opcode, // dd
+    no_opcode, // de
+    no_opcode, // df
+    no_opcode, // e0
+    no_opcode, // e1
+    no_opcode, // e2
+    no_opcode, // e3
+    no_opcode, // e4
+    no_opcode, // e5
+    no_opcode, // e6
+    no_opcode, // e7
+    no_opcode, // e8
+    no_opcode, // e9
+    no_opcode, // ea
+    no_opcode, // eb
+    no_opcode, // ec
+    no_opcode, // ed
+    no_opcode, // ee
+    no_opcode, // ef
+    no_opcode, // f0
+    no_opcode, // f1
+    no_opcode, // f2
+    no_opcode, // f3
+    no_opcode, // f4
+    no_opcode, // f5
+    no_opcode, // f6
+    no_opcode, // f7
+    { instruction_t::swapgs, no_operand, no_operand, opcode_flag_t::none }, // f8
+    { instruction_t::rdtscp, no_operand, no_operand, opcode_flag_t::none }, // f9
+    no_opcode, // fa
+    no_opcode, // fb
+    no_opcode, // fc
+    no_opcode, // fd
+    no_opcode, // fe
+    no_opcode, // ff
+};
+
 // Group 8: Bit Tests with Immediates (Opcode: 0F BA)
 const opcode_t table_group_8[8] = {
     no_opcode,

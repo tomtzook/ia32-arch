@@ -777,6 +777,17 @@ static decode_error_t handle_operand(decoder_context_t& context, const tables::o
     return decode_error_t::success;
 }
 
+static void load_group_7_actual_opcode(decoder_context_t& context) {
+    const auto& modrm = context.modrm.value;
+    if (modrm.bits.mod == mod_type_t::register_) {
+        const auto index = modrm.raw & 0x3F;
+        const auto& instruction = tables::table_group_7_complete[index];
+        context.decoded.definition = instruction;
+    } else {
+        // memory mod, no changes needed
+    }
+}
+
 static decode_error_t decode(decoder_context_t& context) {
     // handle prefix
     do {
@@ -803,6 +814,10 @@ static decode_error_t decode(decoder_context_t& context) {
         context.ptr += sizeof(mod_rm_t);
         context.modrm.has = true;
         context.modrm.value = *modrm;
+    }
+
+    if (context.decoded.definition.is_group() && context.decoded.definition.kind.group == opcode_group_t::group7) {
+        load_group_7_actual_opcode(context);
     }
 
     if (context.decoded.definition.is_group()) {

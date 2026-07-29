@@ -168,6 +168,7 @@ private:
     idtr_t m_idtr;
 };
 
+bool has_error_code(interrupt_t vector);
 interrupt_type_t vector_type(interrupt_t vector);
 const char* vector_to_str(interrupt_t vector);
 

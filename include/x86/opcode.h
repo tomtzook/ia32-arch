@@ -648,7 +648,13 @@ enum class instruction_t {
     xsavec,
     xsaveopt,
     xsaves,
-    xsetbv
+    xsetbv,
+    vmcall,
+    vmlaunch,
+    vmresume,
+    vmxoff,
+    xend,
+    vmfunc,
 };
 
 enum class instruction_pair_t {
